@@ -1,0 +1,130 @@
+'use client';
+
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+import { api } from '@/lib/api';
+import { toast } from 'react-toastify';
+
+interface User {
+  id: string;
+  nome: string;
+  email: string;
+  is_admin?: boolean;
+  plan_type: string;
+  trial_end_date?: string;
+  subscription_status: string;
+  plan_name?: string;
+  subscription_date?: string;
+  subscription_amount?: number;
+  payment_method?: string;
+  cancellation_date?: string | null;
+  access_until?: string | null;
+}
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  signIn: (data: any) => Promise<void>;
+  signOut: (redirectTo?: string) => void; // redirectTo defaults to /dashboard
+  signUp: (data: any) => Promise<void>;
+  syncUser: () => Promise<void>;
+}
+
+const AuthContext = createContext({} as AuthContextType);
+
+// @ts-ignore
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = Cookies.get('gestaolocacoes.token');
+    const userStr = Cookies.get('gestaolocacoes.user');
+
+    if (token && userStr) {
+      setUser(JSON.parse(userStr));
+      api.defaults.headers.Authorization = `Bearer ${token}`;
+    }
+    setLoading(false);
+
+    // Listener para o evento de trial expirado
+    const handleTrialExpired = () => {
+      const currentUserStr = Cookies.get('gestaolocacoes.user');
+      if (currentUserStr) {
+        const currentUser = JSON.parse(currentUserStr);
+        const updatedUser = { ...currentUser, subscription_status: 'trial_expired' };
+        setUser(updatedUser);
+        Cookies.set('gestaolocacoes.user', JSON.stringify(updatedUser), { expires: 7 });
+      }
+    };
+
+    window.addEventListener('trial-expired', handleTrialExpired);
+    return () => window.removeEventListener('trial-expired', handleTrialExpired);
+  }, []);
+
+  async function signIn({ email, senha }: any) {
+    try {
+      const response = await api.post('/auth/login', { email, senha });
+      const { token, user: userData } = response.data;
+
+      Cookies.set('gestaolocacoes.token', token, { expires: 7 });
+      Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
+
+      api.defaults.headers.Authorization = `Bearer ${token}`;
+      setUser(userData);
+      router.push('/dashboard');
+      toast.success('Login realizado com sucesso!');
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.error ||
+        (error?.message?.includes('Network') ? 'Servidor indisponível.' : null) ||
+        'Erro ao realizar login';
+      toast.error(message);
+      console.error('Erro ao realizar login', error);
+      throw error;
+    }
+  }
+
+  async function signUp({ nome, email, senha }: any) {
+    try {
+      await api.post('/auth/register', { nome, email, senha });
+      toast.success('Conta criada com sucesso! Faça login.');
+      router.push('/');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao criar conta');
+      throw error;
+    }
+  }
+
+  function signOut(redirectTo = '/dashboard') {
+    Cookies.remove('gestaolocacoes.token');
+    Cookies.remove('gestaolocacoes.user');
+    setUser(null);
+    router.push(redirectTo);
+  }
+
+  async function syncUser() {
+    try {
+      const token = Cookies.get('gestaolocacoes.token');
+      if (!token) return;
+
+      const response = await api.get('/auth/me');
+      const userData = response.data;
+      
+      setUser(userData);
+      Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
+    } catch (error) {
+      console.error('Erro ao sincronizar usuário', error);
+    }
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, loading, signIn, signOut, signUp, syncUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => useContext(AuthContext);

@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  nome         String
+  email        String     @unique
+  senha        String
+  cpf_cnpj     String?
+  telefone     String?
+  endereco     String?
+  is_admin     Boolean    @default(false)
+  reset_token  String?
+  reset_token_expires DateTime?
+  data_criacao DateTime   @default(now())
+
+  // SaaS Trial & Subscription Fields
+  plan_type           String     @default("trial") // trial, free, premium
+  trial_start_date    DateTime?  @default(now())
+  trial_end_date      DateTime?
+  subscription_status String     @default("trial_active") // trial_active, trial_expiring, trial_expired, active_subscription, cancelled
+  
+  stripe_customer_id     String?    @unique
+  stripe_subscription_id String?    @unique
+
+  // Enhanced Subscription Details
+  plan_name           String?    // e.g., "Profissional"
+  subscription_date   DateTime?
+  subscription_amount Float?
+  payment_method      String?
+
+  // Cancellation Fields
+  cancellation_date   DateTime?
+  access_until        DateTime?
+
+  imoveis              Property[]
+  subscription_history SubscriptionHistory[]
+  cancellation_feedbacks CancellationFeedback[]
+}
+
+model SubscriptionHistory {
+  id                String   @id @default(uuid())
+  plan_name         String
+  amount            Float
+  date              DateTime @default(now())
+  
+  usuario_id        String
+  user              User     @relation(fields: [usuario_id], references: [id])
+}
+
+model CancellationFeedback {
+  id                 String   @id @default(uuid())
+  motivo             String   // opção escolhida
+  detalhe            String?  // campo aberto "Outro"
+  accepted_discount  Boolean  @default(false)
+  accepted_downgrade Boolean  @default(false)
+  created_at         DateTime @default(now())
+
+  usuario_id         String
+  user               User     @relation(fields: [usuario_id], references: [id])
+}
+
+model Property {
+  id                String        @id @default(uuid())
+  nome              String
+  endereco          String
+  descricao         String?
+  valor_diaria      Float
+  capacidade_maxima Int
+  redes_sociais_url String?
+  data_criacao      DateTime      @default(now())
+  
+  usuario_id        String
+  user              User          @relation(fields: [usuario_id], references: [id])
+  reservas          Reservation[]
+  campanhas         Campaign[]
+}
+
+model Tenant {
+  id           String        @id @default(uuid())
+  nome         String
+  cpf          String?       @unique
+  telefone     String?
+  email        String?       @unique
+  endereco     String?
+  observacoes  String?
+  reservas     Reservation[]
+  campanhas    Campaign[]
+}
+
+model Reservation {
+  id            String    @id @default(uuid())
+  data_checkin  DateTime
+  hora_checkin  String?
+  data_checkout DateTime
+  hora_checkout String?
+  valor_total   Float
+  status        String    @default("Pendente") // Confirmada, Pendente, Cancelada
+  
+  imovel_id     String
+  imovel        Property  @relation(fields: [imovel_id], references: [id])
+  
+  locatario_id  String
+  locatario     Tenant    @relation(fields: [locatario_id], references: [id])
+  
+  pagamentos    Payment[]
+  contrato      ContractDraft?
+}
+
+model Payment {
+  id             String      @id @default(uuid())
+  valor          Float
+  tipo           String      // Sinal, Restante
+  status         String      @default("Pendente") // Pago, Pendente
+  data_vencimento DateTime?
+  data_pagamento DateTime?
+  meio_pagamento String?
+  
+  reserva_id     String
+  reserva        Reservation @relation(fields: [reserva_id], references: [id], onDelete: Cascade)
+}
+
+model ContractDraft {
+  id         String      @id @default(uuid())
+  content    String
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  reserva_id String      @unique
+  reserva    Reservation @relation(fields: [reserva_id], references: [id], onDelete: Cascade)
+}
+
+model Campaign {
+  id           String   @id @default(uuid())
+  data_envio   DateTime @default(now())
+  mensagem     String
+  
+  imovel_id    String
+  imovel       Property @relation(fields: [imovel_id], references: [id])
+  
+  locatario_id String
+  locatario    Tenant   @relation(fields: [locatario_id], references: [id])
+}

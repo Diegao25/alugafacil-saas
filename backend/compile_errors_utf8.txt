@@ -1,0 +1,9 @@
+﻿src/controllers/contract.controller.ts(53,11): error TS2451: Cannot redeclare block-scoped variable 'ownerId'.
+src/controllers/contract.controller.ts(59,11): error TS2451: Cannot redeclare block-scoped variable 'ownerId'.
+src/controllers/contract.controller.ts(97,44): error TS2304: Cannot find name 'ownerId'.
+src/controllers/property.controller.ts(55,16): error TS2322: Type 'string | null' is not assignable to type 'string | StringFilter<"Property"> | undefined'.
+  Type 'null' is not assignable to type 'string | StringFilter<"Property"> | undefined'.
+src/controllers/property.controller.ts(71,20): error TS2322: Type 'string | null' is not assignable to type 'string | StringFilter<"Property"> | undefined'.
+  Type 'null' is not assignable to type 'string | StringFilter<"Property"> | undefined'.
+src/controllers/property.controller.ts(122,69): error TS2322: Type 'string | null' is not assignable to type 'string | StringFilter<"Property"> | undefined'.
+  Type 'null' is not assignable to type 'string | StringFilter<"Property"> | undefined'.

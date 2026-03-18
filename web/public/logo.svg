@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <!-- house shape -->
+  <path d="M8 28 L32 4 L56 28 V56 H8 Z" fill="url(#grad)"/>
+  <!-- door -->
+  <rect x="28" y="34" width="8" height="14" fill="white" rx="1"/>
+  <!-- windows -->
+  <rect x="16" y="22" width="6" height="6" fill="white" rx="1"/>
+  <rect x="42" y="22" width="6" height="6" fill="white" rx="1"/>
+</svg>

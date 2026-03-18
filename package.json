@@ -1,0 +1,10 @@
+{
+    "name": "gestao_locacoes",
+    "private": true,
+    "scripts": {
+        "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix web\""
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

@@ -18,14 +18,3 @@ export function WithSearchParams({ children, fallback }: WithSearchParamsProps) 
     </Suspense>
   );
 }
-```
-
-**Salve esse arquivo!**
-
----
-
-## 📍 PASSO 2: Corrigir `/dashboard/page.tsx`
-
-### Localização:
-```
-web/src/app/dashboard/page.tsx

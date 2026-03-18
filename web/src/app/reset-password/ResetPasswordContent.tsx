@@ -7,7 +7,7 @@ import { Eye, EyeOff, KeyRound } from 'lucide-react';
 import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
 
-export default function ResetPasswordPage() {
+export default function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');

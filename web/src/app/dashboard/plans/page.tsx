@@ -1,7 +1,10 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { Check, Rocket, Shield, Zap, ArrowLeft, Loader2, Clock, XCircle } from 'lucide-react';
+import { 
+  Check, Rocket, Shield, Zap, ArrowLeft, Loader2, Clock, XCircle,
+  ArrowRightLeft, CreditCard, Package, DollarSign, Calendar, RefreshCw
+} from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
 import { api } from '@/lib/api';
@@ -502,5 +505,3 @@ export default function PlansPage() {
   );
 }
 
-// Helper icons needed from lucide
-import { ArrowRightLeft, CreditCard, Package, DollarSign, Calendar, RefreshCw } from 'lucide-react';

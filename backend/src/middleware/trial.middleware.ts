@@ -16,7 +16,8 @@ export const checkTrial = async (req: AuthRequest, res: Response, next: NextFunc
       select: {
         plan_type: true,
         trial_end_date: true,
-        subscription_status: true
+        subscription_status: true,
+        access_until: true
       }
     });
 
@@ -25,8 +26,14 @@ export const checkTrial = async (req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
-    // Se o plano jÃ¡ for premium/ativo, libera
-    if (user.plan_type !== 'trial' && user.subscription_status === 'active_subscription') {
+    // Se o plano já for premium/ativo, libera
+    if (user.subscription_status === 'active_subscription') {
+      return next();
+    }
+
+    // Se o plano foi cancelado, mas o acesso ainda é válido, libera
+    const accessUntil = (user as any).access_until;
+    if (user.subscription_status === 'cancelled' && accessUntil && new Date() < new Date(accessUntil)) {
       return next();
     }
 

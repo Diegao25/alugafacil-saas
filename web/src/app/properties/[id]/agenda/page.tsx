@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import {
   addMonths,
   eachDayOfInterval,
@@ -33,9 +36,13 @@ type PropertyAvailabilityResponse = {
 
 async function fetchAvailability(id: string): Promise<PropertyAvailabilityResponse> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333';
-  const response = await fetch(`${baseUrl}/api/public/properties/${id}/availability`, {
-    cache: 'no-store'
-  });
+
+  const response = await fetch(
+    `${baseUrl}/api/public/properties/${id}/availability`,
+    {
+      cache: 'no-store'
+    }
+  );
 
   if (response.status === 404) {
     notFound();
@@ -53,7 +60,8 @@ export default async function PropertyAgendaPage({
 }: {
   params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
+
   const availability = await fetchAvailability(id);
 
   const bookings = availability.bookings
@@ -68,9 +76,11 @@ export default async function PropertyAgendaPage({
   const calendarStart = today;
   const calendarStartMonth = startOfMonth(today);
   const calendarEnd = endOfMonth(addMonths(calendarStartMonth, 11));
+
   const monthStarts = Array.from({ length: 12 }, (_, index) =>
     startOfMonth(addMonths(calendarStartMonth, index))
   );
+
   const calendarDays = eachDayOfInterval({
     start: calendarStart,
     end: calendarEnd
@@ -78,22 +88,34 @@ export default async function PropertyAgendaPage({
 
   const isDayBooked = (day: Date) =>
     bookings.some(
-      (booking) => day.getTime() >= booking.start.getTime() && day.getTime() < booking.end.getTime()
+      (booking) =>
+        day.getTime() >= booking.start.getTime() &&
+        day.getTime() < booking.end.getTime()
     );
 
   const availableDays = calendarDays.filter((day) => !isDayBooked(day)).length;
+
   const bookingsInRange = bookings.filter(
-    (booking) => booking.end > calendarStart && booking.start <= calendarEnd
+    (booking) =>
+      booking.end > calendarStart &&
+      booking.start <= calendarEnd
   );
+
   const priceFormatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL'
   });
+
   const weekdayLabels = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
   const capitalizeMonthLabel = (label: string) =>
     label ? label[0].toLocaleUpperCase('pt-BR') + label.slice(1) : label;
+
   const formatMonthLabel = (date: Date) =>
-    format(date, 'MMM', { locale: ptBR }).replace('.', '').slice(0, 2).toUpperCase();
+    format(date, 'MMM', { locale: ptBR })
+      .replace('.', '')
+      .slice(0, 2)
+      .toUpperCase();
 
   return (
     <div className="min-h-screen bg-slate-50 py-10">
@@ -101,8 +123,12 @@ export default async function PropertyAgendaPage({
         <div className="rounded-3xl bg-white p-6 shadow-sm shadow-slate-900/5">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-wide text-slate-500">Agenda Compartilhável</p>
-              <h1 className="mt-2 text-3xl font-bold text-slate-900">{availability.property.nome}</h1>
+              <p className="text-sm uppercase tracking-wide text-slate-500">
+                Agenda Compartilhável
+              </p>
+              <h1 className="mt-2 text-3xl font-bold text-slate-900">
+                {availability.property.nome}
+              </h1>
               <p className="text-sm text-slate-500">
                 {availability.property.endereco ?? 'Endereço não informado'}
               </p>
@@ -117,9 +143,10 @@ export default async function PropertyAgendaPage({
             </div>
             <CopyLinkButton />
           </div>
+
           <p className="mt-6 text-sm text-slate-500">
-            Esta agenda mostra os próximos 12 meses disponíveis e bloqueados. Envie o link para o
-            possível locatário e ele verá automaticamente as datas ocupadas.
+            Esta agenda mostra os próximos 12 meses disponíveis e bloqueados.
+            Envie o link para o possível locatário e ele verá automaticamente as datas ocupadas.
           </p>
         </div>
 
@@ -134,6 +161,7 @@ export default async function PropertyAgendaPage({
                   {availableDays} dias livres
                 </p>
               </div>
+
               <div className="flex gap-2 text-xs">
                 <span className="flex items-center gap-1 rounded-full border border-emerald-200 px-3 py-1 text-emerald-700">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -145,6 +173,7 @@ export default async function PropertyAgendaPage({
                 </span>
               </div>
             </div>
+
             <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {monthStarts.map((monthStart) => {
                 const monthEnd = endOfMonth(monthStart);
@@ -152,11 +181,13 @@ export default async function PropertyAgendaPage({
                 const leadingBlanks = getDay(monthStart);
                 const totalCells = leadingBlanks + days.length;
                 const trailingBlanks = (7 - (totalCells % 7)) % 7;
+
                 const cells = [
                   ...Array.from({ length: leadingBlanks }, () => null),
                   ...days,
                   ...Array.from({ length: trailingBlanks }, () => null)
                 ];
+
                 const availableInMonth = days.filter(
                   (day) => day >= calendarStart && !isDayBooked(day)
                 ).length;
@@ -168,18 +199,22 @@ export default async function PropertyAgendaPage({
                   >
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-semibold text-slate-900">
-                        {capitalizeMonthLabel(format(monthStart, 'MMMM', { locale: ptBR }))}{' '}
+                        {capitalizeMonthLabel(
+                          format(monthStart, 'MMMM', { locale: ptBR })
+                        )}{' '}
                         {format(monthStart, 'yyyy')}
                       </p>
-                      <p className="text-xs text-slate-500">{availableInMonth} livres</p>
+                      <p className="text-xs text-slate-500">
+                        {availableInMonth} livres
+                      </p>
                     </div>
-                    <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[9px] font-semibold uppercase leading-none text-slate-500">
+
+                    <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[9px] font-semibold uppercase text-slate-500">
                       {weekdayLabels.map((label) => (
-                        <span key={label} className="block">
-                          {label}
-                        </span>
+                        <span key={label}>{label}</span>
                       ))}
                     </div>
+
                     <div className="mt-2 grid grid-cols-7 gap-2">
                       {cells.map((day, index) => {
                         if (!day) {
@@ -196,8 +231,8 @@ export default async function PropertyAgendaPage({
                               isPast
                                 ? 'border-slate-200 bg-slate-100 text-slate-400'
                                 : booked
-                                  ? 'border-red-200 bg-red-50 text-red-700'
-                                  : 'border-emerald-100 bg-emerald-50 text-emerald-800'
+                                ? 'border-red-200 bg-red-50 text-red-700'
+                                : 'border-emerald-100 bg-emerald-50 text-emerald-800'
                             }`}
                           >
                             <div className="text-sm">{format(day, 'd')}</div>
@@ -216,14 +251,18 @@ export default async function PropertyAgendaPage({
               <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
                 Reservas confirmadas
               </p>
-              <span className="text-xs text-slate-400">{bookingsInRange.length} entradas</span>
+              <span className="text-xs text-slate-400">
+                {bookingsInRange.length} entradas
+              </span>
             </div>
+
             <div className="mt-4 space-y-3">
               {bookingsInRange.length === 0 && (
                 <p className="text-sm text-slate-500">
                   Nenhuma reserva registrada nos próximos 12 meses.
                 </p>
               )}
+
               {bookingsInRange.map((booking) => (
                 <div
                   key={booking.id}
@@ -238,6 +277,7 @@ export default async function PropertyAgendaPage({
                       {booking.locatario ?? 'Reserva sem nome'} • {booking.status}
                     </p>
                   </div>
+
                   <span className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">
                     {booking.status}
                   </span>

@@ -6,8 +6,10 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const inter = Inter({ subsets: ['latin'] });
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://alugafacil.com.br'),
   title: 'Aluga Fácil | Sistema de Gestão de Locações por Temporada',
   description: 'A solução definitiva para anfitriões. Organize suas reservas, controle seus recebimentos e gere contratos em um só lugar. Economize tempo e profissionalize sua gestão.',
   keywords: ['gestão de imóveis', 'aluguel por temporada', 'calendário de reservas', 'controle financeiro imobiliário', 'anfitrião profissional'],

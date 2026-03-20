@@ -47,7 +47,7 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
         title: 'Cadastre seu primeiro cliente',
         description: 'Tenha todos os contatos dos seus locatários em um só lugar.',
         icon: FileText,
-        link: '/dashboard/tenants',
+        link: '/dashboard/tenants/new',
         completed: (stats?.totalTenants ?? 0) > 0
       },
       {

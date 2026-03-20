@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,6 +27,7 @@ import {
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, loading } = useAuth();
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -116,6 +117,38 @@ export default function LandingPage() {
       avatar: 'CO'
     }
   ];
+
+  const termsSections = [
+    {
+      title: '1. Aceitação',
+      content:
+        'Ao utilizar o Aluga Fácil, você concorda com este conjunto de regras, políticas e práticas. O uso contínuo evidencia a aceitação automática dessas condições.'
+    },
+    {
+      title: '2. Uso autorizado',
+      content:
+        'Você pode criar e gerenciar seus imóveis, reservas e locatários. É proibido usar a plataforma para atividades ilegais, conteúdo enganoso ou violar direitos de terceiros.'
+    },
+    {
+      title: '3. Dados e privacidade',
+      content:
+        'Os dados cadastrados — clientes, pagamentos, contratos — são armazenados com segurança. É responsabilidade do usuário manter seus acessos protegidos.'
+    },
+    {
+      title: '4. Responsabilidades',
+      content:
+        'O sistema auxilia na gestão, mas o locador continua responsável por verificar contratos, políticas locais e comunicações com os hóspedes.'
+    },
+    {
+      title: '5. Alterações nos termos',
+      content: 'Podemos ajustar estes termos a qualquer momento. Notificaremos por e-mail e o uso contínuo após a comunicação implica aceitação.'
+    }
+  ];
+
+  const handleOpenTerms = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setIsTermsOpen(true);
+  };
 
   return (
     <div className="w-full bg-slate-50 text-slate-900 font-sans selection:bg-blue-200">
@@ -505,7 +538,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center flex-col md:flex-row gap-8">
             <div className="flex items-center gap-2">
-              <Logo href="/" size="medium" />
+              <Logo href="/" size="medium" textColor="text-white" />
             </div>
             
             <div className="flex gap-4 items-center">
@@ -521,18 +554,63 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-6 text-sm font-medium">
-                <a href="#" className="hover:text-white transition">Termos de Uso</a>
+                <a href="#" onClick={handleOpenTerms} className="hover:text-white transition">Termos de Uso</a>
                 <a href="#" className="hover:text-white transition">Política de Privacidade</a>
                 <a href="#" className="hover:text-white transition">Contato</a>
             </div>
           </div>
           
-          <div className="border-t border-slate-800 mt-12 pt-8 text-center text-sm flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>&copy; {new Date().getFullYear()} Aluga Fácil. Todos os direitos reservados.</p>
+            <div className="border-t border-slate-800 mt-12 pt-8 text-center text-sm flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>
+              &copy; {new Date().getFullYear()}{' '}
+              <span className="text-white font-semibold">Aluga Fácil</span>. Todos os direitos reservados.
+            </p>
             <p>Feito para quem administra imóveis com inteligência.</p>
           </div>
         </div>
       </footer>
+      {isTermsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
+          <div className="relative w-full max-w-3xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-y-auto max-h-[90vh]">
+            <div className="flex items-start justify-between px-6 pt-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Aluga Fácil</p>
+                <h3 className="text-2xl font-bold text-slate-900">Termos de Uso</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsTermsOpen(false)}
+                className="rounded-full p-2 text-slate-500 hover:text-slate-900 transition"
+                aria-label="Fechar termos de uso"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="px-6 pb-16 space-y-6 text-slate-600 text-sm">
+              <p>
+                Este documento estabelece as regras para o uso da plataforma Aluga Fácil. Leia com atenção antes de continuar a utilizar o serviço.
+              </p>
+              {termsSections.map((section) => (
+                <div key={section.title} className="space-y-2">
+                  <h4 className="text-base font-semibold text-slate-900">{section.title}</h4>
+                  <p className="leading-relaxed">{section.content}</p>
+                </div>
+              ))}
+              <p className="text-xs text-slate-400">
+                Em caso de dúvidas, entre em contato pelo e-mail suporte@alugafacil.com.br. Atualizamos estes termos periodicamente; as mudanças entram em vigor imediatamente após a publicação.
+              </p>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsTermsOpen(false)}
+                  className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

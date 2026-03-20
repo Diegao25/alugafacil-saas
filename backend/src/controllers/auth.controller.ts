@@ -91,6 +91,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       }
     }
 
+    const refreshedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { login_count: { increment: 1 } }
+    });
+
     const secret = process.env.JWT_SECRET || 'gestao_locacoes_secret';
     const token = jwt.sign({ id: user.id }, secret, {
       expiresIn: '7d',
@@ -111,22 +116,23 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({ 
       user: { 
-        id: user.id, 
-        nome: user.nome, 
-        email: user.email, 
-        cpf_cnpj: user.cpf_cnpj, 
-        telefone: user.telefone, 
-        endereco: user.endereco, 
+        id: refreshedUser.id, 
+        nome: refreshedUser.nome, 
+        email: refreshedUser.email, 
+        cpf_cnpj: refreshedUser.cpf_cnpj, 
+        telefone: refreshedUser.telefone, 
+        endereco: refreshedUser.endereco, 
         is_admin: isAdmin,
-        plan_type: user.plan_type,
+        plan_type: refreshedUser.plan_type,
         trial_end_date: trialEndDate,
-        subscription_status: user.subscription_status,
-        plan_name: (user as any).plan_name,
-        subscription_date: (user as any).subscription_date,
-        subscription_amount: (user as any).subscription_amount,
-        payment_method: (user as any).payment_method,
-        cancellation_date: (user as any).cancellation_date,
-        access_until: (user as any).access_until,
+        subscription_status: refreshedUser.subscription_status,
+        plan_name: (refreshedUser as any).plan_name,
+        subscription_date: (refreshedUser as any).subscription_date,
+        subscription_amount: (refreshedUser as any).subscription_amount,
+        payment_method: (refreshedUser as any).payment_method,
+        cancellation_date: (refreshedUser as any).cancellation_date,
+        access_until: (refreshedUser as any).access_until,
+        login_count: refreshedUser.login_count
       }, 
       token 
     });

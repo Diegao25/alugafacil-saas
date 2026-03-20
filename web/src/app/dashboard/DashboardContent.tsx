@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { Building, Calendar, CheckCircle, DollarSign, Clock, LogOut, Rocket, Info, ChevronRight } from 'lucide-react';
+import { Building, Calendar, CheckCircle, DollarSign, Clock, LogOut, Rocket, Info, ChevronRight, X } from 'lucide-react';
 import { format, differenceInCalendarDays, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrencyBR } from '@/lib/utils';
@@ -10,11 +10,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import OnboardingChecklist from '@/components/OnboardingChecklist';
 import { Plus } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showNpsModal, setShowNpsModal] = useState(false);
+  const [npsScore, setNpsScore] = useState(10);
+  const [npsComment, setNpsComment] = useState('');
+  const [npsSubmitting, setNpsSubmitting] = useState(false);
 
   const daysRemaining = (() => {
     if (user?.plan_type !== 'trial' || !user?.trial_end_date) return 0;
@@ -49,6 +54,44 @@ export default function DashboardPage() {
     }
     loadStats();
   }, [user?.subscription_status]);
+
+  useEffect(() => {
+    if (!user) return;
+    let isMounted = true;
+
+    async function checkNps() {
+      try {
+        const response = await api.get('/nps/check');
+        if (isMounted && response.data?.eligible) {
+          setShowNpsModal(true);
+        }
+      } catch (error) {
+        console.error('Erro ao consultar o NPS:', error);
+      }
+    }
+
+    checkNps();
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
+  const handleNpsSubmit = async () => {
+    setNpsSubmitting(true);
+    try {
+      await api.post('/nps', {
+        score: npsScore,
+        comment: npsComment ? npsComment.trim() : undefined
+      });
+      toast.success('Obrigado pela sua nota!');
+      setShowNpsModal(false);
+    } catch (error: any) {
+      console.error('Erro ao enviar NPS:', error);
+      toast.error(error?.response?.data?.error || 'Não foi possível registrar seu feedback.');
+    } finally {
+      setNpsSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -325,6 +368,67 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      {showNpsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-y-auto max-h-[90vh]">
+            <div className="flex items-center justify-between px-6 pt-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Aluga Fácil</p>
+                <h3 className="text-2xl font-bold text-slate-900">Avaliação NPS</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowNpsModal(false)}
+                className="rounded-full p-2 text-slate-500 hover:text-slate-900 transition"
+                aria-label="Fechar avaliação"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="px-6 pb-10 space-y-6 text-slate-600 text-sm">
+              <p>
+                Você já está com a conta ativa há alguns dias. Nos dê uma nota de 0 a 10 sobre o quanto recomendaria o
+                Aluga Fácil para um colega.
+              </p>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs text-slate-500 uppercase tracking-[0.3em] font-semibold">
+                  <span>0 - Nada provável</span>
+                  <span>10 - Extremamente provável</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={10}
+                  value={npsScore}
+                  onChange={(event) => setNpsScore(Number(event.target.value))}
+                  className="w-full"
+                />
+                <div className="text-3xl font-black text-slate-900 text-center">{npsScore}</div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-[0.3em] text-slate-500">Comentário (opcional)</label>
+                <textarea
+                  value={npsComment}
+                  onChange={(event) => setNpsComment(event.target.value)}
+                  rows={3}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition"
+                  placeholder="Conte o que você mais gosta ou o que podemos melhorar."
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleNpsSubmit}
+                  disabled={npsSubmitting}
+                  className="px-6 py-3 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {npsSubmitting ? 'Enviando...' : 'Enviar avaliação'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

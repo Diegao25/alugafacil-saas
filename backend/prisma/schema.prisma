@@ -20,6 +20,7 @@ model User {
   reset_token  String?
   reset_token_expires DateTime?
   data_criacao DateTime   @default(now())
+  login_count  Int        @default(0)
 
   // SaaS Trial & Subscription Fields
   plan_type           String     @default("trial") // trial, free, premium
@@ -43,6 +44,16 @@ model User {
   imoveis              Property[]
   subscription_history SubscriptionHistory[]
   cancellation_feedbacks CancellationFeedback[]
+  nps_responses        NpsResponse[]
+}
+
+model NpsResponse {
+  id          String   @id @default(uuid())
+  score       Int
+  comment     String?
+  createdAt   DateTime @default(now())
+  usuario_id  String
+  user        User     @relation(fields: [usuario_id], references: [id])
 }
 
 model SubscriptionHistory {

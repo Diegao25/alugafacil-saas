@@ -12,6 +12,7 @@ import publicRoutes from './routes/public.routes';
 import userRoutes from './routes/user.routes';
 import subscriptionRoutes from './routes/subscription.routes';
 import { campaignRoutes } from './routes/campaign.routes';
+import npsRoutes from './routes/nps.routes';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/public', publicRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/nps', npsRoutes);
 
 const PORT = process.env.PORT || 3333;
 

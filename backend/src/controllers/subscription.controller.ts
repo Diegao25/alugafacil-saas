@@ -11,6 +11,11 @@ const PLAN_PRICE_MAPPING: Record<string, string> = {
 };
 
 export const createCheckoutSession = async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!stripe) {
+    res.status(503).json({ error: 'Funcionalidade de pagamentos não configurada neste servidor.' });
+    return;
+  }
+
   try {
     const { planName } = req.body;
     const userId = req.user?.id;
@@ -159,6 +164,10 @@ export const cancelSubscription = async (req: AuthRequest, res: Response): Promi
 }
 
 export const verifySession = async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!stripe) {
+    res.status(503).json({ error: 'Stripe não configurado' });
+    return;
+  }
   try {
     const { sessionId } = req.params;
     const userId = req.user?.id;
@@ -242,6 +251,10 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
 };
 
 export const handleWebhook = async (req: Request, res: Response): Promise<void> => {
+  if (!stripe) {
+    res.status(503).json({ error: 'Webhook não configurado' });
+    return;
+  }
   const sig = req.headers['stripe-signature'] as string;
   let event;
 

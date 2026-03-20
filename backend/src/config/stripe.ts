@@ -4,9 +4,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not defined in .env');
+  console.warn('⚠️ AVISO: STRIPE_SECRET_KEY não definida no .env. Pagamentos estarão desabilitados.');
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  typescript: true,
-});
+export const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+      typescript: true,
+    })
+  : null;

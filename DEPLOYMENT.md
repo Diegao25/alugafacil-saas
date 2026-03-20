@@ -15,10 +15,10 @@ Crie um serviço separado (ou adicione à stack existente) que aponte para `back
 {
   "build": {
     "builder": "nixpacks",
-    "buildCommand": "cd backend && npm install && npm run build"
+    "buildCommand": "npm install && npm run build"
   },
   "deploy": {
-    "startCommand": "cd backend && npm start"
+    "startCommand": "npm start"
   }
 }
 ```

@@ -32,6 +32,9 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: { usuario_id: userId }
     });
 
+    // 1.1 Total de Locatários
+    const totalTenants = await prisma.tenant.count();
+
     // 2. Reservas começando hoje
     const reservationsToday = await prisma.reservation.count({
       where: {
@@ -168,6 +171,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
 
     res.status(200).json({
       totalProperties,
+      totalTenants,
       reservationsToday,
       checkoutsToday,
       pendingCheckinsCount,

@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CheckCircle2, Circle, PartyPopper, ArrowRight, Building, Calendar, FileText } from 'lucide-react';
+import { CheckCircle2, PartyPopper, ArrowRight, Building, Calendar, FileText, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
-import { api } from '@/lib/api';
 
 interface ChecklistItem {
   id: string;
@@ -28,6 +27,14 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
 
     const checklist: ChecklistItem[] = [
       {
+        id: 'profile',
+        title: 'Atualize seu perfil',
+        description: 'Atualize os dados do seu perfil para que reflita corretamente em seu contrato de locação.',
+        icon: User,
+        link: '/dashboard/profile',
+        completed: Boolean(stats?.profileCompleted)
+      },
+      {
         id: 'property',
         title: 'Cadastre seu primeiro imóvel',
         description: 'Adicione as informações básicas de uma de suas propriedades.',
@@ -36,20 +43,20 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
         completed: (stats?.totalProperties ?? 0) > 0
       },
       {
-        id: 'reservation',
-        title: 'Registre sua primeira reserva',
-        description: 'Comece a organizar sua agenda de locações.',
-        icon: Calendar,
-        link: '/dashboard/reservations/new',
-        completed: (stats?.totalReservations ?? 0) > 0 || (stats?.reservationsToday ?? 0) > 0 || (stats?.upcomingCheckins?.length ?? 0) > 0
-      },
-      {
         id: 'tenant',
         title: 'Cadastre seu primeiro cliente',
         description: 'Tenha todos os contatos dos seus locatários em um só lugar.',
         icon: FileText,
         link: '/dashboard/tenants',
         completed: (stats?.totalTenants ?? 0) > 0
+      },
+      {
+        id: 'reservation',
+        title: 'Registre sua primeira reserva',
+        description: 'Comece a organizar sua agenda de locações.',
+        icon: Calendar,
+        link: '/dashboard/reservations/new',
+        completed: (stats?.totalReservations ?? 0) > 0 || (stats?.reservationsToday ?? 0) > 0 || (stats?.upcomingCheckins?.length ?? 0) > 0
       }
     ];
 

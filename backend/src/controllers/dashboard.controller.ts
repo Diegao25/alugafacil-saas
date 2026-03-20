@@ -152,6 +152,20 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       }
     });
 
+    let profileCompleted = false;
+    if (req.user?.id) {
+      const profileInfo = await prisma.user.findUnique({
+        where: { id: req.user.id },
+        select: { cpf_cnpj: true, telefone: true, endereco: true }
+      });
+
+      profileCompleted = Boolean(
+        profileInfo?.cpf_cnpj &&
+        profileInfo?.telefone &&
+        profileInfo?.endereco
+      );
+    }
+
     res.status(200).json({
       totalProperties,
       reservationsToday,
@@ -162,7 +176,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       upcomingCheckouts,
       checkinsTodayList,
       checkoutsTodayList,
-      pendingPayments
+      pendingPayments,
+      profileCompleted
     });
   } catch (error) {
     console.error(error);

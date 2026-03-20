@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   output: 'standalone',
   // Redução agressiva de consumo de memória para build (Next.js 15+ / v16)
   experimental: {
@@ -16,10 +16,17 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true, 
   },
+  // Desativa ESLint no build (economiza memória)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: {
+    unoptimized: true,
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   // Desabilita geração de sourcemaps para economizar memória
   productionBrowserSourceMaps: false,
-};
+} satisfies import("next").NextConfig;
 
 export default nextConfig;

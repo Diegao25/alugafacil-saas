@@ -19,7 +19,9 @@ export async function sendPasswordResetEmail(email: string, nome: string, resetL
             </a>
           </div>
           <p style="color: #64748b; font-size: 14px;">Ou copie e cole o link no seu navegador:</p>
-          <p style="color: #64748b; font-size: 14px; word-break: break-all;">${resetLink}</p>
+          <p style="color: #64748b; font-size: 14px; word-break: break-all;">
+            <a href="${resetLink}" style="color: #2563eb; text-decoration: underline;">${resetLink}</a>
+          </p>
           <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
           <p style="color: #94a3b8; font-size: 12px; text-align: center;">Este link expira em 1 hora.</p>
         </div>

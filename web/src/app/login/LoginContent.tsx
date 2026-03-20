@@ -203,28 +203,7 @@ export default function LoginPage() {
                 />
               </div>
 
-              {resetLink && (
-                <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-emerald-700">
-                  <p className="font-semibold">Link gerado (ambiente local):</p>
-                  <p className="break-all">{resetLink}</p>
-                  <div className="mt-2 flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => navigator.clipboard.writeText(resetLink)}
-                      className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
-                    >
-                      Copiar link
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => window.open(resetLink, '_blank')}
-                      className="rounded-lg border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
-                    >
-                      Abrir link
-                    </button>
-                  </div>
-                </div>
-              )}
+
 
               <div className="flex justify-end gap-2 pt-2">
                 <button

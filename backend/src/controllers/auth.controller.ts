@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../prisma';
 import crypto from 'crypto';
+import { sendPasswordResetEmail } from '../utils/mail';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -331,14 +332,25 @@ export const requestPasswordReset = async (req: Request, res: Response): Promise
     const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
     const resetLink = `${frontendBase}/reset-password?token=${token}`;
 
+    // Envio real do e-mail de recuperação
+    try {
+      await sendPasswordResetEmail(user.email, user.nome, resetLink);
+    } catch (error) {
+      console.warn('Falha no envio de e-mail (possivelmente falta de API Key):', error);
+      // Em desenvolvimento, se não houver API Key, o link ainda aparecerá nos logs do console para testes.
+      console.log('--- RESET LINK (DEBUG) ---');
+      console.log(resetLink);
+    }
+
     res.status(200).json({
-      message: 'Se o e-mail existir, enviaremos as instruÃ§Ãµes.',
-      resetLink
+      message: 'Se o e-mail existir, enviaremos as instruções.',
+      // resetLink: process.env.NODE_ENV === 'development' ? resetLink : undefined // Comentado para segurança real
     });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao solicitar recuperaÃ§Ã£o de senha', details: error });
+    res.status(500).json({ error: 'Erro ao solicitar recuperação de senha', details: error });
   }
 };
+
 
 export const resetPassword = async (req: Request, res: Response): Promise<void> => {
   try {

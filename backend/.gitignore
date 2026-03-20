@@ -3,3 +3,7 @@ node_modules
 .env
 
 /generated/prisma
+*.db
+dist/
+*.log
+.DS_Store

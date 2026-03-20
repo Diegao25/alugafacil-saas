@@ -29,6 +29,7 @@ export default function LandingPage() {
   const { user, loading } = useAuth();
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -174,6 +175,24 @@ export default function LandingPage() {
     }
   ];
 
+  const contactInfo = [
+    {
+      label: 'E-mail',
+      value: 'suporte@alugafacil.com.br',
+      href: 'mailto:suporte@alugafacil.com.br'
+    },
+    {
+      label: 'WhatsApp',
+      value: '+55 (11) 99999-0000',
+      href: 'https://wa.me/5511999990000'
+    },
+    {
+      label: 'Telefone',
+      value: '+55 (11) 3333-4444',
+      href: 'tel:+551133334444'
+    }
+  ];
+
   const handleOpenTerms = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     setIsTermsOpen(true);
@@ -182,6 +201,11 @@ export default function LandingPage() {
   const handleOpenPrivacy = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     setIsPrivacyOpen(true);
+  };
+
+  const handleOpenContact = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setIsContactOpen(true);
   };
 
   return (
@@ -590,7 +614,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-6 text-sm font-medium">
                 <a href="#" onClick={handleOpenTerms} className="hover:text-white transition">Termos de Uso</a>
                 <a href="#" onClick={handleOpenPrivacy} className="hover:text-white transition">Política de Privacidade</a>
-                <a href="#" className="hover:text-white transition">Contato</a>
+                <a href="#" onClick={handleOpenContact} className="hover:text-white transition">Contato</a>
             </div>
           </div>
           
@@ -678,6 +702,53 @@ export default function LandingPage() {
               <div className="flex justify-end">
                 <button
                   onClick={() => setIsPrivacyOpen(false)}
+                  className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {isContactOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-y-auto max-h-[90vh]">
+            <div className="flex items-start justify-between px-6 pt-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Aluga Fácil</p>
+                <h3 className="text-2xl font-bold text-slate-900">Contato</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsContactOpen(false)}
+                className="rounded-full p-2 text-slate-500 hover:text-slate-900 transition"
+                aria-label="Fechar contato"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="px-6 pb-16 space-y-6 text-slate-600 text-sm">
+              <p>
+                Estamos prontos para ajudar você a profissionalizar suas locações. Escolha o canal abaixo e fale conosco agora mesmo.
+              </p>
+              <div className="space-y-4">
+                {contactInfo.map((info) => (
+                  <a
+                    key={info.label}
+                    href={info.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-col gap-1 rounded-2xl border border-slate-200 px-4 py-3 hover:border-blue-300 transition"
+                  >
+                    <span className="text-xs uppercase font-semibold tracking-[0.3em] text-slate-400">{info.label}</span>
+                    <span className="text-lg font-bold text-slate-900">{info.value}</span>
+                  </a>
+                ))}
+              </div>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsContactOpen(false)}
                   className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
                 >
                   Fechar

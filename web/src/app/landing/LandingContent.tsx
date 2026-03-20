@@ -28,6 +28,7 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, loading } = useAuth();
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -145,9 +146,42 @@ export default function LandingPage() {
     }
   ];
 
+  const privacySections = [
+    {
+      title: '1. Dados coletados',
+      content:
+        'Coletamos apenas informações necessárias para operar a plataforma – nome, CPF/CNPJ, telefone e dados de pagamento. Essas informações são usadas para processar reservas e emitir documentos.'
+    },
+    {
+      title: '2. Compartilhamento',
+      content:
+        'Compartilhamos dados com parceiros apenas quando estritamente necessário (ex.: Stripe para pagamentos) e nunca vendemos sua base para terceiros.'
+    },
+    {
+      title: '3. Segurança',
+      content:
+        'Utilizamos criptografia em trânsito e repouso. Recomendamos habilitar autenticação forte e proteger seus tokens de API.'
+    },
+    {
+      title: '4. Cookies',
+      content:
+        'Usamos cookies essenciais para manter sessões e cookies analíticos para melhorar o produto. Você pode revogar cookies não essenciais via configurações do navegador.'
+    },
+    {
+      title: '5. Contato',
+      content:
+        'Para acessar ou excluir dados, envie um e-mail para privacidade@alugafacil.com.br. Respondemos em até 7 dias úteis.'
+    }
+  ];
+
   const handleOpenTerms = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     setIsTermsOpen(true);
+  };
+
+  const handleOpenPrivacy = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setIsPrivacyOpen(true);
   };
 
   return (
@@ -555,7 +589,7 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row gap-6 text-sm font-medium">
                 <a href="#" onClick={handleOpenTerms} className="hover:text-white transition">Termos de Uso</a>
-                <a href="#" className="hover:text-white transition">Política de Privacidade</a>
+                <a href="#" onClick={handleOpenPrivacy} className="hover:text-white transition">Política de Privacidade</a>
                 <a href="#" className="hover:text-white transition">Contato</a>
             </div>
           </div>
@@ -602,6 +636,48 @@ export default function LandingPage() {
               <div className="flex justify-end">
                 <button
                   onClick={() => setIsTermsOpen(false)}
+                  className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {isPrivacyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
+          <div className="relative w-full max-w-3xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-y-auto max-h-[90vh]">
+            <div className="flex items-start justify-between px-6 pt-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Aluga Fácil</p>
+                <h3 className="text-2xl font-bold text-slate-900">Política de Privacidade</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPrivacyOpen(false)}
+                className="rounded-full p-2 text-slate-500 hover:text-slate-900 transition"
+                aria-label="Fechar política de privacidade"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="px-6 pb-16 space-y-6 text-slate-600 text-sm">
+              <p>
+                Esta Política descreve os dados que coletamos, como utilizamos e quais são seus direitos ao usar o Aluga Fácil.
+              </p>
+              {privacySections.map((section) => (
+                <div key={section.title} className="space-y-2">
+                  <h4 className="text-base font-semibold text-slate-900">{section.title}</h4>
+                  <p className="leading-relaxed">{section.content}</p>
+                </div>
+              ))}
+              <p className="text-xs text-slate-400">
+                Para dúvidas adicionais, envie um e-mail para privacidade@alugafacil.com.br.
+              </p>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsPrivacyOpen(false)}
                   className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
                 >
                   Fechar

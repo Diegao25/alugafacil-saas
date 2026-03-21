@@ -12,6 +12,20 @@ import OnboardingChecklist from '@/components/OnboardingChecklist';
 import { Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
 
+const npsScale = [
+  { value: 0, color: 'bg-red-700' },
+  { value: 1, color: 'bg-red-600' },
+  { value: 2, color: 'bg-orange-600' },
+  { value: 3, color: 'bg-orange-500' },
+  { value: 4, color: 'bg-amber-500' },
+  { value: 5, color: 'bg-yellow-400' },
+  { value: 6, color: 'bg-yellow-300' },
+  { value: 7, color: 'bg-lime-400' },
+  { value: 8, color: 'bg-lime-500' },
+  { value: 9, color: 'bg-green-500' },
+  { value: 10, color: 'bg-green-600' }
+];
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState<any>(null);
@@ -395,14 +409,27 @@ export default function DashboardPage() {
                   <span>0 - Nada provável</span>
                   <span>10 - Extremamente provável</span>
                 </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={10}
-                  value={npsScore}
-                  onChange={(event) => setNpsScore(Number(event.target.value))}
-                  className="w-full"
-                />
+                <div className="flex items-center justify-center gap-1 overflow-x-auto pb-1">
+                  {npsScale.map(({ value, color }) => {
+                    const selected = npsScore === value;
+
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setNpsScore(value)}
+                        aria-pressed={selected}
+                        className={`flex h-10 min-w-10 items-center justify-center rounded-md px-0 text-sm font-black text-white transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-slate-300/50 ${
+                          selected
+                            ? `${color} scale-105 ring-4 ring-slate-900/15 shadow-lg -translate-y-0.5`
+                            : `${color} shadow-sm hover:-translate-y-0.5 hover:shadow-md`
+                        }`}
+                      >
+                        {value}
+                      </button>
+                    );
+                  })}
+                </div>
                 <div className="text-3xl font-black text-slate-900 text-center">{npsScore}</div>
               </div>
               <div className="space-y-2">

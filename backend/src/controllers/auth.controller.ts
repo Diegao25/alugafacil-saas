@@ -91,10 +91,16 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       }
     }
 
-    const refreshedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: { login_count: { increment: 1 } }
-    });
+    let refreshedUser = user;
+    try {
+      refreshedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: { login_count: { increment: 1 } }
+      });
+    } catch (loginCountError) {
+      // Keep login working even if the database schema is behind the code.
+      console.warn('Nao foi possivel atualizar login_count durante o login:', loginCountError);
+    }
 
     const secret = process.env.JWT_SECRET || 'gestao_locacoes_secret';
     const token = jwt.sign({ id: user.id }, secret, {
@@ -132,7 +138,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         payment_method: (refreshedUser as any).payment_method,
         cancellation_date: (refreshedUser as any).cancellation_date,
         access_until: (refreshedUser as any).access_until,
-        login_count: refreshedUser.login_count
+        login_count: (refreshedUser as any).login_count ?? 0
       }, 
       token 
     });

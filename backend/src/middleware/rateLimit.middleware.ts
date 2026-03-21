@@ -4,6 +4,7 @@ type RateLimitConfig = {
   windowMs: number;
   max: number;
   message: string;
+  keyGenerator?: (req: Request) => string;
 };
 
 type RateLimitEntry = {
@@ -22,10 +23,16 @@ function getRequestKey(req: Request) {
   return forwardedIp?.trim() || req.ip || 'unknown';
 }
 
+export function getRequesterIp(req: Request) {
+  return getRequestKey(req);
+}
+
 export function createRateLimitMiddleware(config: RateLimitConfig) {
   return (req: Request, res: Response, next: NextFunction) => {
     const now = Date.now();
-    const storeKey = `${req.path}:${getRequestKey(req)}`;
+    const storeKey = config.keyGenerator
+      ? config.keyGenerator(req)
+      : `${req.path}:${getRequestKey(req)}`;
     const current = rateLimitStore.get(storeKey);
 
     if (!current || current.resetAt <= now) {

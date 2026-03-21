@@ -10,18 +10,28 @@ import {
   logout
 } from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth.middleware';
-import { createRateLimitMiddleware } from '../middleware/rateLimit.middleware';
+import { createRateLimitMiddleware, getRequesterIp } from '../middleware/rateLimit.middleware';
+
+function getNormalizedEmail(value: unknown) {
+  return typeof value === 'string' && value.trim()
+    ? value.trim().toLowerCase()
+    : 'unknown-email';
+}
 
 const loginRateLimit = createRateLimitMiddleware({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: 'Muitas tentativas de login. Tente novamente em alguns minutos.'
+  message: 'Muitas tentativas de login. Tente novamente em alguns minutos.',
+  // Limits are scoped by IP + e-mail so one account does not block another
+  // user logging in from the same network.
+  keyGenerator: (req) => `login:${getRequesterIp(req)}:${getNormalizedEmail(req.body?.email)}`
 });
 
 const forgotPasswordRateLimit = createRateLimitMiddleware({
   windowMs: 15 * 60 * 1000,
   max: 5,
-  message: 'Muitas solicitações de recuperação. Tente novamente em alguns minutos.'
+  message: 'Muitas solicitações de recuperação. Tente novamente em alguns minutos.',
+  keyGenerator: (req) => `forgot-password:${getRequesterIp(req)}:${getNormalizedEmail(req.body?.email)}`
 });
 
 const router = Router();

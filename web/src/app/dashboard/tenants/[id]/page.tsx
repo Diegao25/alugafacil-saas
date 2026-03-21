@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
-import { maskCep, fetchAddressByCep, parseAddressComponents, maskCpfCnpj, maskPhone, unmask, getPrimaryAddressSegment } from '@/lib/utils';
+import { maskCep, fetchAddressByCep, getPrimaryAddressSegment, isValidCpfCnpj, maskCpfCnpj, maskPhone, parseAddressComponents, unmask } from '@/lib/utils';
 import { LogOut, Save } from 'lucide-react';
 
 export default function EditTenantPage() {
@@ -32,6 +32,7 @@ export default function EditTenantPage() {
   const [bairro, setBairro] = useState('');
   const [cidade, setCidade] = useState('');
   const [uf, setUf] = useState('');
+  const [documentError, setDocumentError] = useState('');
 
   useEffect(() => {
     async function loadTenant() {
@@ -87,6 +88,18 @@ export default function EditTenantPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!formData.cpf.trim()) {
+      setDocumentError('CPF ou CNPJ é obrigatório.');
+      toast.error('CPF ou CNPJ é obrigatório.');
+      return;
+    }
+
+    if (!isValidCpfCnpj(formData.cpf)) {
+      setDocumentError('Informe um CPF ou CNPJ válido.');
+      toast.error('Informe um CPF ou CNPJ válido.');
+      return;
+    }
 
     const enderecoCompleto = `${logradouro}${numero ? ', ' + numero : ''}${bairro ? ', ' + bairro : ''}${cidade ? ', ' + cidade : ''}${uf ? ' - ' + uf : ''}${formData.cep ? ', ' + formData.cep : ''}`.trim();
 
@@ -144,10 +157,28 @@ export default function EditTenantPage() {
               <label className="text-sm font-medium text-slate-700">CPF/CNPJ</label>
               <input
                 type="text"
+                required
                 value={formData.cpf}
-                onChange={(e) => setFormData({ ...formData, cpf: maskCpfCnpj(e.target.value) })}
+                onChange={(e) => {
+                  setFormData({ ...formData, cpf: maskCpfCnpj(e.target.value) });
+                  if (documentError) {
+                    setDocumentError('');
+                  }
+                }}
+                onBlur={() => {
+                  if (!formData.cpf.trim()) {
+                    setDocumentError('CPF ou CNPJ é obrigatório.');
+                    return;
+                  }
+                  if (!isValidCpfCnpj(formData.cpf)) {
+                    setDocumentError('Informe um CPF ou CNPJ válido.');
+                    return;
+                  }
+                  setDocumentError('');
+                }}
                 className="w-full rounded-xl border border-slate-300 px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
               />
+              {documentError && <p className="text-sm font-medium text-red-600">{documentError}</p>}
             </div>
 
             <div className="space-y-2">

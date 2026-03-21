@@ -235,6 +235,11 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    if (!cpf_cnpj || !String(cpf_cnpj).trim()) {
+      res.status(400).json({ error: 'CPF ou CNPJ é obrigatório.' });
+      return;
+    }
+
     if (!isValidCpfCnpj(cpf_cnpj)) {
       res.status(400).json({ error: 'CPF ou CNPJ inválido.' });
       return;

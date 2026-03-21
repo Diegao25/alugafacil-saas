@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { prisma } from '../prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { isValidCpfCnpj } from '../utils/document';
 
 export const createTenant = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -8,6 +9,16 @@ export const createTenant = async (req: AuthRequest, res: Response): Promise<voi
 
     if (!nome) {
       res.status(400).json({ error: 'O nome é obrigatório' });
+      return;
+    }
+
+    if (!cpf || !String(cpf).trim()) {
+      res.status(400).json({ error: 'CPF ou CNPJ é obrigatório.' });
+      return;
+    }
+
+    if (!isValidCpfCnpj(cpf)) {
+      res.status(400).json({ error: 'CPF ou CNPJ inválido.' });
       return;
     }
 
@@ -77,6 +88,16 @@ export const updateTenant = async (req: AuthRequest, res: Response): Promise<voi
   try {
     const id = req.params.id as string;
     const data = req.body;
+
+    if (!data.cpf || !String(data.cpf).trim()) {
+      res.status(400).json({ error: 'CPF ou CNPJ é obrigatório.' });
+      return;
+    }
+
+    if (!isValidCpfCnpj(data.cpf)) {
+      res.status(400).json({ error: 'CPF ou CNPJ inválido.' });
+      return;
+    }
 
     // Verificar se existe
     const tenant = await prisma.tenant.findUnique({ where: { id } });

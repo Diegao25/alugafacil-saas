@@ -87,6 +87,13 @@ export default function ProfilePage() {
     setLoading(true);
 
     try {
+      if (!formData.cpf_cnpj.trim()) {
+        setDocumentError('CPF ou CNPJ é obrigatório.');
+        toast.error('CPF ou CNPJ é obrigatório.');
+        setLoading(false);
+        return;
+      }
+
       if (!isValidCpfCnpj(formData.cpf_cnpj)) {
         setDocumentError('Informe um CPF ou CNPJ válido.');
         toast.error('Informe um CPF ou CNPJ válido.');
@@ -219,6 +226,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     placeholder="000.000.000-00"
+                    required
                     value={formData.cpf_cnpj}
                     onChange={(e) => {
                       const nextValue = maskCpfCnpj(e.target.value);
@@ -228,6 +236,10 @@ export default function ProfilePage() {
                       }
                     }}
                     onBlur={() => {
+                      if (!formData.cpf_cnpj.trim()) {
+                        setDocumentError('CPF ou CNPJ é obrigatório.');
+                        return;
+                      }
                       if (!isValidCpfCnpj(formData.cpf_cnpj)) {
                         setDocumentError('Informe um CPF ou CNPJ válido.');
                         return;

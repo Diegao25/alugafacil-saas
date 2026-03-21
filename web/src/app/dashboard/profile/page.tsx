@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
-import { maskCep, fetchAddressByCep, parseAddressComponents } from '@/lib/utils';
+import { maskCep, fetchAddressByCep, isValidCpfCnpj, maskCpfCnpj, parseAddressComponents } from '@/lib/utils';
 import { User, Phone, MapPin, CreditCard, Save, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [cep, setCep] = useState('');
   const [cepLoading, setCepLoading] = useState(false);
   const [showOwnerProfileLabel, setShowOwnerProfileLabel] = useState(false);
+  const [documentError, setDocumentError] = useState('');
 
   const [address, setAddress] = useState({
     logradouro: '',
@@ -86,6 +87,13 @@ export default function ProfilePage() {
     setLoading(true);
 
     try {
+      if (!isValidCpfCnpj(formData.cpf_cnpj)) {
+        setDocumentError('Informe um CPF ou CNPJ válido.');
+        toast.error('Informe um CPF ou CNPJ válido.');
+        setLoading(false);
+        return;
+      }
+
       const enderecoSegment = [
         [address.logradouro, address.numero].filter(Boolean).join(', '),
         address.bairro
@@ -212,9 +220,25 @@ export default function ProfilePage() {
                     type="text"
                     placeholder="000.000.000-00"
                     value={formData.cpf_cnpj}
-                    onChange={(e) => setFormData({ ...formData, cpf_cnpj: e.target.value })}
+                    onChange={(e) => {
+                      const nextValue = maskCpfCnpj(e.target.value);
+                      setFormData({ ...formData, cpf_cnpj: nextValue });
+                      if (documentError) {
+                        setDocumentError('');
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!isValidCpfCnpj(formData.cpf_cnpj)) {
+                        setDocumentError('Informe um CPF ou CNPJ válido.');
+                        return;
+                      }
+                      setDocumentError('');
+                    }}
                     className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
+                  {documentError && (
+                    <p className="text-sm font-medium text-rose-600">{documentError}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">

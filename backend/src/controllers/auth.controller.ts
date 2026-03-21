@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { sendPasswordResetEmail } from '../utils/mail';
 import { resolveOwnerId } from '../utils/owner';
 import { AUTH_COOKIE_NAME, getAuthCookieOptions, getJwtSecret } from '../utils/security';
+import { isValidCpfCnpj } from '../utils/document';
 
 const PASSWORD_HASH_ROUNDS = 10;
 const INVALID_CREDENTIALS_MESSAGE = 'Credenciais inválidas.';
@@ -231,6 +232,11 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 
     if (!targetUserId) {
       res.status(404).json({ error: 'Locador não encontrado.' });
+      return;
+    }
+
+    if (!isValidCpfCnpj(cpf_cnpj)) {
+      res.status(400).json({ error: 'CPF ou CNPJ inválido.' });
       return;
     }
 

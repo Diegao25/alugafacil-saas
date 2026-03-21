@@ -12,6 +12,7 @@ interface User {
   email: string;
   is_admin?: boolean;
   can_manage_users?: boolean;
+  owner_user_id?: string | null;
   plan_type: string;
   trial_end_date?: string;
   subscription_status: string;

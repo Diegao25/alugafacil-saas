@@ -164,6 +164,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
         cpf_cnpj: true,
         telefone: true,
         endereco: true,
+        owner_user_id: true,
         is_admin: true,
         plan_type: true,
         trial_end_date: true,
@@ -206,6 +207,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
             cpf_cnpj: true,
             telefone: true,
             endereco: true,
+            owner_user_id: true,
             is_admin: true,
             plan_type: true,
             trial_end_date: true,
@@ -245,6 +247,11 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 
     if (!targetUserId) {
       res.status(404).json({ error: 'Locador não encontrado.' });
+      return;
+    }
+
+    if (!(await canManageUsers(userId))) {
+      res.status(403).json({ error: 'Somente o locador principal pode editar este perfil.' });
       return;
     }
 

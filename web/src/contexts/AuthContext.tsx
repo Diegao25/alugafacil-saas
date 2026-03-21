@@ -15,6 +15,9 @@ interface User {
   plan_type: string;
   trial_end_date?: string;
   subscription_status: string;
+  terms_pending?: boolean;
+  current_terms_version?: string | null;
+  accepted_terms_version?: string | null;
   plan_name?: string;
   subscription_date?: string;
   subscription_amount?: number;

@@ -45,6 +45,31 @@ model User {
   subscription_history SubscriptionHistory[]
   cancellation_feedbacks CancellationFeedback[]
   nps_responses        NpsResponse[]
+  terms_acceptances    UserTermsAcceptance[]
+}
+
+model TermsVersion {
+  id           String                @id @default(uuid())
+  version      String                @unique
+  title        String
+  content      String
+  is_active    Boolean               @default(true)
+  published_at DateTime              @default(now())
+  created_at   DateTime              @default(now())
+  acceptances  UserTermsAcceptance[]
+}
+
+model UserTermsAcceptance {
+  id               String       @id @default(uuid())
+  accepted_at      DateTime     @default(now())
+  ip_address       String?
+  user_agent       String?
+  usuario_id       String
+  terms_version_id String
+  user             User         @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  termsVersion     TermsVersion @relation(fields: [terms_version_id], references: [id], onDelete: Cascade)
+
+  @@unique([usuario_id, terms_version_id])
 }
 
 model NpsResponse {

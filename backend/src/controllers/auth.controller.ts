@@ -7,6 +7,7 @@ import { sendPasswordResetEmail } from '../utils/mail';
 import { canManageUsers, resolveOwnerId } from '../utils/owner';
 import { AUTH_COOKIE_NAME, getAuthCookieOptions, getJwtSecret } from '../utils/security';
 import { isValidCpfCnpj } from '../utils/document';
+import { getTermsStatus } from '../utils/terms';
 
 const PASSWORD_HASH_ROUNDS = 10;
 const INVALID_CREDENTIALS_MESSAGE = 'Credenciais inválidas.';
@@ -57,7 +58,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         can_manage_users: user.is_admin,
         plan_type: user.plan_type,
         trial_end_date: user.trial_end_date,
-        subscription_status: user.subscription_status
+        subscription_status: user.subscription_status,
+        terms_pending: true,
+        current_terms_version: null,
+        accepted_terms_version: null
       }
     });
   } catch (error) {
@@ -113,6 +117,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     let trialEndDate = user.trial_end_date;
     const canManageUsersAccess = await canManageUsers(user.id);
+    const termsStatus = await getTermsStatus(user.id);
 
     // Auto-correção: Se o trial_end_date for nulo mas for um usuário trial
     if (user.plan_type === 'trial' && !trialEndDate) {
@@ -138,6 +143,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         plan_type: refreshedUser.plan_type,
         trial_end_date: trialEndDate,
         subscription_status: refreshedUser.subscription_status,
+        terms_pending: termsStatus.termsPending,
+        current_terms_version: termsStatus.currentTermsVersion,
+        accepted_terms_version: termsStatus.acceptedTermsVersion,
         plan_name: (refreshedUser as any).plan_name,
         subscription_date: (refreshedUser as any).subscription_date,
         subscription_amount: (refreshedUser as any).subscription_amount,
@@ -222,10 +230,14 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
     }
 
     const canManageUsersAccess = await canManageUsers(user.id);
+    const termsStatus = await getTermsStatus(user.id);
 
     res.status(200).json({
       ...finalUser,
-      can_manage_users: canManageUsersAccess
+      can_manage_users: canManageUsersAccess,
+      terms_pending: termsStatus.termsPending,
+      current_terms_version: termsStatus.currentTermsVersion,
+      accepted_terms_version: termsStatus.acceptedTermsVersion
     });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar perfil', details: error });

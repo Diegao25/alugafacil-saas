@@ -9,6 +9,7 @@ import {
   getOwnerProfile,
   logout
 } from '../controllers/auth.controller';
+import { acceptCurrentTerms, getCurrentTerms } from '../controllers/terms.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { createRateLimitMiddleware, getRequesterIp } from '../middleware/rateLimit.middleware';
 
@@ -42,6 +43,8 @@ router.post('/forgot-password', forgotPasswordRateLimit, requestPasswordReset);
 router.post('/reset-password', resetPassword);
 router.get('/me', authenticate, getMe);
 router.get('/owner', authenticate, getOwnerProfile);
+router.get('/terms/current', authenticate, getCurrentTerms);
+router.post('/terms/accept', authenticate, acceptCurrentTerms);
 router.put('/profile', authenticate, updateProfile);
 router.post('/logout', logout);
 

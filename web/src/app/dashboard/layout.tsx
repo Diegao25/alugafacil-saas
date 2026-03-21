@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import PlanBanner from '@/components/PlanBanner';
 import TrialBlockingModal from '@/components/TrialBlockingModal';
+import TermsAcceptanceModal from '@/components/TermsAcceptanceModal';
 import { Menu, X, LogOut } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -48,6 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex-1 flex flex-col h-screen overflow-hidden w-full relative">
         <PlanBanner />
         <TrialBlockingModal />
+        <TermsAcceptanceModal />
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between lg:justify-end px-4 lg:px-8 shadow-sm shrink-0">
           <button 
             className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg"

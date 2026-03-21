@@ -1,4 +1,5 @@
 import type { CookieOptions } from 'express';
+import type { Request } from 'express';
 
 export const AUTH_COOKIE_NAME = 'gestaolocacoes.session';
 const SEVEN_DAYS_IN_MS = 7 * 24 * 60 * 60 * 1000;
@@ -66,4 +67,30 @@ export function parseCookieValue(cookieHeader: string | undefined, cookieName: s
   }
 
   return null;
+}
+
+function normalizeBaseUrl(value: string) {
+  return value.replace(/\/+$/, '');
+}
+
+export function getPublicApiBaseUrl(req?: Request) {
+  const configuredBaseUrl =
+    process.env.API_BASE_URL ||
+    process.env.BACKEND_URL ||
+    process.env.BACKEND_PUBLIC_URL ||
+    (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : undefined);
+
+  if (configuredBaseUrl) {
+    return normalizeBaseUrl(configuredBaseUrl);
+  }
+
+  const forwardedHost = req?.get('x-forwarded-host');
+  const host = forwardedHost || req?.get('host');
+
+  if (host) {
+    const protocol = req?.get('x-forwarded-proto') || req?.protocol || 'https';
+    return `${protocol}://${normalizeBaseUrl(host)}`;
+  }
+
+  return `http://localhost:${process.env.PORT || '3333'}`;
 }

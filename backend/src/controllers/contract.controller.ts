@@ -6,7 +6,7 @@ import { formatPhone } from '../utils/formatters';
 import jwt from 'jsonwebtoken';
 import { addDays } from 'date-fns';
 import { resolveOwnerId } from '../utils/owner';
-import { getJwtSecret } from '../utils/security';
+import { getJwtSecret, getPublicApiBaseUrl } from '../utils/security';
 
 type ReservationWithRelations = {
   id: string;
@@ -177,7 +177,7 @@ export const shareContractLink = async (req: AuthRequest, res: Response): Promis
     const secret = getJwtSecret();
     const token = jwt.sign({ contractId: reservation.id }, secret, { expiresIn: '4h' });
 
-    const apiBase = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || '3333'}`;
+    const apiBase = getPublicApiBaseUrl(req);
     const link = `${apiBase}/api/public/contracts/share?token=${token}`;
 
     res.json({ link, expiresIn: 4 * 60 * 60 });

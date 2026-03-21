@@ -7,7 +7,9 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-const buildTimeWhatsappNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || '';
+const DEFAULT_SUPPORT_WHATSAPP_NUMBER = '5511988392241';
+const buildTimeWhatsappNumber =
+  process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || DEFAULT_SUPPORT_WHATSAPP_NUMBER;
 
 function normalizePhone(value: string) {
   return value.replace(/\D/g, '');

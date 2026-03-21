@@ -17,11 +17,37 @@ function normalizePhone(value: string) {
   return value.replace(/\D/g, '');
 }
 
+function getWhatsappOriginLabel(pathname: string) {
+  if (pathname === '/dashboard') return 'Visão Geral';
+  if (pathname === '/dashboard/profile') return 'Perfil do Locador';
+  if (pathname === '/dashboard/properties') return 'Imóveis';
+  if (pathname === '/dashboard/properties/new') return 'Novo Imóvel';
+  if (pathname.startsWith('/dashboard/properties/')) return 'Detalhes do Imóvel';
+  if (pathname === '/dashboard/tenants') return 'Locatários';
+  if (pathname === '/dashboard/tenants/new') return 'Novo Locatário';
+  if (pathname.startsWith('/dashboard/tenants/')) return 'Editar Locatário';
+  if (pathname === '/dashboard/reservations') return 'Reservas';
+  if (pathname === '/dashboard/reservations/new') return 'Nova Reserva';
+  if (pathname.includes('/dashboard/reservations/') && pathname.endsWith('/edit')) return 'Editar Reserva';
+  if (pathname === '/dashboard/payments') return 'Pagamentos';
+  if (pathname === '/dashboard/payments/new') return 'Novo Pagamento';
+  if (pathname === '/dashboard/contracts') return 'Contratos';
+  if (pathname.includes('/dashboard/contracts/') && pathname.endsWith('/edit')) return 'Editar Contrato';
+  if (pathname === '/dashboard/campaigns') return 'Campanhas';
+  if (pathname === '/dashboard/users') return 'Usuários';
+  if (pathname === '/dashboard/plans') return 'Planos';
+  if (pathname === '/dashboard/plans/success') return 'Sucesso do Plano';
+  if (pathname === '/dashboard/plans/cancel') return 'Cancelamento do Plano';
+
+  return 'Dashboard';
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const originLabel = getWhatsappOriginLabel(pathname);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -66,7 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 'Olá! Preciso de ajuda no Aluga Fácil.',
                 `Usuário: ${user.nome}`,
                 `E-mail: ${user.email}`,
-                `Origem: ${pathname}`
+                `Origem: ${originLabel}`
               ].join('\n')
             )}`}
             target="_blank"

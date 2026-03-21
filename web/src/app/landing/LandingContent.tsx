@@ -590,9 +590,6 @@ export default function LandingPage() {
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-pink-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm0 2h10c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3H7c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3zm5 2a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm4.5-.5a1 1 0 110 2 1 1 0 010-2z"/></svg>
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-blue-400 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11.75 19h-2.5v-9h2.5v9zm-1.25-10.273c-.803 0-1.45-.658-1.45-1.468 0-.81.647-1.458 1.45-1.458.803 0 1.45.648 1.45 1.458 0 .81-.647 1.468-1.45 1.468zm13 10.273h-2.5v-4.735c0-1.13-.025-2.588-1.577-2.588-1.578 0-1.818 1.229-1.818 2.499v4.824h-2.5v-9h2.4v1.234h.034c.334-.632 1.148-1.298 2.362-1.298 2.524 0 2.993 1.662 2.993 3.822v5.242z"/></svg>
-              </a>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-6 text-sm font-medium">

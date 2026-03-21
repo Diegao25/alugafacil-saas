@@ -88,7 +88,7 @@ export function AuthProvider({ children }) {
     try {
       await api.post('/auth/register', { nome, email, senha });
       toast.success('Conta criada com sucesso! Faça login.');
-      router.push('/');
+      router.push('/login?external=1');
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Erro ao criar conta');
       throw error;

@@ -34,11 +34,20 @@ type PropertyAvailabilityResponse = {
   bookings: BookingResponse[];
 };
 
+function getApiOrigin() {
+  const configuredBaseUrl =
+    process.env.NEXT_PUBLIC_API_URL ??
+    process.env.API_BASE_URL ??
+    'http://localhost:3333';
+
+  return configuredBaseUrl.replace(/\/api\/?$/, '');
+}
+
 async function fetchAvailability(id: string): Promise<PropertyAvailabilityResponse> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333';
+  const apiOrigin = getApiOrigin();
 
   const response = await fetch(
-    `${baseUrl}/api/public/properties/${id}/availability`,
+    `${apiOrigin}/api/public/properties/${id}/availability`,
     {
       cache: 'no-store'
     }
@@ -58,9 +67,9 @@ async function fetchAvailability(id: string): Promise<PropertyAvailabilityRespon
 export default async function PropertyAgendaPage({
   params
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
 
   const availability = await fetchAvailability(id);
 

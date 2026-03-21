@@ -14,7 +14,7 @@ export default function ProfilePage() {
   const [fetching, setFetching] = useState(true);
   const [cep, setCep] = useState('');
   const [cepLoading, setCepLoading] = useState(false);
-  const [readOnly, setReadOnly] = useState(false);
+  const [showOwnerProfileLabel, setShowOwnerProfileLabel] = useState(false);
 
   const [address, setAddress] = useState({
     logradouro: '',
@@ -42,23 +42,17 @@ export default function ProfilePage() {
         const currentUser = response.data;
         const isAdmin = currentUser.is_admin;
         let profileData = response.data;
-        let shouldBeReadOnly = !isAdmin;
 
         if (!isAdmin) {
           try {
             const ownerResponse = await api.get('/auth/owner');
             profileData = ownerResponse.data;
-            shouldBeReadOnly = ownerResponse.data.id !== currentUser.id;
           } catch (error) {
             profileData = response.data;
-            shouldBeReadOnly = false;
             toast.warn('Não foi possível carregar o perfil do locador. Exibindo seus dados.');
           }
-        } else {
-          shouldBeReadOnly = false;
         }
-
-        setReadOnly(shouldBeReadOnly);
+        setShowOwnerProfileLabel(!isAdmin);
 
         const endereco = profileData.endereco || '';
 
@@ -89,7 +83,6 @@ export default function ProfilePage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (readOnly) return;
     setLoading(true);
 
     try {
@@ -182,11 +175,11 @@ export default function ProfilePage() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
-          {readOnly ? 'Perfil do Locador' : 'Meu Perfil de Locador'}
+          {showOwnerProfileLabel ? 'Perfil do Locador' : 'Meu Perfil de Locador'}
         </h1>
         <p className="text-slate-500 mt-2">
-          {readOnly
-            ? 'Visualize os dados do locador que serão exibidos nos contratos de locação.'
+          {showOwnerProfileLabel
+            ? 'Gerencie os dados do locador que serão exibidos nos contratos de locação.'
             : 'Gerencie suas informações pessoais que serão exibidas nos contratos de locação.'}
         </p>
       </div>
@@ -206,12 +199,7 @@ export default function ProfilePage() {
                     required
                     value={formData.nome}
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                    disabled={readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
 
@@ -225,12 +213,7 @@ export default function ProfilePage() {
                     placeholder="000.000.000-00"
                     value={formData.cpf_cnpj}
                     onChange={(e) => setFormData({ ...formData, cpf_cnpj: e.target.value })}
-                    disabled={readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
 
@@ -244,12 +227,7 @@ export default function ProfilePage() {
                     placeholder="(00) 00000-0000"
                     value={formData.telefone}
                     onChange={(e) => setFormData({ ...formData, telefone: formatPhoneNumber(e.target.value) })}
-                    disabled={readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
 
@@ -264,12 +242,8 @@ export default function ProfilePage() {
                     value={cep}
                     onChange={(e) => setCep(maskCep(e.target.value))}
                     onBlur={handleCepBlur}
-                    disabled={cepLoading || readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    disabled={cepLoading}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
 
@@ -283,12 +257,7 @@ export default function ProfilePage() {
                     placeholder="Logradouro"
                     value={address.logradouro}
                     onChange={(e) => setAddress({ ...address, logradouro: e.target.value })}
-                    disabled={readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
 
@@ -300,12 +269,7 @@ export default function ProfilePage() {
                     required
                     value={address.numero}
                     onChange={(e) => setAddress({ ...address, numero: e.target.value })}
-                    disabled={readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
 
@@ -316,12 +280,7 @@ export default function ProfilePage() {
                     placeholder="Bairro"
                     value={address.bairro}
                     onChange={(e) => setAddress({ ...address, bairro: e.target.value })}
-                    disabled={readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
 
@@ -332,12 +291,7 @@ export default function ProfilePage() {
                     placeholder="Cidade"
                     value={address.cidade}
                     onChange={(e) => setAddress({ ...address, cidade: e.target.value })}
-                    disabled={readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
 
@@ -349,12 +303,7 @@ export default function ProfilePage() {
                     maxLength={2}
                     value={address.uf}
                     onChange={(e) => setAddress({ ...address, uf: e.target.value.toUpperCase() })}
-                    disabled={readOnly}
-                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all ${
-                      readOnly
-                        ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'
-                    }`}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                   />
                 </div>
               </div>
@@ -370,16 +319,14 @@ export default function ProfilePage() {
                   Sair
                 </button>
 
-                {!readOnly && (
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70"
-                  >
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70"
+                >
                   <Save className="h-5 w-5" />
-                    {loading ? 'Salvando...' : 'Salvar e Sair'}
-                  </button>
-                )}
+                  {loading ? 'Salvando...' : 'Salvar e Sair'}
+                </button>
               </div>
             </form>
           </div>

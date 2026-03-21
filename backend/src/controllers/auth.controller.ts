@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../prisma';
 import crypto from 'crypto';
 import { sendPasswordResetEmail } from '../utils/mail';
+import { resolveOwnerId } from '../utils/owner';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -226,9 +227,15 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
   try {
     const { nome, cpf_cnpj, telefone, endereco } = req.body;
     const userId = (req as any).user.id;
+    const targetUserId = await resolveOwnerId(userId);
+
+    if (!targetUserId) {
+      res.status(404).json({ error: 'Locador não encontrado.' });
+      return;
+    }
 
     const user = await prisma.user.update({
-      where: { id: userId },
+      where: { id: targetUserId },
       data: {
         nome,
         cpf_cnpj,

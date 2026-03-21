@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { Building, Calendar, CheckCircle, DollarSign, Clock, LogOut, Rocket, Info, ChevronRight, X } from 'lucide-react';
+import { Building, Calendar, CheckCircle, DollarSign, Clock, LogOut, Rocket, Info, ChevronRight, X, Eye, EyeOff } from 'lucide-react';
 import { format, differenceInCalendarDays, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrencyBR } from '@/lib/utils';
@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const [npsScore, setNpsScore] = useState(10);
   const [npsComment, setNpsComment] = useState('');
   const [npsSubmitting, setNpsSubmitting] = useState(false);
+  const [hideRevenue, setHideRevenue] = useState(false);
 
   const daysRemaining = (() => {
     if (user?.plan_type !== 'trial' || !user?.trial_end_date) return 0;
@@ -179,10 +180,23 @@ export default function DashboardPage() {
           <div className="absolute right-[-10px] top-[-10px] opacity-10 group-hover:scale-110 transition-transform">
             <DollarSign size={100} />
           </div>
-          <p className="text-sm font-bold text-blue-100 uppercase tracking-wider">Faturamento (Mês)</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-bold text-blue-100 uppercase tracking-wider">Faturamento (Mês)</p>
+            <button
+              type="button"
+              onClick={() => setHideRevenue((current) => !current)}
+              className="relative z-10 rounded-full bg-white/10 p-2 text-blue-100 transition hover:bg-white/20 hover:text-white"
+              aria-label={hideRevenue ? 'Mostrar faturamento' : 'Ocultar faturamento'}
+              title={hideRevenue ? 'Mostrar faturamento' : 'Ocultar faturamento'}
+            >
+              {hideRevenue ? <Eye size={16} /> : <EyeOff size={16} />}
+            </button>
+          </div>
           <div className="mt-4 flex items-baseline gap-1 min-w-0">
             <span className="text-base font-bold text-blue-200 shrink-0">R$</span>
-            <span className="text-xl font-black truncate">{formatCurrencyBR(stats?.monthlyRevenue ?? 0)}</span>
+            <span className="text-xl font-black truncate">
+              {hideRevenue ? '••••••' : formatCurrencyBR(stats?.monthlyRevenue ?? 0)}
+            </span>
           </div>
         </div>
       </div>

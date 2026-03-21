@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { getOrCreateActiveTermsVersion, getRequestIpAddress } from '../utils/terms';
+import { canManageUsers } from '../utils/owner';
 
 export const getCurrentTerms = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -8,6 +9,11 @@ export const getCurrentTerms = async (req: Request, res: Response): Promise<void
 
     if (!userId) {
       res.status(401).json({ error: 'Não autenticado.' });
+      return;
+    }
+
+    if (!(await canManageUsers(userId))) {
+      res.status(403).json({ error: 'Somente o locador principal pode aceitar os termos.' });
       return;
     }
 

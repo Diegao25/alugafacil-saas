@@ -1,4 +1,5 @@
 import { prisma } from '../prisma';
+import { resolveOwnerId } from './owner';
 
 const DEFAULT_TERMS_VERSION = '2026.03';
 const DEFAULT_TERMS_TITLE = 'Termos de Uso';
@@ -55,6 +56,36 @@ export async function getOrCreateActiveTermsVersion() {
 
 export async function getTermsStatus(userId: string): Promise<TermsStatus> {
   const activeTerms = await getOrCreateActiveTermsVersion();
+  const ownerId = await resolveOwnerId(userId);
+
+  if (!ownerId) {
+    return {
+      termsPending: false,
+      currentTermsVersion: activeTerms.version,
+      acceptedTermsVersion: null
+    };
+  }
+
+  if (ownerId !== userId) {
+    const ownerAcceptance = await prisma.userTermsAcceptance.findFirst({
+      where: {
+        usuario_id: ownerId,
+        terms_version_id: activeTerms.id
+      },
+      include: {
+        termsVersion: {
+          select: { version: true }
+        }
+      },
+      orderBy: { accepted_at: 'desc' }
+    });
+
+    return {
+      termsPending: false,
+      currentTermsVersion: activeTerms.version,
+      acceptedTermsVersion: ownerAcceptance?.termsVersion.version ?? null
+    };
+  }
 
   const acceptance = await prisma.userTermsAcceptance.findFirst({
     where: {

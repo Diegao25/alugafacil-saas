@@ -29,7 +29,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     const passwordHash = await bcrypt.hash(senha, PASSWORD_HASH_ROUNDS);
-    const adminExists = await prisma.user.findFirst({ where: { is_admin: true } });
     
     // ConfiguraÃ§Ã£o do Trial (14 dias)
     const trialStartDate = new Date();
@@ -41,7 +40,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         nome,
         email,
         senha: passwordHash,
-        is_admin: !adminExists,
+        is_admin: true,
+        owner_user_id: null,
         plan_type: 'trial',
         trial_start_date: trialStartDate,
         trial_end_date: trialEndDate,
@@ -87,14 +87,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    let isAdmin = user.is_admin;
-    if (!isAdmin) {
-      const adminExists = await prisma.user.findFirst({ where: { is_admin: true } });
-      if (!adminExists) {
-        await prisma.user.update({ where: { id: user.id }, data: { is_admin: true } });
-        isAdmin = true;
-      }
-    }
+    const isAdmin = user.is_admin;
 
     let refreshedUser = user;
     try {
@@ -292,8 +285,15 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 
 export const getOwnerProfile = async (req: Request, res: Response): Promise<void> => {
   try {
-    let owner = await prisma.user.findFirst({
-      where: { is_admin: true },
+    const ownerId = await resolveOwnerId((req as any).user?.id);
+
+    if (!ownerId) {
+      res.status(404).json({ error: 'Locador não encontrado.' });
+      return;
+    }
+
+    const owner = await prisma.user.findUnique({
+      where: { id: ownerId },
       select: {
         id: true,
         nome: true,
@@ -303,46 +303,12 @@ export const getOwnerProfile = async (req: Request, res: Response): Promise<void
         endereco: true,
         is_admin: true,
         data_criacao: true
-      },
-      orderBy: { data_criacao: 'asc' }
+      }
     });
 
     if (!owner) {
-      const fallback = await prisma.user.findFirst({
-        orderBy: { data_criacao: 'asc' },
-        select: {
-          id: true,
-          nome: true,
-          email: true,
-          cpf_cnpj: true,
-          telefone: true,
-          endereco: true,
-          is_admin: true,
-          data_criacao: true
-        }
-      });
-
-      if (!fallback) {
-        res.status(404).json({ error: 'Locador não encontrado.' });
-        return;
-      }
-
-      const promoted = await prisma.user.update({
-        where: { id: fallback.id },
-        data: { is_admin: true },
-        select: {
-          id: true,
-          nome: true,
-          email: true,
-          cpf_cnpj: true,
-          telefone: true,
-          endereco: true,
-          is_admin: true,
-          data_criacao: true
-        }
-      });
-
-      owner = promoted;
+      res.status(404).json({ error: 'Locador não encontrado.' });
+      return;
     }
 
     res.status(200).json(owner);

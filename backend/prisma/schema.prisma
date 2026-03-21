@@ -40,6 +40,10 @@ model User {
   // Cancellation Fields
   cancellation_date   DateTime?
   access_until        DateTime?
+  owner_user_id       String?
+
+  owner               User?      @relation("UserAccountMembers", fields: [owner_user_id], references: [id], onDelete: SetNull)
+  team_members        User[]     @relation("UserAccountMembers")
 
   imoveis              Property[]
   subscription_history SubscriptionHistory[]

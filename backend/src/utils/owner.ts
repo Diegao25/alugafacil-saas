@@ -5,19 +5,13 @@ export async function resolveOwnerId(userId?: string | null): Promise<string | n
 
   const current = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, is_admin: true }
+    select: { id: true, is_admin: true, owner_user_id: true }
   });
 
   if (!current) return null;
-  if (current.is_admin) return current.id;
+  if (current.is_admin || !current.owner_user_id) return current.id;
 
-  const owner = await prisma.user.findFirst({
-    where: { is_admin: true },
-    select: { id: true },
-    orderBy: { data_criacao: 'asc' }
-  });
-
-  return owner?.id || current.id;
+  return current.owner_user_id;
 }
 
 export async function canManageUsers(userId?: string | null): Promise<boolean> {

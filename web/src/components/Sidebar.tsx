@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Building, Users, Calendar, DollarSign, FileText, User, Megaphone, CreditCard } from 'lucide-react';
 import Logo from './Logo';
+import packageJson from '../../package.json';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { signOut, user } = useAuth();
   const pathname = usePathname();
+  const productVersion = `v${packageJson.version}`;
 
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -37,36 +39,49 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         {navItems.map((item) => {
           const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard');
           const isTrialExpired = user?.subscription_status === 'trial_expired';
+          const isProfileItem = item.href === '/dashboard/profile';
           
           if (isTrialExpired) {
             return (
-              <div
-                key={item.name}
-                className={`flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-medium opacity-50 cursor-not-allowed ${
-                  isActive ? 'bg-slate-100 text-slate-400' : 'text-slate-400'
-                }`}
-                title="Assine um plano para liberar o acesso"
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.name}</span>
+              <div key={item.name}>
+                <div
+                  className={`flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-medium opacity-50 cursor-not-allowed ${
+                    isActive ? 'bg-slate-100 text-slate-400' : 'text-slate-400'
+                  }`}
+                  title="Assine um plano para liberar o acesso"
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span>{item.name}</span>
+                </div>
+                {isProfileItem && (
+                  <p className="px-4 pt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Versão {productVersion}
+                  </p>
+                )}
               </div>
             );
           }
 
           return (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={onClose}
-              className={`flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                isActive
-                  ? 'bg-blue-50 text-blue-700 shadow-sm'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              <item.icon className="h-5 w-5" />
-              <span>{item.name}</span>
-            </Link>
+            <div key={item.name}>
+              <Link
+                href={item.href}
+                onClick={onClose}
+                className={`flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                  isActive
+                    ? 'bg-blue-50 text-blue-700 shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.name}</span>
+              </Link>
+              {isProfileItem && (
+                <p className="px-4 pt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Versão {productVersion}
+                </p>
+              )}
+            </div>
           );
         })}
       </nav>

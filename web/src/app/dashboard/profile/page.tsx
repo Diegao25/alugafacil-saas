@@ -39,21 +39,26 @@ export default function ProfilePage() {
         if (!user?.id) return;
 
         const response = await api.get('/auth/me');
-        const isAdmin = response.data.is_admin;
+        const currentUser = response.data;
+        const isAdmin = currentUser.is_admin;
         let profileData = response.data;
+        let shouldBeReadOnly = !isAdmin;
 
         if (!isAdmin) {
-          setReadOnly(true);
           try {
             const ownerResponse = await api.get('/auth/owner');
             profileData = ownerResponse.data;
+            shouldBeReadOnly = ownerResponse.data.id !== currentUser.id;
           } catch (error) {
             profileData = response.data;
+            shouldBeReadOnly = false;
             toast.warn('Não foi possível carregar o perfil do locador. Exibindo seus dados.');
           }
         } else {
-          setReadOnly(false);
+          shouldBeReadOnly = false;
         }
+
+        setReadOnly(shouldBeReadOnly);
 
         const endereco = profileData.endereco || '';
 

@@ -36,11 +36,17 @@ type PropertyAvailabilityResponse = {
 
 function getApiOrigin() {
   const configuredBaseUrl =
-    process.env.NEXT_PUBLIC_API_URL ??
-    process.env.API_BASE_URL ??
-    'http://localhost:3333';
+    process.env.NEXT_PUBLIC_API_URL ?? process.env.API_BASE_URL;
 
-  return configuredBaseUrl.replace(/\/api\/?$/, '');
+  if (configuredBaseUrl) {
+    return configuredBaseUrl.replace(/\/api\/?$/, '');
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://easygoing-backend-production.up.railway.app';
+  }
+
+  return 'http://localhost:3333';
 }
 
 async function fetchAvailability(id: string): Promise<PropertyAvailabilityResponse> {

@@ -65,14 +65,27 @@ export default function PropertiesPage() {
     }
   }
 
-  function buildWhatsappNumber(phone?: string) {
-    if (!phone) return '';
-    const digits = unmask(phone);
-    if (!digits) return '';
-    // Retorna apenas os dígitos sem o 55 inicial se já houver, 
-    // pois adicionaremos o 55 de forma fixa no link
-    return digits.replace(/^55/, '');
+function buildWhatsappNumber(phone?: string) {
+  if (!phone) return '';
+  const digits = unmask(phone);
+  if (!digits) return '';
+  // Retorna apenas os dígitos sem o 55 inicial se já houver, 
+  // pois adicionaremos o 55 de forma fixa no link
+  return digits.replace(/^55/, '');
+}
+
+function normalizeExternalUrl(url?: string | null) {
+  if (!url) return '';
+
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
   }
+
+  return `https://${trimmed}`;
+}
 
   function handleShareAgenda() {
     if (!shareDialog) return;
@@ -88,8 +101,18 @@ export default function PropertiesPage() {
     }
     const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
     const agendaUrl = `${origin}/properties/${shareDialog.id}/agenda`;
-    const message = `Olá ${tenant.nome}!\nSegue a agenda do imóvel ${shareDialog.nome}: ${agendaUrl}`;
-    const url = `https://api.whatsapp.com/send?phone=55${phone}&text=${encodeURIComponent(message)}`;
+    const socialUrl = normalizeExternalUrl(shareDialog.redes_sociais_url);
+    const message = [
+      `Olá ${tenant.nome}!`,
+      `Segue a agenda do imóvel ${shareDialog.nome}:`,
+      agendaUrl,
+      socialUrl ? '' : null,
+      socialUrl ? 'Rede social do imóvel:' : null,
+      socialUrl || null
+    ]
+      .filter(Boolean)
+      .join('\n');
+    const url = `https://wa.me/55${phone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     setShareDialog(null);
     setSelectedTenant('');
@@ -151,22 +174,22 @@ export default function PropertiesPage() {
                   <span>R$ {formatCurrencyBR(property.valor_diaria)} <span className="text-slate-500 text-xs font-normal">/ diária</span></span>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {property.redes_sociais_url && (
-                    <Link
+                  {normalizeExternalUrl(property.redes_sociais_url) && (
+                    <a
                       target="_blank"
                       rel="noreferrer"
-                      href={property.redes_sociais_url}
+                      href={normalizeExternalUrl(property.redes_sociais_url)}
                       className="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-indigo-700 transition hover:bg-indigo-100 hover:border-indigo-200 gap-2 shadow-sm"
                     >
-                      {property.redes_sociais_url.includes('instagram.com') ? (
+                      {normalizeExternalUrl(property.redes_sociais_url).includes('instagram.com') ? (
                         <Instagram className="h-3.5 w-3.5" />
-                      ) : property.redes_sociais_url.includes('facebook.com') ? (
+                      ) : normalizeExternalUrl(property.redes_sociais_url).includes('facebook.com') ? (
                         <Facebook className="h-3.5 w-3.5" />
                       ) : (
                         <ExternalLink className="h-3.5 w-3.5" />
                       )}
                       REDE SOCIAL
-                    </Link>
+                    </a>
                   )}
                   <CopyLinkButton
                     url={agendaUrl}

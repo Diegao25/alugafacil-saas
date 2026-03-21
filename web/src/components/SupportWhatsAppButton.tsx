@@ -5,6 +5,7 @@ import { inAppWhatsappSupportEnabled } from '@/lib/features';
 import { MessageCircle } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const buildTimeWhatsappNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || '';
 
@@ -15,8 +16,13 @@ function normalizePhone(value: string) {
 export default function SupportWhatsAppButton() {
   const { user } = useAuth();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [runtimeWhatsappNumber, setRuntimeWhatsappNumber] = useState(buildTimeWhatsappNumber);
   const [runtimeFeatureEnabled, setRuntimeFeatureEnabled] = useState(inAppWhatsappSupportEnabled);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -54,30 +60,31 @@ export default function SupportWhatsAppButton() {
     [runtimeWhatsappNumber]
   );
 
-  if (!runtimeFeatureEnabled || !phone || !user) {
+  if (!mounted || !runtimeFeatureEnabled || !phone) {
     return null;
   }
 
   const message = [
     'Olá! Preciso de ajuda no Aluga Fácil.',
-    `Usuário: ${user.nome}`,
-    `E-mail: ${user.email}`,
+    `Usuário: ${user?.nome || 'Não identificado'}`,
+    `E-mail: ${user?.email || 'Não informado'}`,
     `Tela atual: ${pathname}`
   ].join('\n');
 
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
-  return (
+  return createPortal(
     <a
       href={whatsappUrl}
       target="_blank"
       rel="noreferrer"
-      className="fixed bottom-5 right-5 z-[65] inline-flex items-center gap-3 rounded-2xl bg-[#10b981] px-4 py-3 text-sm font-bold text-white shadow-xl shadow-emerald-700/30 transition-all hover:-translate-y-0.5 hover:bg-[#0ea271] lg:bottom-6 lg:right-6"
+      className="fixed bottom-5 right-5 z-[9999] inline-flex items-center gap-3 rounded-2xl bg-[#10b981] px-4 py-3 text-sm font-bold text-white shadow-xl shadow-emerald-700/30 transition-all hover:-translate-y-0.5 hover:bg-[#0ea271] lg:bottom-6 lg:right-6"
       aria-label="Falar com o suporte pelo WhatsApp"
       title="Falar com o suporte pelo WhatsApp"
     >
       <MessageCircle className="h-5 w-5" />
       <span className="hidden sm:inline">WhatsApp</span>
-    </a>
+    </a>,
+    document.body
   );
 }

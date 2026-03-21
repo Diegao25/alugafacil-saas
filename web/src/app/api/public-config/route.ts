@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Runtime config for UI features that should react to environment changes
 // without depending on a fresh client-side env bake.
 export async function GET() {

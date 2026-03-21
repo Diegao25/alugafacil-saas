@@ -377,22 +377,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Social Proof Bar */}
-      <section className="border-y border-slate-200 bg-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">
-            Confiado por administradores em todo o Brasil
-          </p>
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale">
-             {/* Logo placeholders - in a real app these would be real images */}
-             <div className="text-2xl font-black text-slate-800">BookingHost</div>
-             <div className="text-xl font-bold italic text-slate-800">LitoralImóveis</div>
-             <div className="text-2xl font-black text-slate-800 tracking-tighter">TemporadaPRO</div>
-             <div className="text-xl font-medium uppercase text-slate-800">Chalés&Cia</div>
-          </div>
-        </div>
-      </section>
-
       {/* Problem Section */}
       <section className="py-24 bg-slate-50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">

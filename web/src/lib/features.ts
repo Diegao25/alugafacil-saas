@@ -5,3 +5,6 @@ export const plansAccessEnabled =
 export const trialEnforcementEnabled =
   process.env.NODE_ENV !== 'production' ||
   process.env.NEXT_PUBLIC_ENABLE_TRIAL_ENFORCEMENT === 'true';
+
+export const inAppWhatsappSupportEnabled =
+  process.env.NEXT_PUBLIC_ENABLE_IN_APP_WHATSAPP_SUPPORT !== 'false';

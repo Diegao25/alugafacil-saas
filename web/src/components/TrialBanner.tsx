@@ -5,11 +5,16 @@ import { differenceInCalendarDays, parseISO } from 'date-fns';
 import { AlertCircle, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { plansAccessEnabled } from '@/lib/features';
 
 export default function TrialBanner() {
   const { user } = useAuth();
 
   const pathname = usePathname();
+
+  if (!plansAccessEnabled) {
+    return null;
+  }
 
   if (!user || user.plan_type !== 'trial' || user.subscription_status === 'trial_expired' || !user.trial_end_date || pathname === '/dashboard/plans') {
     return null;

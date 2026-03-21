@@ -4,11 +4,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Lock, Rocket, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { plansAccessEnabled } from '@/lib/features';
 
 export default function TrialBlockingModal() {
   const { user } = useAuth();
 
   const pathname = usePathname();
+
+  if (!plansAccessEnabled) {
+    return null;
+  }
 
   if (!user || user.subscription_status !== 'trial_expired' || pathname === '/dashboard/plans') {
     return null;

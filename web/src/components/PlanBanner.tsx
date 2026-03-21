@@ -6,10 +6,15 @@ import { ptBR } from 'date-fns/locale';
 import { AlertCircle, ChevronRight, ShieldCheck, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { plansAccessEnabled } from '@/lib/features';
 
 export default function PlanBanner() {
   const { user } = useAuth();
   const pathname = usePathname();
+
+  if (!plansAccessEnabled) {
+    return null;
+  }
 
   if (!user || pathname === '/dashboard/plans') {
     return null;

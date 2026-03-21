@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Home, Building, Users, Calendar, DollarSign, FileText, User, Megaphone, CreditCard } from 'lucide-react';
 import Logo from './Logo';
 import packageJson from '../../package.json';
+import { plansAccessEnabled } from '@/lib/features';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { signOut, user } = useAuth();
@@ -19,7 +20,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     { name: 'Reservas', href: '/dashboard/reservations', icon: Calendar },
     { name: 'Pagamentos', href: '/dashboard/payments', icon: DollarSign },
     { name: 'Contratos', href: '/dashboard/contracts', icon: FileText },
-    { name: 'Planos', href: '/dashboard/plans', icon: CreditCard },
+    ...(plansAccessEnabled ? [{ name: 'Planos', href: '/dashboard/plans', icon: CreditCard }] : []),
     { name: 'Mala Direta', href: '/dashboard/campaigns', icon: Megaphone },
     ...(user?.is_admin ? [{ name: 'Usuários', href: '/dashboard/users', icon: User }] : []),
     {

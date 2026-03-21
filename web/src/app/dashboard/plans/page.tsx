@@ -9,7 +9,8 @@ import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
 import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { plansAccessEnabled } from '@/lib/features';
 
 const PLANS = [
   {
@@ -60,6 +61,7 @@ const PLANS = [
 export default function PlansPage() {
   const { user, syncUser } = useAuth();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const mode = searchParams.get('mode');
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [showPlans, setShowPlans] = useState(mode === 'plans');
@@ -71,8 +73,18 @@ export default function PlansPage() {
   const currentPlan = PLANS.find(p => p.name.toLowerCase() === user?.plan_name?.toLowerCase()) || PLANS[1]; // Default to Profissional for demo
 
   useEffect(() => {
+    if (!plansAccessEnabled) {
+      router.replace('/dashboard');
+    }
+  }, [router]);
+
+  useEffect(() => {
     syncUser();
   }, []);
+
+  if (!plansAccessEnabled) {
+    return null;
+  }
 
   useEffect(() => {
     setShowPlans(mode === 'plans');
@@ -504,4 +516,3 @@ export default function PlansPage() {
     </div>
   );
 }
-

@@ -405,6 +405,27 @@ export const updateReservationStatus = async (req: AuthRequest, res: Response): 
   try {
     const id = req.params.id as string;
     const { status } = req.body;
+    const ownerId = await resolveOwnerId(req.user?.id);
+
+    if (!ownerId) {
+      res.status(401).json({ error: 'Não autorizado' });
+      return;
+    }
+
+    const reservation = await prisma.reservation.findUnique({
+      where: { id },
+      include: { imovel: true }
+    });
+
+    if (!reservation) {
+      res.status(404).json({ error: 'Reserva não encontrada' });
+      return;
+    }
+
+    if (reservation.imovel.usuario_id !== ownerId) {
+      res.status(403).json({ error: 'Sem permissão' });
+      return;
+    }
 
     const updated = await prisma.reservation.update({
       where: { id },

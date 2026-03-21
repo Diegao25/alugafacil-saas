@@ -6,19 +6,33 @@ import { resolveOwnerId } from '../utils/owner';
 export const createPayment = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { reserva_id, valor, tipo } = req.body;
+    const ownerId = await resolveOwnerId(req.user?.id);
 
     if (!reserva_id || !valor || !tipo) {
       res.status(400).json({ error: 'Campos obrigatórios ausentes' });
       return;
     }
 
+    if (!ownerId) {
+      res.status(401).json({ error: 'Não autorizado' });
+      return;
+    }
+
     // Checking if reservation exists
     const reservation = await prisma.reservation.findUnique({
-      where: { id: reserva_id }
+      where: { id: reserva_id },
+      include: {
+        imovel: true
+      }
     });
 
     if (!reservation) {
       res.status(404).json({ error: 'Reserva não encontrada' });
+      return;
+    }
+
+    if (reservation.imovel.usuario_id !== ownerId) {
+      res.status(403).json({ error: 'Sem permissão' });
       return;
     }
 
@@ -41,11 +55,16 @@ export const getPayments = async (req: AuthRequest, res: Response): Promise<void
     const usuario_id = req.user?.id;
     const ownerId = await resolveOwnerId(usuario_id);
 
+    if (!ownerId) {
+      res.status(401).json({ error: 'Não autorizado' });
+      return;
+    }
+
     const payments = await prisma.payment.findMany({
       where: {
         reserva: {
           imovel: {
-            usuario_id: ownerId || undefined
+            usuario_id: ownerId
           }
         }
       },

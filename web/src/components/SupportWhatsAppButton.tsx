@@ -4,8 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { inAppWhatsappSupportEnabled } from '@/lib/features';
 import { MessageCircle } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
-const whatsappNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER;
+const buildTimeWhatsappNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || '';
 
 function normalizePhone(value: string) {
   return value.replace(/\D/g, '');
@@ -14,14 +15,46 @@ function normalizePhone(value: string) {
 export default function SupportWhatsAppButton() {
   const { user } = useAuth();
   const pathname = usePathname();
+  const [runtimeWhatsappNumber, setRuntimeWhatsappNumber] = useState(buildTimeWhatsappNumber);
+  const [runtimeFeatureEnabled, setRuntimeFeatureEnabled] = useState(inAppWhatsappSupportEnabled);
 
-  if (!inAppWhatsappSupportEnabled || !whatsappNumber || !user) {
-    return null;
-  }
+  useEffect(() => {
+    let mounted = true;
 
-  const phone = normalizePhone(whatsappNumber);
+    async function loadRuntimeConfig() {
+      try {
+        const response = await fetch('/api/public-config', { cache: 'no-store' });
 
-  if (!phone) {
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!mounted) {
+          return;
+        }
+
+        setRuntimeWhatsappNumber(data.supportWhatsappNumber || '');
+        setRuntimeFeatureEnabled(data.enableInAppWhatsappSupport !== false);
+      } catch {
+        // Keep build-time fallback when runtime config cannot be fetched.
+      }
+    }
+
+    void loadRuntimeConfig();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const phone = useMemo(
+    () => normalizePhone(runtimeWhatsappNumber || buildTimeWhatsappNumber),
+    [runtimeWhatsappNumber]
+  );
+
+  if (!runtimeFeatureEnabled || !phone || !user) {
     return null;
   }
 

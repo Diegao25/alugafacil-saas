@@ -610,41 +610,43 @@ export default function LandingPage() {
       </footer>
       {isTermsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
-          <div className="relative w-full max-w-3xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-y-auto max-h-[90vh]">
-            <div className="flex items-start justify-between px-6 pt-6">
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Aluga Fácil</p>
-                <h3 className="text-2xl font-bold text-slate-900">Termos de Uso</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsTermsOpen(false)}
-                className="rounded-full p-2 text-slate-500 hover:text-slate-900 transition"
-                aria-label="Fechar termos de uso"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="px-6 pb-16 space-y-6 text-slate-600 text-sm">
-              <p>
-                Este documento estabelece as regras para o uso da plataforma Aluga Fácil. Leia com atenção antes de continuar a utilizar o serviço.
-              </p>
-              {termsSections.map((section) => (
-                <div key={section.title} className="space-y-2">
-                  <h4 className="text-base font-semibold text-slate-900">{section.title}</h4>
-                  <p className="leading-relaxed">{section.content}</p>
+          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+            <div className="max-h-[90vh] overflow-y-auto">
+              <div className="flex items-start justify-between px-6 pt-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Aluga Fácil</p>
+                  <h3 className="text-2xl font-bold text-slate-900">Termos de Uso</h3>
                 </div>
-              ))}
-              <p className="text-xs text-slate-400">
-                Em caso de dúvidas, entre em contato pelo e-mail suporte@alugafacil.com.br. Atualizamos estes termos periodicamente; as mudanças entram em vigor imediatamente após a publicação.
-              </p>
-              <div className="flex justify-end">
                 <button
+                  type="button"
                   onClick={() => setIsTermsOpen(false)}
-                  className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                  className="rounded-full p-2 text-slate-500 hover:text-slate-900 transition"
+                  aria-label="Fechar termos de uso"
                 >
-                  Fechar
+                  <X size={20} />
                 </button>
+              </div>
+              <div className="px-6 pb-16 space-y-6 text-slate-600 text-sm">
+                <p>
+                  Este documento estabelece as regras para o uso da plataforma Aluga Fácil. Leia com atenção antes de continuar a utilizar o serviço.
+                </p>
+                {termsSections.map((section) => (
+                  <div key={section.title} className="space-y-2">
+                    <h4 className="text-base font-semibold text-slate-900">{section.title}</h4>
+                    <p className="leading-relaxed">{section.content}</p>
+                  </div>
+                ))}
+                <p className="text-xs text-slate-400">
+                  Em caso de dúvidas, entre em contato pelo e-mail suporte@alugafacil.com.br. Atualizamos estes termos periodicamente; as mudanças entram em vigor imediatamente após a publicação.
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setIsTermsOpen(false)}
+                    className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                  >
+                    Fechar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -652,41 +654,43 @@ export default function LandingPage() {
       )}
       {isPrivacyOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
-          <div className="relative w-full max-w-3xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-y-auto max-h-[90vh]">
-            <div className="flex items-start justify-between px-6 pt-6">
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Aluga Fácil</p>
-                <h3 className="text-2xl font-bold text-slate-900">Política de Privacidade</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsPrivacyOpen(false)}
-                className="rounded-full p-2 text-slate-500 hover:text-slate-900 transition"
-                aria-label="Fechar política de privacidade"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="px-6 pb-16 space-y-6 text-slate-600 text-sm">
-              <p>
-                Esta Política descreve os dados que coletamos, como utilizamos e quais são seus direitos ao usar o Aluga Fácil.
-              </p>
-              {privacySections.map((section) => (
-                <div key={section.title} className="space-y-2">
-                  <h4 className="text-base font-semibold text-slate-900">{section.title}</h4>
-                  <p className="leading-relaxed">{section.content}</p>
+          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+            <div className="max-h-[90vh] overflow-y-auto">
+              <div className="flex items-start justify-between px-6 pt-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Aluga Fácil</p>
+                  <h3 className="text-2xl font-bold text-slate-900">Política de Privacidade</h3>
                 </div>
-              ))}
-              <p className="text-xs text-slate-400">
-                Para dúvidas adicionais, envie um e-mail para privacidade@alugafacil.com.br.
-              </p>
-              <div className="flex justify-end">
                 <button
+                  type="button"
                   onClick={() => setIsPrivacyOpen(false)}
-                  className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                  className="rounded-full p-2 text-slate-500 hover:text-slate-900 transition"
+                  aria-label="Fechar política de privacidade"
                 >
-                  Fechar
+                  <X size={20} />
                 </button>
+              </div>
+              <div className="px-6 pb-16 space-y-6 text-slate-600 text-sm">
+                <p>
+                  Esta Política descreve os dados que coletamos, como utilizamos e quais são seus direitos ao usar o Aluga Fácil.
+                </p>
+                {privacySections.map((section) => (
+                  <div key={section.title} className="space-y-2">
+                    <h4 className="text-base font-semibold text-slate-900">{section.title}</h4>
+                    <p className="leading-relaxed">{section.content}</p>
+                  </div>
+                ))}
+                <p className="text-xs text-slate-400">
+                  Para dúvidas adicionais, envie um e-mail para privacidade@alugafacil.com.br.
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setIsPrivacyOpen(false)}
+                    className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                  >
+                    Fechar
+                  </button>
+                </div>
               </div>
             </div>
           </div>

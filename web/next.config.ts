@@ -16,10 +16,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true, 
   },
-  // Desativa ESLint no build (economiza memória)
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     unoptimized: true,
   },

@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
-import { prisma } from '../prisma';
 import { AuthRequest } from './auth.middleware';
+import { canManageUsers } from '../utils/owner';
 
 export const requireAdmin = async (
   req: AuthRequest,
@@ -14,13 +14,8 @@ export const requireAdmin = async (
       return;
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { is_admin: true }
-    });
-
-    if (!user?.is_admin) {
-      res.status(403).json({ error: 'Acesso restrito ao administrador' });
+    if (!(await canManageUsers(userId))) {
+      res.status(403).json({ error: 'Acesso restrito ao locador responsável' });
       return;
     }
 

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../prisma';
 import crypto from 'crypto';
 import { sendPasswordResetEmail } from '../utils/mail';
-import { resolveOwnerId } from '../utils/owner';
+import { canManageUsers, resolveOwnerId } from '../utils/owner';
 import { AUTH_COOKIE_NAME, getAuthCookieOptions, getJwtSecret } from '../utils/security';
 import { isValidCpfCnpj } from '../utils/document';
 
@@ -54,6 +54,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         nome: user.nome, 
         email: user.email, 
         is_admin: user.is_admin,
+        can_manage_users: user.is_admin,
         plan_type: user.plan_type,
         trial_end_date: user.trial_end_date,
         subscription_status: user.subscription_status
@@ -111,6 +112,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.cookie(AUTH_COOKIE_NAME, token, getAuthCookieOptions());
 
     let trialEndDate = user.trial_end_date;
+    const canManageUsersAccess = await canManageUsers(user.id);
 
     // Auto-correção: Se o trial_end_date for nulo mas for um usuário trial
     if (user.plan_type === 'trial' && !trialEndDate) {
@@ -132,6 +134,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         telefone: refreshedUser.telefone, 
         endereco: refreshedUser.endereco, 
         is_admin: isAdmin,
+        can_manage_users: canManageUsersAccess,
         plan_type: refreshedUser.plan_type,
         trial_end_date: trialEndDate,
         subscription_status: refreshedUser.subscription_status,
@@ -218,7 +221,12 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
       }
     }
 
-    res.status(200).json(finalUser);
+    const canManageUsersAccess = await canManageUsers(user.id);
+
+    res.status(200).json({
+      ...finalUser,
+      can_manage_users: canManageUsersAccess
+    });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar perfil', details: error });
   }

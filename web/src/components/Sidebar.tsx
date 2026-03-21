@@ -22,7 +22,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     { name: 'Contratos', href: '/dashboard/contracts', icon: FileText },
     ...(plansAccessEnabled ? [{ name: 'Planos', href: '/dashboard/plans', icon: CreditCard }] : []),
     { name: 'Mala Direta', href: '/dashboard/campaigns', icon: Megaphone },
-    ...(user?.is_admin ? [{ name: 'Usuários', href: '/dashboard/users', icon: User }] : []),
+    ...(user?.can_manage_users ? [{ name: 'Usuários', href: '/dashboard/users', icon: User }] : []),
     {
       name: user?.is_admin ? 'Meu Perfil' : 'Perfil do Locador',
       href: '/dashboard/profile',

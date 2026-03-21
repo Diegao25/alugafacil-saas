@@ -11,6 +11,7 @@ interface User {
   nome: string;
   email: string;
   is_admin?: boolean;
+  can_manage_users?: boolean;
   plan_type: string;
   trial_end_date?: string;
   subscription_status: string;

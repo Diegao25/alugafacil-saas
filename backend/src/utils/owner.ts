@@ -19,3 +19,10 @@ export async function resolveOwnerId(userId?: string | null): Promise<string | n
 
   return owner?.id || current.id;
 }
+
+export async function canManageUsers(userId?: string | null): Promise<boolean> {
+  if (!userId) return false;
+
+  const ownerId = await resolveOwnerId(userId);
+  return ownerId === userId;
+}

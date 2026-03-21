@@ -1,10 +1,23 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { prisma } from '../prisma';
+import { AuthRequest } from '../middleware/auth.middleware';
+import { resolveOwnerId } from '../utils/owner';
 
 class CampaignController {
-  async index(req: Request, res: Response) {
+  async index(req: AuthRequest, res: Response) {
     try {
+      const ownerId = await resolveOwnerId(req.user?.id);
+
+      if (!ownerId) {
+        return res.status(401).json({ error: 'Não autorizado' });
+      }
+
       const campaigns = await prisma.campaign.findMany({
+        where: {
+          imovel: {
+            usuario_id: ownerId
+          }
+        },
         include: {
           imovel: {
             select: { nome: true }
@@ -24,12 +37,41 @@ class CampaignController {
     }
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: AuthRequest, res: Response) {
     try {
       const { imovel_id, locatario_id, mensagem } = req.body;
+      const ownerId = await resolveOwnerId(req.user?.id);
+
+      if (!ownerId) {
+        return res.status(401).json({ error: 'Não autorizado' });
+      }
 
       if (!imovel_id || !locatario_id || !mensagem) {
         return res.status(400).json({ error: 'Dados insuficientes' });
+      }
+
+      const property = await prisma.property.findFirst({
+        where: {
+          id: imovel_id,
+          usuario_id: ownerId
+        },
+        select: { id: true }
+      });
+
+      if (!property) {
+        return res.status(404).json({ error: 'Imóvel não encontrado para esta conta' });
+      }
+
+      const tenant = await prisma.tenant.findFirst({
+        where: {
+          id: locatario_id,
+          usuario_id: ownerId
+        },
+        select: { id: true }
+      });
+
+      if (!tenant) {
+        return res.status(404).json({ error: 'Locatário não encontrado para esta conta' });
       }
 
       const campaign = await prisma.campaign.create({

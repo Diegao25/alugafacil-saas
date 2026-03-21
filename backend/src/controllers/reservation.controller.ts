@@ -31,6 +31,15 @@ export const createReservation = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
+    const tenant = await prisma.tenant.findFirst({
+      where: { id: locatario_id, usuario_id: ownerId }
+    });
+
+    if (!tenant) {
+      res.status(404).json({ error: 'Locatário não encontrado para esta conta' });
+      return;
+    }
+
     const checkinDate = new Date(data_checkin);
     if (hora_checkin) {
       const [hours, minutes] = hora_checkin.split(':').map(Number);

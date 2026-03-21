@@ -46,6 +46,7 @@ model User {
   team_members        User[]     @relation("UserAccountMembers")
 
   imoveis              Property[]
+  locatarios           Tenant[]
   subscription_history SubscriptionHistory[]
   cancellation_feedbacks CancellationFeedback[]
   nps_responses        NpsResponse[]
@@ -131,6 +132,8 @@ model Tenant {
   email        String?       @unique
   endereco     String?
   observacoes  String?
+  usuario_id   String?
+  user         User?         @relation(fields: [usuario_id], references: [id])
   reservas     Reservation[]
   campanhas    Campaign[]
 }

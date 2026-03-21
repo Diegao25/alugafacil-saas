@@ -33,7 +33,9 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
     });
 
     // 1.1 Total de Locatários
-    const totalTenants = await prisma.tenant.count();
+    const totalTenants = await prisma.tenant.count({
+      where: { usuario_id: userId }
+    });
 
     // 2. Reservas começando hoje
     const reservationsToday = await prisma.reservation.count({

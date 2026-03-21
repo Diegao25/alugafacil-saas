@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { inAppWhatsappSupportEnabled } from '@/lib/features';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import PlanBanner from '@/components/PlanBanner';
@@ -20,6 +20,7 @@ function normalizePhone(value: string) {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -65,7 +66,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 'Olá! Preciso de ajuda no Aluga Fácil.',
                 `Usuário: ${user.nome}`,
                 `E-mail: ${user.email}`,
-                'Origem: dashboard'
+                `Origem: ${pathname}`
               ].join('\n')
             )}`}
             target="_blank"

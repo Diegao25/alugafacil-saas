@@ -1,14 +1,21 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { inAppWhatsappSupportEnabled } from '@/lib/features';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import PlanBanner from '@/components/PlanBanner';
 import TrialBlockingModal from '@/components/TrialBlockingModal';
 import TermsAcceptanceModal from '@/components/TermsAcceptanceModal';
-import SupportWhatsAppButton from '@/components/SupportWhatsAppButton';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, LogOut, MessageCircle } from 'lucide-react';
+
+const SUPPORT_WHATSAPP_NUMBER =
+  process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || '5511988392241';
+
+function normalizePhone(value: string) {
+  return value.replace(/\D/g, '');
+}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth();
@@ -51,7 +58,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <PlanBanner />
         <TrialBlockingModal />
         <TermsAcceptanceModal />
-        <SupportWhatsAppButton />
+        {inAppWhatsappSupportEnabled && normalizePhone(SUPPORT_WHATSAPP_NUMBER) && (
+          <a
+            href={`https://wa.me/${normalizePhone(SUPPORT_WHATSAPP_NUMBER)}?text=${encodeURIComponent(
+              [
+                'Olá! Preciso de ajuda no Aluga Fácil.',
+                `Usuário: ${user.nome}`,
+                `E-mail: ${user.email}`,
+                'Origem: dashboard'
+              ].join('\n')
+            )}`}
+            target="_blank"
+            rel="noreferrer"
+            className="fixed bottom-5 right-5 z-[9999] inline-flex items-center gap-3 rounded-2xl bg-[#10b981] px-4 py-3 text-sm font-bold text-white shadow-xl shadow-emerald-700/30 transition-all hover:-translate-y-0.5 hover:bg-[#0ea271] lg:bottom-6 lg:right-6"
+            aria-label="Falar com o suporte pelo WhatsApp"
+            title="Falar com o suporte pelo WhatsApp"
+          >
+            <MessageCircle className="h-5 w-5" />
+            <span className="hidden sm:inline">WhatsApp</span>
+          </a>
+        )}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between lg:justify-end px-4 lg:px-8 shadow-sm shrink-0">
           <button 
             className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg"

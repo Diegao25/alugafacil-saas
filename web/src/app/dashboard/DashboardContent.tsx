@@ -11,6 +11,7 @@ import Link from 'next/link';
 import OnboardingChecklist from '@/components/OnboardingChecklist';
 import { Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { trialEnforcementEnabled } from '@/lib/features';
 
 const npsScale = [
   { value: 0, color: 'bg-red-700' },
@@ -50,7 +51,7 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadStats() {
       // NÃ£o tentar carregar se o trial jÃ¡ estiver expirado localmente
-      if (user?.subscription_status === 'trial_expired') {
+      if (user?.subscription_status === 'trial_expired' && trialEnforcementEnabled) {
         setLoading(false);
         return;
       }

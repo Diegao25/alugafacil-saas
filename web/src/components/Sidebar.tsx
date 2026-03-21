@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Home, Building, Users, Calendar, DollarSign, FileText, User, Megaphone, CreditCard } from 'lucide-react';
 import Logo from './Logo';
 import packageJson from '../../package.json';
-import { plansAccessEnabled } from '@/lib/features';
+import { plansAccessEnabled, trialEnforcementEnabled } from '@/lib/features';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { signOut, user } = useAuth();
@@ -39,7 +39,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <nav className="flex-1 space-y-2 p-4 mt-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard');
-          const isTrialExpired = user?.subscription_status === 'trial_expired';
+          const isTrialExpired =
+            user?.subscription_status === 'trial_expired' && trialEnforcementEnabled;
           const isProfileItem = item.href === '/dashboard/profile';
           
           if (isTrialExpired) {

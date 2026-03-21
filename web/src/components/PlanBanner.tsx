@@ -6,18 +6,31 @@ import { ptBR } from 'date-fns/locale';
 import { AlertCircle, ChevronRight, ShieldCheck, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { plansAccessEnabled } from '@/lib/features';
+import { plansAccessEnabled, trialEnforcementEnabled } from '@/lib/features';
 
 export default function PlanBanner() {
   const { user } = useAuth();
   const pathname = usePathname();
 
-  if (!plansAccessEnabled) {
+  if (!plansAccessEnabled && !(user?.subscription_status === 'trial_expired' && !trialEnforcementEnabled)) {
     return null;
   }
 
   if (!user || pathname === '/dashboard/plans') {
     return null;
+  }
+
+  if (user.subscription_status === 'trial_expired' && !trialEnforcementEnabled) {
+    return (
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-4 py-2 text-sm font-semibold flex items-center justify-center gap-4 animate-in slide-in-from-top duration-500 shadow-lg relative z-50">
+        <div className="flex items-center gap-2">
+          <ShieldCheck size={16} />
+          <span>
+            Seu teste terminou, mas seu acesso segue liberado enquanto a conta estiver em validação com os usuários piloto.
+          </span>
+        </div>
+      </div>
+    );
   }
 
   if (user.subscription_status === 'cancelled') {

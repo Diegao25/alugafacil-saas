@@ -2,6 +2,10 @@ import { Response, NextFunction } from 'express';
 import { prisma } from '../prisma';
 import { AuthRequest } from './auth.middleware';
 
+const trialEnforcementEnabled =
+  process.env.NODE_ENV !== 'production' ||
+  process.env.ENABLE_TRIAL_ENFORCEMENT === 'true';
+
 export const checkTrial = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = req.user?.id;
@@ -47,6 +51,12 @@ export const checkTrial = async (req: AuthRequest, res: Response, next: NextFunc
           where: { id: userId },
           data: { subscription_status: 'trial_expired' }
         });
+      }
+
+      if (!trialEnforcementEnabled) {
+        // Pilot mode keeps production accounts usable after the trial while
+        // pricing and plan purchasing remain under validation.
+        return next();
       }
 
       res.status(403).json({ 

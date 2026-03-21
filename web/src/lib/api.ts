@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 // Tenta obter a URL da API de forma estática para o build do Next.js
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -26,14 +25,7 @@ const getBaseUrl = () => {
 
 export const api = axios.create({
   baseURL: getBaseUrl(),
-});
-
-api.interceptors.request.use((config) => {
-  const token = Cookies.get('gestaolocacoes.token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+  withCredentials: true,
 });
 
 // Interceptor para capturar trial expirado

@@ -6,6 +6,7 @@ import { formatPhone } from '../utils/formatters';
 import jwt from 'jsonwebtoken';
 import { addDays } from 'date-fns';
 import { resolveOwnerId } from '../utils/owner';
+import { getJwtSecret } from '../utils/security';
 
 type ReservationWithRelations = {
   id: string;
@@ -173,12 +174,7 @@ export const shareContractLink = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
-    const secret = process.env.JWT_SECRET || 'gestao_locacoes_secret';
-    if (!secret) {
-      res.status(500).json({ error: 'Chave de compartilhamento não configurada' });
-      return;
-    }
-
+    const secret = getJwtSecret();
     const token = jwt.sign({ contractId: reservation.id }, secret, { expiresIn: '4h' });
 
     const apiBase = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || '3333'}`;
@@ -193,9 +189,9 @@ export const shareContractLink = async (req: AuthRequest, res: Response): Promis
 export const serveSharedContract = async (req: Request, res: Response): Promise<void> => {
   try {
     const token = typeof req.query.token === 'string' ? req.query.token : undefined;
-    const secret = process.env.JWT_SECRET || 'gestao_locacoes_secret';
+    const secret = getJwtSecret();
 
-    if (!token || !secret) {
+    if (!token) {
       res.status(400).json({ error: 'Token inválido' });
       return;
     }

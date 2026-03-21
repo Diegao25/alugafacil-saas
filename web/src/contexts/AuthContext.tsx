@@ -40,14 +40,12 @@ export function AuthProvider({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    const token = Cookies.get('gestaolocacoes.token');
     const userStr = Cookies.get('gestaolocacoes.user');
 
-    if (token && userStr) {
+    if (userStr) {
       setUser(JSON.parse(userStr));
-      api.defaults.headers.Authorization = `Bearer ${token}`;
     }
-    setLoading(false);
+    void syncUser().finally(() => setLoading(false));
 
     // Listener para o evento de trial expirado
     const handleTrialExpired = () => {
@@ -67,12 +65,10 @@ export function AuthProvider({ children }) {
   async function signIn({ email, senha }: any) {
     try {
       const response = await api.post('/auth/login', { email, senha });
-      const { token, user: userData } = response.data;
+      const { user: userData } = response.data;
 
-      Cookies.set('gestaolocacoes.token', token, { expires: 7 });
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
 
-      api.defaults.headers.Authorization = `Bearer ${token}`;
       setUser(userData);
       router.push('/dashboard');
       toast.success('Login realizado com sucesso!');
@@ -99,7 +95,9 @@ export function AuthProvider({ children }) {
   }
 
   function signOut(redirectTo = '/dashboard') {
-    Cookies.remove('gestaolocacoes.token');
+    void api.post('/auth/logout').catch(() => {
+      // The UI should still log out locally even if the network request fails.
+    });
     Cookies.remove('gestaolocacoes.user');
     setUser(null);
     router.push(redirectTo);
@@ -107,16 +105,14 @@ export function AuthProvider({ children }) {
 
   async function syncUser() {
     try {
-      const token = Cookies.get('gestaolocacoes.token');
-      if (!token) return;
-
       const response = await api.get('/auth/me');
       const userData = response.data;
       
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
     } catch (error) {
-      console.error('Erro ao sincronizar usuário', error);
+      Cookies.remove('gestaolocacoes.user');
+      setUser(null);
     }
   }
 

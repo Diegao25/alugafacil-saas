@@ -13,10 +13,24 @@ import userRoutes from './routes/user.routes';
 import subscriptionRoutes from './routes/subscription.routes';
 import { campaignRoutes } from './routes/campaign.routes';
 import npsRoutes from './routes/nps.routes';
+import { getAllowedOrigins, getJwtSecret } from './utils/security';
 
 const app = express();
+const allowedOrigins = getAllowedOrigins();
+getJwtSecret();
 
-app.use(cors());
+app.set('trust proxy', 1);
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Origin not allowed by CORS'));
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);

@@ -5,6 +5,10 @@ import { prisma } from '../prisma';
 import crypto from 'crypto';
 import { sendPasswordResetEmail } from '../utils/mail';
 import { resolveOwnerId } from '../utils/owner';
+import { AUTH_COOKIE_NAME, getAuthCookieOptions, getJwtSecret } from '../utils/security';
+
+const PASSWORD_HASH_ROUNDS = 10;
+const INVALID_CREDENTIALS_MESSAGE = 'Credenciais inválidas.';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -22,7 +26,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const passwordHash = await bcrypt.hash(senha, 8);
+    const passwordHash = await bcrypt.hash(senha, PASSWORD_HASH_ROUNDS);
     const adminExists = await prisma.user.findFirst({ where: { is_admin: true } });
     
     // ConfiguraÃ§Ã£o do Trial (14 dias)
@@ -43,11 +47,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       },
     });
 
-    const secret = process.env.JWT_SECRET || 'gestao_locacoes_secret';
-    const token = jwt.sign({ id: user.id }, secret, {
-      expiresIn: '7d',
-    });
-
     res.status(201).json({ 
       user: { 
         id: user.id, 
@@ -57,8 +56,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         plan_type: user.plan_type,
         trial_end_date: user.trial_end_date,
         subscription_status: user.subscription_status
-      }, 
-      token 
+      }
     });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao registrar usuário', details: error });
@@ -72,14 +70,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      res.status(400).json({ error: 'Usuário não encontrado.' });
+      res.status(401).json({ error: INVALID_CREDENTIALS_MESSAGE });
       return;
     }
 
     const checkPassword = await bcrypt.compare(senha, user.senha);
 
     if (!checkPassword) {
-      res.status(401).json({ error: 'Senha incorreta.' });
+      res.status(401).json({ error: INVALID_CREDENTIALS_MESSAGE });
       return;
     }
 
@@ -103,10 +101,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       console.warn('Nao foi possivel atualizar login_count durante o login:', loginCountError);
     }
 
-    const secret = process.env.JWT_SECRET || 'gestao_locacoes_secret';
+    const secret = getJwtSecret();
     const token = jwt.sign({ id: user.id }, secret, {
       expiresIn: '7d',
     });
+    // Store the session token in a secure cookie so the browser sends it
+    // automatically and client-side JavaScript cannot read it.
+    res.cookie(AUTH_COOKIE_NAME, token, getAuthCookieOptions());
 
     let trialEndDate = user.trial_end_date;
 
@@ -140,8 +141,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         cancellation_date: (refreshedUser as any).cancellation_date,
         access_until: (refreshedUser as any).access_until,
         login_count: (refreshedUser as any).login_count ?? 0
-      }, 
-      token 
+      }
     });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao fazer login', details: error });
@@ -396,7 +396,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const passwordHash = await bcrypt.hash(senha, 8);
+    const passwordHash = await bcrypt.hash(senha, PASSWORD_HASH_ROUNDS);
 
     await prisma.user.update({
       where: { id: user.id },
@@ -411,4 +411,9 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
   } catch (error) {
     res.status(500).json({ error: 'Erro ao redefinir senha', details: error });
   }
+};
+
+export const logout = async (_req: Request, res: Response): Promise<void> => {
+  res.clearCookie(AUTH_COOKIE_NAME, getAuthCookieOptions());
+  res.status(200).json({ message: 'Logout realizado com sucesso.' });
 };

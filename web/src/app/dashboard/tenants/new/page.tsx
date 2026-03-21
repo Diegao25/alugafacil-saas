@@ -1,25 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { fetchAddressByCep, maskCep, maskCpfCnpj, maskPhone, unmask, getPrimaryAddressSegment } from '@/lib/utils';
 import { LogOut, Save } from 'lucide-react';
-import Cookies from 'js-cookie';
 
 export default function NewTenantPage() {
   const router = useRouter();
-  
-  // Verificar se usuário está logado
-  useEffect(() => {
-    const token = Cookies.get('gestaolocacoes.token');
-    if (!token) {
-      toast.error('Faça login para continuar');
-      router.push('/login');
-    }
-  }, [router]);
 
   const [loading, setLoading] = useState(false);
   

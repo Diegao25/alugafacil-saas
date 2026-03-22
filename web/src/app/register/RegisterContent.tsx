@@ -49,7 +49,7 @@ export default function RegisterPage() {
 
       (window as any).google.accounts.id.renderButton(
         document.getElementById('google-button-register'),
-        { theme: 'outline', size: 'large', width: '380', text: 'continue_with', locale: 'pt_BR' }
+        { theme: 'filled_blue', size: 'large', width: '380', text: 'continue_with', locale: 'pt_BR' }
       );
     }
   }, [signInWithGoogle]);

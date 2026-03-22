@@ -52,7 +52,7 @@ export default function LoginPage() {
 
       (window as any).google.accounts.id.renderButton(
         document.getElementById('google-button-login'),
-        { theme: 'outline', size: 'large', width: '380', text: 'signin_with', locale: 'pt_BR' }
+        { theme: 'filled_blue', size: 'large', width: '380', text: 'signin_with', locale: 'pt_BR' }
       );
     }
   }, [signInWithGoogle]);

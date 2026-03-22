@@ -19,6 +19,10 @@ const app = express();
 const allowedOrigins = getAllowedOrigins();
 getJwtSecret();
 
+console.log('--- Startup Config ---');
+console.log('GOOGLE_CLIENT_ID loaded:', !!process.env.GOOGLE_CLIENT_ID);
+console.log('GOOGLE_CLIENT_SECRET loaded:', !!process.env.GOOGLE_CLIENT_SECRET);
+
 app.set('trust proxy', 1);
 app.use(cors({
   origin(origin, callback) {

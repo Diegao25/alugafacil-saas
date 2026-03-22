@@ -34,6 +34,7 @@ export default function LoginPage() {
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         callback: handleGoogleResponse,
         auto_select: false,
+        use_fedcm_for_prompt: false, 
         cancel_on_tap_outside: true,
       });
 

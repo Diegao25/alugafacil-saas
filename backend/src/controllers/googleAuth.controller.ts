@@ -12,6 +12,9 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export const googleLogin = async (req: Request, res: Response): Promise<void> => {
   try {
     const { credential } = req.body;
+    console.log('--- Google Login Request ---');
+    console.log('Credential provided:', !!credential);
+    console.log('Google Client ID (env):', process.env.GOOGLE_CLIENT_ID);
 
     if (!credential) {
       res.status(400).json({ error: 'Token do Google não fornecido.' });
@@ -23,6 +26,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
+    console.log('Token verified successfully');
     const payload = ticket.getPayload();
     if (!payload || !payload.email) {
       res.status(400).json({ error: 'Falha ao verificar token do Google.' });

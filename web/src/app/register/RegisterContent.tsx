@@ -41,8 +41,8 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && (window as any).google) {
-      // Usar a variável de ambiente, mas com um fallback para garantir estabilidade em prod
-      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '136105438202-hcn3vukt3phsjvt07q1pvc7bc35hdotr.apps.googleusercontent.com';
+      // Hardcoded Client ID para garantir 100% de estabilidade em produção
+      const clientId = '136105438202-hcn3vukt3phsjvt07q1pvc7bc35hdotr.apps.googleusercontent.com';
 
       (window as any).google.accounts.id.initialize({
         client_id: clientId,

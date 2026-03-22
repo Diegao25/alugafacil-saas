@@ -28,7 +28,8 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    const { email, name, picture, sub: googleId } = payload;
+    const { email: rawEmail, name, picture, sub: googleId } = payload;
+    const email = rawEmail.toLowerCase();
 
     let user = await prisma.user.findUnique({
       where: { email },
@@ -65,14 +66,26 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         console.warn('Falha no envio do e-mail de boas-vindas:', error);
       }
     } else {
-      // Incrementar contador de login para usuários existentes
+      // Atualizar dados do usuário se necessário (nome/foto) e contador de login
       try {
+        const updateData: any = { login_count: { increment: 1 } };
+        
+        // Se o usuário não tem nome ou tem o nome padrão, atualiza com o do Google
+        if ((!user.nome || user.nome === 'Usuário Google') && name) {
+          updateData.nome = name;
+        }
+
         await prisma.user.update({
           where: { id: user.id },
-          data: { login_count: { increment: 1 } }
+          data: updateData
         });
+
+        // Atualizar objeto user local para o response
+        if (updateData.nome) {
+          user.nome = updateData.nome;
+        }
       } catch (e) {
-        console.warn('Não foi possível atualizar login_count:', e);
+        console.warn('Não foi possível atualizar dados do usuário:', e);
       }
     }
 

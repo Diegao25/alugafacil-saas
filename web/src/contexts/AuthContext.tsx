@@ -146,12 +146,18 @@ export function AuthProvider({ children }) {
       
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
-    } catch (error) {
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch (error: any) {
+      // Se for um erro de rede (sem resposta), NÃO limpa o estado para evitar logout errôneo
+      // Somente limpa se o servidor confirmou que a sessão é inválida (401 ou 403)
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) {
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+        Cookies.remove('gestaolocacoes.user');
+        setUser(null);
       }
-      Cookies.remove('gestaolocacoes.user');
-      setUser(null);
+      console.warn('Sync user failed:', error.message);
     }
   }
 

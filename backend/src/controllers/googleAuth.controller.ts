@@ -98,9 +98,9 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         plan_type: user.plan_type,
         trial_end_date: user.trial_end_date,
         subscription_status: user.subscription_status,
-        terms_pending: termsStatus.terms_pending,
-        current_terms_version: termsStatus.current_terms_version,
-        accepted_terms_version: termsStatus.accepted_terms_version
+        terms_pending: termsStatus.termsPending,
+        current_terms_version: termsStatus.currentTermsVersion,
+        accepted_terms_version: termsStatus.acceptedTermsVersion
       },
       isNewUser
     });

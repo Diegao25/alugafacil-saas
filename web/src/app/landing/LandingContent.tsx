@@ -178,18 +178,18 @@ export default function LandingPage() {
   const contactInfo = [
     {
       label: 'E-mail',
-      value: 'suporte@alugafacil.com.br',
-      href: 'mailto:suporte@alugafacil.com.br'
+      value: 'diegohga@gmail.com',
+      href: 'mailto:diegohga@gmail.com'
     },
     {
       label: 'WhatsApp',
-      value: '+55 (11) 99999-0000',
-      href: 'https://wa.me/5511999990000'
+      value: '+55 (11) 98839-2241',
+      href: 'https://wa.me/5511988392241'
     },
     {
       label: 'Telefone',
-      value: '+55 (11) 3333-4444',
-      href: 'tel:+551133334444'
+      value: '+55 (11) 98839-2241',
+      href: 'tel:+5511988392241'
     }
   ];
 

@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { formatCurrencyBR, maskPhone } from '@/lib/utils';
-import { openPdfPreviewFromBlob } from '@/lib/pdf';
 
 export default function ContractEditPage() {
   const params = useParams();
@@ -57,18 +56,9 @@ export default function ContractEditPage() {
     }
   };
 
-  const handlePreview = async () => {
+  const handlePreview = () => {
     if (!reservationId) return;
-    const previewWindow = window.open('', '_blank');
-
-    try {
-      const response = await api.get(`/contracts/${reservationId}`, { responseType: 'blob' });
-      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-      await openPdfPreviewFromBlob(pdfBlob, previewWindow);
-    } catch (error) {
-      previewWindow?.close();
-      toast.error('Erro ao gerar visualização do contrato');
-    }
+    router.push(`/dashboard/contracts/${reservationId}/view`);
   };
 
   return (

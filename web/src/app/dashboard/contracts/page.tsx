@@ -6,7 +6,7 @@ import { Download, FileText, Eye, Pencil, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-import { openPdfPreviewFromBlob } from '@/lib/pdf';
+import { openWhatsAppLink } from '@/lib/whatsapp';
 
 export default function ContractsPage() {
   const router = useRouter();
@@ -44,17 +44,8 @@ export default function ContractsPage() {
     }
   }
 
-  async function handlePreviewContract(id: string) {
-    const previewWindow = window.open('', '_blank');
-
-    try {
-      const response = await api.get(`/contracts/${id}`, { responseType: 'blob' });
-      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-      await openPdfPreviewFromBlob(pdfBlob, previewWindow);
-    } catch (error) {
-      previewWindow?.close();
-      toast.error('Erro ao pré-visualizar contrato');
-    }
+  function handlePreviewContract(id: string) {
+    router.push(`/dashboard/contracts/${id}/view`);
   }
 
   function handleEditContract(id: string) {
@@ -79,9 +70,9 @@ export default function ContractsPage() {
         return;
       }
       const message = `Olá ${reserva.locatario.nome}, segue o contrato do imóvel para sua revisão: ${link}`;
-      const waLink = `https://api.whatsapp.com/send?phone=55${digits.replace(/^55/, '')}&text=${encodeURIComponent(message)}`;
-      window.open(waLink, '_blank');
-      toast.success('Link do contrato copiado para o WhatsApp');
+      const waLink = `https://wa.me/55${digits.replace(/^55/, '')}?text=${encodeURIComponent(message)}`;
+      openWhatsAppLink(waLink);
+      toast.success('Abrindo conversa no WhatsApp...');
     } catch (error) {
       toast.error('Erro ao gerar link do contrato para o WhatsApp');
     }

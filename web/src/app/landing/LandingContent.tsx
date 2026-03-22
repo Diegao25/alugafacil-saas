@@ -21,7 +21,8 @@ import {
   Clock,
   LayoutDashboard,
   Smartphone,
-  Check
+  Check,
+  ChevronDown
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -30,6 +31,7 @@ export default function LandingPage() {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -147,6 +149,25 @@ export default function LandingPage() {
     }
   ];
 
+  const faqItems = [
+    {
+      question: "Preciso cadastrar cartão de crédito para testar?",
+      answer: "Não! Você pode criar sua conta e usar todas as funcionalidades por 15 dias sem informar nenhum dado de pagamento. Só pediremos o cartão se você decidir assinar um plano profissional após o teste."
+    },
+    {
+      question: "O sistema gera contrato de locação automaticamente?",
+      answer: "Sim! Com base nos dados do imóvel e do locatário que você já cadastrou, o sistema gera um PDF profissional pronto para assinatura em apenas um clique."
+    },
+    {
+      question: "Consigo gerenciar mais de um imóvel?",
+      answer: "Sim, o Aluga Fácil foi feito para escalar. Você pode gerenciar desde um único chalé até dezenas de propriedades em um painel centralizado."
+    },
+    {
+      question: "Como funciona o suporte em caso de dúvidas?",
+      answer: "Nosso suporte é prioritário via WhatsApp e E-mail. Você terá um canal direto com nossa equipe para resolver qualquer questão técnica ou de uso."
+    }
+  ];
+
   const privacySections = [
     {
       title: '1. Dados coletados',
@@ -192,6 +213,10 @@ export default function LandingPage() {
       href: 'tel:+5511988392241'
     }
   ];
+
+  const toggleFaq = (index: number) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
 
   const handleOpenTerms = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -278,11 +303,11 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 mb-8 leading-[1.1] tracking-tight">
-              Simplifique a gestão dos seus imóveis e <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">lucre mais.</span>
+              Recupere seus <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">finais de semana</span> e o controle das suas locações.
             </h1>
 
             <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              Substitua planilhas confusas, agendas de papel e contratos manuais por um sistema único. Centralize reservas, controle pagamentos e pare de perder tempo com burocracia.
+              Diga adeus à bagunça do WhatsApp e às planilhas que não batem. Automatize seus contratos, organize seu calendário e nunca mais perca um recebimento. **Comece em 2 minutos.**
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -447,16 +472,26 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-600 transform translate-x-4 translate-y-4 rounded-3xl -z-10 opacity-10"></div>
-              <img 
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
-                alt="Dashboard Aluga Fácil - Visão Geral do Controle Financeiro" 
-                className="rounded-3xl shadow-2xl object-cover"
-              />
+              <div className="relative">
+                <div className="absolute inset-0 bg-blue-600 transform translate-x-4 translate-y-4 rounded-3xl -z-10 opacity-10"></div>
+                <div className="bg-white rounded-3xl shadow-2xl p-4 border border-slate-100 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                    alt="Analíticos do Aluga Fácil" 
+                    className="rounded-2xl object-cover w-full h-[300px]"
+                  />
+                  <div className="mt-6 flex justify-center">
+                    <Link
+                      href="/register?external=1"
+                      className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
+                    >
+                      Quero profissionalizar minha gestão!
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
       </section>
 
       {/* Features Grid */}
@@ -524,23 +559,56 @@ export default function LandingPage() {
             {testimonials.map((testimonial, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between"
+                className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow"
               >
                 <div>
                   <div className="flex gap-1 mb-6">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={20} className="fill-yellow-400 text-yellow-400" />
+                      <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
                   <p className="text-slate-700 text-lg mb-8 leading-relaxed font-medium">{testimonial.text}</p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-inner">
-                    {testimonial.avatar}
-                  </div>
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${testimonial.name}&background=random&color=fff&bold=true`}
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full shadow-inner"
+                  />
                   <div>
                     <div className="font-bold text-slate-900">{testimonial.name}</div>
                     <div className="text-sm text-slate-500">{testimonial.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-24 bg-white px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">Perguntas Frequentes</h2>
+            <p className="text-xl text-slate-600">Tudo que você precisa saber para começar agora.</p>
+          </div>
+
+          <div className="space-y-4">
+            {faqItems.map((item, index) => (
+              <div key={index} className="border border-slate-200 rounded-2xl overflow-hidden hover:border-blue-300 transition-colors">
+                <button
+                  className="w-full flex items-center justify-between p-6 text-left bg-white hover:bg-slate-50 transition-colors"
+                  onClick={() => toggleFaq(index)}
+                >
+                  <span className="text-lg font-bold text-slate-900">{item.question}</span>
+                  <ChevronDown className={`text-slate-400 transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180' : ''}`} />
+                </button>
+                <div 
+                  className={`overflow-hidden transition-all duration-300 ${openFaqIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+                >
+                  <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-slate-50">
+                    {item.answer}
                   </div>
                 </div>
               </div>
@@ -578,6 +646,30 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-slate-950 text-slate-400 py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-900">
         <div className="max-w-7xl mx-auto">
+          {/* Trust Signals in Footer */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 pb-16 border-b border-slate-900">
+            <div className="flex flex-col items-center text-center">
+              <Shield className="text-blue-500 mb-3" size={32} />
+              <span className="text-white font-bold text-sm">Dados Criptografados</span>
+              <span className="text-xs">Segurança nível bancário</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <CheckCircle2 className="text-emerald-500 mb-3" size={32} />
+              <span className="text-white font-bold text-sm">LGPD Compliant</span>
+              <span className="text-xs">Privacidade garantida</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <Zap className="text-amber-500 mb-3" size={32} />
+              <span className="text-white font-bold text-sm">Acesso Imediato</span>
+              <span className="text-xs">Configuração em 2 min</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+               <Users className="text-indigo-500 mb-3" size={32} />
+              <span className="text-white font-bold text-sm">Suporte Humano</span>
+              <span className="text-xs">Via WhatsApp e E-mail</span>
+            </div>
+          </div>
+
           <div className="flex justify-between items-center flex-col md:flex-row gap-8">
             <div className="flex items-center gap-2">
               <Logo href="/" size="medium" textColor="text-white" />

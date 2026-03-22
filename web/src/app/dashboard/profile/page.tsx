@@ -138,8 +138,8 @@ export default function ProfilePage() {
       });
       toast.success('Perfil atualizado com sucesso!');
       router.push('/dashboard');
-    } catch (error) {
-      toast.error('Erro ao atualizar perfil');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao atualizar perfil');
     } finally {
       setLoading(false);
     }

@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { formatCurrencyBR, maskPhone } from '@/lib/utils';
+import { openPdfPreviewFromBlob } from '@/lib/pdf';
 
 export default function ContractEditPage() {
   const params = useParams();
@@ -58,11 +59,14 @@ export default function ContractEditPage() {
 
   const handlePreview = async () => {
     if (!reservationId) return;
+    const previewWindow = window.open('', '_blank');
+
     try {
       const response = await api.get(`/contracts/${reservationId}`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      window.open(url, '_blank');
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      await openPdfPreviewFromBlob(pdfBlob, previewWindow);
     } catch (error) {
+      previewWindow?.close();
       toast.error('Erro ao gerar visualização do contrato');
     }
   };

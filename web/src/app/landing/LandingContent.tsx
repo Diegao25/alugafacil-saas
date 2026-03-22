@@ -476,9 +476,9 @@ export default function LandingPage() {
                 <div className="absolute inset-0 bg-blue-600 transform translate-x-4 translate-y-4 rounded-3xl -z-10 opacity-10"></div>
                 <div className="bg-white rounded-3xl shadow-2xl p-4 border border-slate-100 overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
-                    alt="Analíticos do Aluga Fácil" 
-                    className="rounded-2xl object-cover w-full h-[300px]"
+                    src="/images/dashboard-mockup.png" 
+                    alt="Visão Geral do Dashboard Aluga Fácil" 
+                    className="rounded-2xl object-cover w-full h-auto shadow-sm"
                   />
                   <div className="mt-6 flex justify-center">
                     <Link

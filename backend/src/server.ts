@@ -19,10 +19,6 @@ const app = express();
 const allowedOrigins = getAllowedOrigins();
 getJwtSecret();
 
-console.log('--- Startup Config ---');
-console.log('GOOGLE_CLIENT_ID loaded:', !!process.env.GOOGLE_CLIENT_ID);
-console.log('GOOGLE_CLIENT_SECRET loaded:', !!process.env.GOOGLE_CLIENT_SECRET);
-
 app.set('trust proxy', 1);
 app.use(cors({
   origin(origin, callback) {
@@ -52,6 +48,21 @@ app.use('/api/nps', npsRoutes);
 
 const PORT = process.env.PORT || 3333;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });
+
+server.on('error', (error) => {
+  console.error('SERVER ERROR EVENT:', error);
+});
+
+server.on('close', () => {
+  console.log('SERVER CLOSE EVENT');
+});
+
+// Heartbeat para manter o loop de eventos ativo e debug
+setInterval(() => {
+  if (process.env.NODE_ENV !== 'production') {
+    // console.log('Backend heartbeat...');
+  }
+}, 10000);

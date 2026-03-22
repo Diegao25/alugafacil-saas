@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const AUTH_STORAGE_KEY = 'gestaolocacoes.auth_token';
+
 // Tenta obter a URL da API de forma estática para o build do Next.js
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -28,6 +30,19 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = window.localStorage.getItem(AUTH_STORAGE_KEY);
+
+    if (token) {
+      config.headers = config.headers ?? {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
+  return config;
+});
+
 // Interceptor para capturar trial expirado
 api.interceptors.response.use(
   (response) => response,
@@ -41,3 +56,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export { AUTH_STORAGE_KEY };

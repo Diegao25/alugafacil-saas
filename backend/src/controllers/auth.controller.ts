@@ -124,6 +124,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     res.status(200).json({ 
+      token,
       user: { 
         id: refreshedUser.id, 
         nome: refreshedUser.nome, 

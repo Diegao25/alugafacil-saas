@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import { api } from '@/lib/api';
+import { api, AUTH_STORAGE_KEY } from '@/lib/api';
 import { toast } from 'react-toastify';
 
 interface User {
@@ -70,7 +70,16 @@ export function AuthProvider({ children }) {
   async function signIn({ email, senha }: any) {
     try {
       const response = await api.post('/auth/login', { email, senha });
-      const { user: userData } = response.data;
+      const { user: userData, token } = response.data;
+
+      if (typeof window !== 'undefined') {
+        if (token) {
+          // Fallback for mobile/Safari when cross-site cookies are restricted.
+          window.localStorage.setItem(AUTH_STORAGE_KEY, token);
+        } else {
+          window.localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+      }
 
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
 
@@ -103,6 +112,9 @@ export function AuthProvider({ children }) {
     void api.post('/auth/logout').catch(() => {
       // The UI should still log out locally even if the network request fails.
     });
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
     Cookies.remove('gestaolocacoes.user');
     setUser(null);
     router.push(redirectTo);
@@ -116,6 +128,9 @@ export function AuthProvider({ children }) {
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
     } catch (error) {
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(AUTH_STORAGE_KEY);
+      }
       Cookies.remove('gestaolocacoes.user');
       setUser(null);
     }

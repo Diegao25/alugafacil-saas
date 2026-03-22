@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '../prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { resolveOwnerId } from '../utils/owner';
+import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '../utils/password';
+
+const PASSWORD_HASH_ROUNDS = 10;
 
 export const listUsers = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -49,6 +52,11 @@ export const createUser = async (req: AuthRequest, res: Response): Promise<void>
       return;
     }
 
+    if (!isStrongPassword(senha)) {
+      res.status(400).json({ error: PASSWORD_POLICY_MESSAGE });
+      return;
+    }
+
     if (!ownerId) {
       res.status(401).json({ error: 'Não autorizado.' });
       return;
@@ -60,7 +68,7 @@ export const createUser = async (req: AuthRequest, res: Response): Promise<void>
       return;
     }
 
-    const passwordHash = await bcrypt.hash(senha, 8);
+    const passwordHash = await bcrypt.hash(senha, PASSWORD_HASH_ROUNDS);
     const user = await prisma.user.create({
       data: {
         nome,
@@ -114,7 +122,14 @@ export const updateUser = async (req: AuthRequest, res: Response): Promise<void>
     const data: { nome?: string; email?: string; senha?: string } = {};
     if (nome) data.nome = nome;
     if (email) data.email = email;
-    if (senha) data.senha = await bcrypt.hash(senha, 8);
+    if (senha) {
+      if (!isStrongPassword(senha)) {
+        res.status(400).json({ error: PASSWORD_POLICY_MESSAGE });
+        return;
+      }
+
+      data.senha = await bcrypt.hash(senha, PASSWORD_HASH_ROUNDS);
+    }
 
     const user = await prisma.user.update({
       where: { id },

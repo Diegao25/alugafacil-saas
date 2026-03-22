@@ -334,3 +334,11 @@ export function formatCurrencyInput(value: string): string {
   const numeric = Number(digits) / 100;
   return formatCurrencyBR(numeric);
 }
+
+export const PASSWORD_POLICY_MESSAGE =
+  'A senha deve ter pelo menos 8 caracteres e conter letras e números.';
+
+export function isStrongPassword(password: string): boolean {
+  const normalized = String(password || '');
+  return normalized.length >= 8 && /[A-Za-z]/.test(normalized) && /\d/.test(normalized);
+}

@@ -6,6 +6,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import { Eye, EyeOff, KeyRound, Mail, User } from 'lucide-react';
+import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '@/lib/utils';
+import { toast } from 'react-toastify';
 
 export default function RegisterPage() {
   const { signUp, user, loading } = useAuth();
@@ -34,6 +36,12 @@ export default function RegisterPage() {
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!isStrongPassword(senha)) {
+      toast.error(PASSWORD_POLICY_MESSAGE);
+      return;
+    }
+
     setRegisterLoading(true);
     try {
       await signUp({ nome, email, senha });
@@ -112,6 +120,7 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <p className="text-xs text-slate-500">{PASSWORD_POLICY_MESSAGE}</p>
             </div>
 
             <button

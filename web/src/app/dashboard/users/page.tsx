@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
 import { Plus, Trash2, Edit3, X, Eye, EyeOff } from 'lucide-react';
+import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '@/lib/utils';
 
 type UserItem = {
   id: string;
@@ -45,6 +46,12 @@ export default function UsersPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!isStrongPassword(formData.senha)) {
+      toast.error(PASSWORD_POLICY_MESSAGE);
+      return;
+    }
+
     setSaving(true);
     try {
       const response = await api.post('/users', formData);
@@ -77,6 +84,12 @@ export default function UsersPage() {
   async function handleEdit(e: React.FormEvent) {
     e.preventDefault();
     if (!editingUser) return;
+
+    if (editingData.senha && !isStrongPassword(editingData.senha)) {
+      toast.error(PASSWORD_POLICY_MESSAGE);
+      return;
+    }
+
     setEditingLoading(true);
     try {
       const payload: { nome?: string; email?: string; senha?: string } = {
@@ -160,6 +173,7 @@ export default function UsersPage() {
                 {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
+            <p className="text-xs text-slate-500">{PASSWORD_POLICY_MESSAGE}</p>
           </div>
 
           <div className="md:col-span-3 flex justify-end">
@@ -293,6 +307,7 @@ export default function UsersPage() {
                     {showEditPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                <p className="text-xs text-slate-500">{PASSWORD_POLICY_MESSAGE}</p>
               </div>
 
               <div className="flex justify-end gap-2 pt-2">

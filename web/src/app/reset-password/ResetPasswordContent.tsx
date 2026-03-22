@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
 import Logo from '@/components/Logo';
 import { Eye, EyeOff, KeyRound, CheckCircle2 } from 'lucide-react';
+import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '@/lib/utils';
 
 export default function ResetPasswordContent() {
   const router = useRouter();
@@ -26,8 +27,8 @@ export default function ResetPasswordContent() {
       return;
     }
 
-    if (senha.length < 6) {
-      toast.error('A senha deve ter pelo menos 6 caracteres.');
+    if (!isStrongPassword(senha)) {
+      toast.error(PASSWORD_POLICY_MESSAGE);
       return;
     }
 
@@ -107,6 +108,7 @@ export default function ResetPasswordContent() {
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
+              <p className="text-xs text-slate-500">{PASSWORD_POLICY_MESSAGE}</p>
 
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">

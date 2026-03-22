@@ -8,6 +8,7 @@ import { canManageUsers, resolveOwnerId } from '../utils/owner';
 import { AUTH_COOKIE_NAME, getAuthCookieOptions, getJwtSecret } from '../utils/security';
 import { isValidCpfCnpj } from '../utils/document';
 import { getTermsStatus } from '../utils/terms';
+import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '../utils/password';
 
 const PASSWORD_HASH_ROUNDS = 10;
 const INVALID_CREDENTIALS_MESSAGE = 'Credenciais inválidas.';
@@ -18,6 +19,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     if (!nome || !email || !senha) {
       res.status(400).json({ error: 'Por favor, forneça nome, email e senha.' });
+      return;
+    }
+
+    if (!isStrongPassword(senha)) {
+      res.status(400).json({ error: PASSWORD_POLICY_MESSAGE });
       return;
     }
 
@@ -382,6 +388,11 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
 
     if (!token || !senha) {
       res.status(400).json({ error: 'Token e nova senha sÃ£o obrigatÃ³rios.' });
+      return;
+    }
+
+    if (!isStrongPassword(senha)) {
+      res.status(400).json({ error: PASSWORD_POLICY_MESSAGE });
       return;
     }
 

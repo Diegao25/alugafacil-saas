@@ -100,7 +100,7 @@ export function AuthProvider({ children }) {
   async function signUp({ nome, email, senha }: any) {
     try {
       await api.post('/auth/register', { nome, email, senha });
-      toast.success('Conta criada com sucesso! Faça login.');
+      toast.success('Conta criada com sucesso! Verifique seu e-mail e depois faça login.');
       router.push('/login?external=1');
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Erro ao criar conta');

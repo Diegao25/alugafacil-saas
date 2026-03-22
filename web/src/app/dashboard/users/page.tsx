@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
-import { Plus, Trash2, Edit3, X, Eye, EyeOff } from 'lucide-react';
+import { Plus, Trash2, Edit3, X, Eye, EyeOff, Send } from 'lucide-react';
 import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '@/lib/utils';
 
 type UserItem = {
@@ -21,12 +21,11 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState<UserItem | null>(null);
   const [editingData, setEditingData] = useState({ nome: '', email: '', senha: '' });
   const [editingLoading, setEditingLoading] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [resendingUserId, setResendingUserId] = useState<string | null>(null);
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [formData, setFormData] = useState({
     nome: '',
-    email: '',
-    senha: ''
+    email: ''
   });
 
   useEffect(() => {
@@ -47,17 +46,12 @@ export default function UsersPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!isStrongPassword(formData.senha)) {
-      toast.error(PASSWORD_POLICY_MESSAGE);
-      return;
-    }
-
     setSaving(true);
     try {
       const response = await api.post('/users', formData);
       setUsers((prev) => [response.data, ...prev]);
-      setFormData({ nome: '', email: '', senha: '' });
-      toast.success('Usuário cadastrado com sucesso!');
+      setFormData({ nome: '', email: '' });
+      toast.success('Usuário cadastrado com sucesso! Enviamos um e-mail para definição de senha.');
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Erro ao cadastrar usuário');
     } finally {
@@ -73,6 +67,18 @@ export default function UsersPage() {
       toast.success('Usuário excluído');
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Erro ao excluir usuário');
+    }
+  }
+
+  async function handleResendInvite(userId: string) {
+    setResendingUserId(userId);
+    try {
+      await api.post(`/users/${userId}/resend-invite`);
+      toast.success('Convite reenviado com sucesso!');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao reenviar convite');
+    } finally {
+      setResendingUserId(null);
     }
   }
 
@@ -130,7 +136,7 @@ export default function UsersPage() {
           <h2 className="text-lg font-semibold">Cadastrar novo usuário</h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-700">Nome</label>
             <input
@@ -153,30 +159,12 @@ export default function UsersPage() {
               placeholder="email@exemplo.com"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">Senha</label>
-            <div className="relative">
-              <input
-                type={showNewPassword ? 'text' : 'password'}
-                required
-                value={formData.senha}
-                onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                className="w-full rounded-xl border border-slate-300 px-4 py-2 pr-11 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                placeholder="Senha inicial"
-              />
-              <button
-                type="button"
-                onClick={() => setShowNewPassword((prev) => !prev)}
-                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition"
-                aria-label={showNewPassword ? 'Ocultar senha' : 'Mostrar senha'}
-              >
-                {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-            <p className="text-xs text-slate-500">{PASSWORD_POLICY_MESSAGE}</p>
+
+          <div className="md:col-span-2 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            O novo usuário receberá um e-mail para definir a própria senha no primeiro acesso.
           </div>
 
-          <div className="md:col-span-3 flex justify-end">
+          <div className="md:col-span-2 flex justify-end">
             <button
               type="submit"
               disabled={saving}
@@ -224,6 +212,17 @@ export default function UsersPage() {
                           <Edit3 className="h-4 w-4" />
                           Editar
                         </button>
+                        {!user.is_admin && (
+                          <button
+                            type="button"
+                            onClick={() => handleResendInvite(user.id)}
+                            disabled={resendingUserId === user.id}
+                            className="inline-flex items-center gap-1 rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50 transition-colors disabled:opacity-70"
+                          >
+                            <Send className="h-4 w-4" />
+                            {resendingUserId === user.id ? 'Enviando...' : 'Reenviar convite'}
+                          </button>
+                        )}
                         {!user.is_admin && (
                           <button
                             type="button"

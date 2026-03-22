@@ -1,9 +1,11 @@
 import { Response } from 'express';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { prisma } from '../prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { resolveOwnerId } from '../utils/owner';
-import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '../utils/password';
+import { PASSWORD_POLICY_MESSAGE, isStrongPassword } from '../utils/password';
+import { sendInvitedUserWelcomeEmail } from '../utils/mail';
 
 const PASSWORD_HASH_ROUNDS = 10;
 
@@ -44,16 +46,11 @@ export const listUsers = async (req: AuthRequest, res: Response): Promise<void> 
 
 export const createUser = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { nome, email, senha } = req.body;
+    const { nome, email } = req.body;
     const ownerId = await resolveOwnerId(req.user?.id);
 
-    if (!nome || !email || !senha) {
-      res.status(400).json({ error: 'Nome, e-mail e senha são obrigatórios.' });
-      return;
-    }
-
-    if (!isStrongPassword(senha)) {
-      res.status(400).json({ error: PASSWORD_POLICY_MESSAGE });
+    if (!nome || !email) {
+      res.status(400).json({ error: 'Nome e e-mail são obrigatórios.' });
       return;
     }
 
@@ -68,14 +65,21 @@ export const createUser = async (req: AuthRequest, res: Response): Promise<void>
       return;
     }
 
-    const passwordHash = await bcrypt.hash(senha, PASSWORD_HASH_ROUNDS);
+    const setupToken = crypto.randomBytes(32).toString('hex');
+    const setupTokenHash = crypto.createHash('sha256').update(setupToken).digest('hex');
+    const setupTokenExpires = new Date(Date.now() + 60 * 60 * 1000);
+    const temporaryPassword = crypto.randomBytes(24).toString('hex');
+    const passwordHash = await bcrypt.hash(temporaryPassword, PASSWORD_HASH_ROUNDS);
+
     const user = await prisma.user.create({
       data: {
         nome,
         email,
         senha: passwordHash,
         is_admin: false,
-        owner_user_id: ownerId
+        owner_user_id: ownerId,
+        reset_token: setupTokenHash,
+        reset_token_expires: setupTokenExpires
       },
       select: {
         id: true,
@@ -86,9 +90,80 @@ export const createUser = async (req: AuthRequest, res: Response): Promise<void>
       }
     });
 
+    const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
+    const setupPasswordLink = `${frontendBase}/reset-password?token=${setupToken}`;
+
+    try {
+      await sendInvitedUserWelcomeEmail(user.email, user.nome, setupPasswordLink);
+    } catch (error) {
+      console.warn('Falha no envio do e-mail para usuário convidado:', error);
+    }
+
     res.status(201).json(user);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao criar usuário', details: error });
+  }
+};
+
+export const resendInvite = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id as string;
+    const ownerId = await resolveOwnerId(req.user?.id);
+
+    if (!ownerId) {
+      res.status(401).json({ error: 'Não autorizado.' });
+      return;
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id,
+        owner_user_id: ownerId
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        is_admin: true
+      }
+    });
+
+    if (!user) {
+      res.status(404).json({ error: 'Usuário não encontrado.' });
+      return;
+    }
+
+    if (user.is_admin) {
+      res.status(400).json({ error: 'Convites só podem ser reenviados para usuários secundários.' });
+      return;
+    }
+
+    const setupToken = crypto.randomBytes(32).toString('hex');
+    const setupTokenHash = crypto.createHash('sha256').update(setupToken).digest('hex');
+    const setupTokenExpires = new Date(Date.now() + 60 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        reset_token: setupTokenHash,
+        reset_token_expires: setupTokenExpires
+      }
+    });
+
+    const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
+    const setupPasswordLink = `${frontendBase}/reset-password?token=${setupToken}`;
+
+    try {
+      await sendInvitedUserWelcomeEmail(user.email, user.nome, setupPasswordLink);
+    } catch (error) {
+      console.warn('Falha no reenvio do e-mail para usuário convidado:', error);
+      res.status(500).json({ error: 'Não foi possível reenviar o convite por e-mail.' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Convite reenviado com sucesso.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao reenviar convite', details: error });
   }
 };
 

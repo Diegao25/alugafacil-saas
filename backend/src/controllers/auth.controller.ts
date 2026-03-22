@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../prisma';
 import crypto from 'crypto';
-import { sendPasswordResetEmail } from '../utils/mail';
+import { sendPasswordResetEmail, sendWelcomeEmail } from '../utils/mail';
 import { canManageUsers, resolveOwnerId } from '../utils/owner';
 import { AUTH_COOKIE_NAME, getAuthCookieOptions, getJwtSecret } from '../utils/security';
 import { isValidCpfCnpj } from '../utils/document';
@@ -54,6 +54,15 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         subscription_status: 'trial_active'
       },
     });
+
+    const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
+    const loginLink = `${frontendBase}/login?external=1`;
+
+    try {
+      await sendWelcomeEmail(user.email, user.nome, loginLink, user.trial_end_date);
+    } catch (error) {
+      console.warn('Falha no envio do e-mail de boas-vindas:', error);
+    }
 
     res.status(201).json({ 
       user: { 

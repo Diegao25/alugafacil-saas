@@ -272,9 +272,17 @@ export const deleteUser = async (req: AuthRequest, res: Response): Promise<void>
       }
     }
 
-    await prisma.user.delete({ where: { id } });
+    await prisma.$transaction(async (tx) => {
+      // Usuários secundários antigos podem ter aceito termos ou respondido NPS
+      await tx.userTermsAcceptance.deleteMany({ where: { usuario_id: id } });
+      await tx.npsResponse.deleteMany({ where: { usuario_id: id } });
+      
+      await tx.user.delete({ where: { id } });
+    });
+
     res.status(204).send();
   } catch (error) {
+    console.error('Erro na deleção de usuário:', error);
     res.status(500).json({ error: 'Erro ao excluir usuário', details: error });
   }
 };

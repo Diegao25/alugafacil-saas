@@ -42,9 +42,6 @@ export default function ResetPasswordContent() {
       await api.post('/auth/reset-password', { token, senha });
       setSuccess(true);
       toast.success('Senha redefinida com sucesso!');
-      setTimeout(() => {
-        router.push('/login');
-      }, 3000);
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Erro ao redefinir senha.');
     } finally {
@@ -60,7 +57,7 @@ export default function ResetPasswordContent() {
             <CheckCircle2 className="h-10 w-10 text-emerald-600" />
           </div>
           <h2 className="text-2xl font-bold text-slate-800">Senha Alterada!</h2>
-          <p className="text-slate-600">Sua senha foi redefinida com sucesso. Você será redirecionado para o login em instantes.</p>
+          <p className="text-slate-600">Sua senha foi redefinida com sucesso. Clique no botão abaixo para acessar sua conta agora mesmo.</p>
           <button
             onClick={() => router.push('/login')}
             className="w-full rounded-xl bg-blue-600 py-3 font-semibold text-white shadow-md hover:bg-blue-700 transition-all"

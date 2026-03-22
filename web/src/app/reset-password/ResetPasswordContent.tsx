@@ -23,7 +23,7 @@ export default function ResetPasswordContent() {
     e.preventDefault();
     
     if (!token) {
-      toast.error('Token inválido ou expirado.');
+      toast.error('O link de acesso não contém um token válido.');
       return;
     }
 

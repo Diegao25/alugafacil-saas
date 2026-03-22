@@ -32,7 +32,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showNpsModal, setShowNpsModal] = useState(false);
-  const [npsScore, setNpsScore] = useState(10);
+  const [npsScore, setNpsScore] = useState<number | null>(null);
   const [npsComment, setNpsComment] = useState('');
   const [npsSubmitting, setNpsSubmitting] = useState(false);
   const [hideRevenue, setHideRevenue] = useState(false);
@@ -93,6 +93,10 @@ export default function DashboardPage() {
   }, [user]);
 
   const handleNpsSubmit = async () => {
+    if (npsScore === null) {
+      toast.warning('Por favor, selecione uma nota de 0 a 10 antes de enviar.');
+      return;
+    }
     setNpsSubmitting(true);
     try {
       await api.post('/nps', {
@@ -445,7 +449,7 @@ export default function DashboardPage() {
                     );
                   })}
                 </div>
-                <div className="text-3xl font-black text-slate-900 text-center">{npsScore}</div>
+                <div className="text-3xl font-black text-slate-900 text-center">{npsScore !== null ? npsScore : '-'}</div>
               </div>
               <div className="space-y-2">
                 <label className="text-xs uppercase tracking-[0.3em] text-slate-500">Comentário (opcional)</label>
@@ -461,7 +465,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={handleNpsSubmit}
-                  disabled={npsSubmitting}
+                  disabled={npsSubmitting || npsScore === null}
                   className="px-6 py-3 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {npsSubmitting ? 'Enviando...' : 'Enviar avaliação'}

@@ -358,14 +358,14 @@ export const requestPasswordReset = async (req: Request, res: Response): Promise
     const { email } = req.body;
 
     if (!email) {
-      res.status(400).json({ error: 'E-mail Ã© obrigatÃ³rio.' });
+      res.status(400).json({ error: 'E-mail é obrigatório.' });
       return;
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      res.status(200).json({ message: 'Se o e-mail existir, enviaremos as instruÃ§Ãµes.' });
+      res.status(200).json({ message: 'Se o e-mail existir, enviaremos as instruções.' });
       return;
     }
 
@@ -409,7 +409,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     const { token, senha } = req.body;
 
     if (!token || !senha) {
-      res.status(400).json({ error: 'Token e nova senha sÃ£o obrigatÃ³rios.' });
+      res.status(400).json({ error: 'Token e nova senha são obrigatórios.' });
       return;
     }
 
@@ -430,7 +430,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     });
 
     if (!user) {
-      res.status(400).json({ error: 'Token inválido ou expirado.' });
+      res.status(400).json({ error: 'O link de recuperação expirou ou é inválido.' });
       return;
     }
 

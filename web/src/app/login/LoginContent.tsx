@@ -55,7 +55,7 @@ export default function LoginPage() {
 
       (window as any).google.accounts.id.renderButton(
         document.getElementById('google-button-login'),
-        { theme: 'filled_blue', size: 'large', width: '380', text: 'signin_with', locale: 'pt_BR' }
+        { theme: 'filled_blue', size: 'large', width: '340', text: 'signin_with', locale: 'pt_BR' }
       );
     }
   }, [signInWithGoogle]);
@@ -117,7 +117,9 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
-            <div id="google-button-login" className="w-full"></div>
+            <div className="flex justify-center">
+              <div id="google-button-login"></div>
+            </div>
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center" aria-hidden="true">

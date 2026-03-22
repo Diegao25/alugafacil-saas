@@ -52,7 +52,7 @@ export default function RegisterPage() {
 
       (window as any).google.accounts.id.renderButton(
         document.getElementById('google-button-register'),
-        { theme: 'filled_blue', size: 'large', width: '380', text: 'continue_with', locale: 'pt_BR' }
+        { theme: 'filled_blue', size: 'large', width: '340', text: 'continue_with', locale: 'pt_BR' }
       );
     }
   }, [signInWithGoogle]);
@@ -100,8 +100,10 @@ export default function RegisterPage() {
           </div>
 
           <form onSubmit={handleRegister} className="space-y-5">
-          <div className="space-y-4">
-            <div id="google-button-register" className="w-full"></div>
+          <div className="space-y-6">
+            <div className="flex justify-center">
+              <div id="google-button-register"></div>
+            </div>
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center" aria-hidden="true">

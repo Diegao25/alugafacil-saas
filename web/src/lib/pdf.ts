@@ -20,16 +20,21 @@ function blobToDataUrl(blob: Blob) {
 }
 
 export async function openPdfPreviewFromBlob(blob: Blob, previewWindow: Window | null) {
+  if (isIosSafari()) {
+    const dataUrl = await blobToDataUrl(blob);
+    if (previewWindow && !previewWindow.closed) {
+      previewWindow.close();
+    }
+    // On iOS Safari, navigating the current tab is more reliable than trying
+    // to hydrate an about:blank popup with PDF data after an async request.
+    window.location.href = dataUrl;
+    return;
+  }
+
   const targetWindow = previewWindow ?? window.open('', '_blank');
 
   if (!targetWindow) {
     throw new Error('Não foi possível abrir a pré-visualização do PDF.');
-  }
-
-  if (isIosSafari()) {
-    const dataUrl = await blobToDataUrl(blob);
-    targetWindow.location.href = dataUrl;
-    return;
   }
 
   const objectUrl = window.URL.createObjectURL(blob);

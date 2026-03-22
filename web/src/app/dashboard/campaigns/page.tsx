@@ -149,22 +149,22 @@ export default function CampaignsPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-blue-600 text-white rounded-2xl shadow-lg">
             <Megaphone size={28} />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Mala Direta WhatsApp</h1>
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight sm:text-3xl">Mala Direta WhatsApp</h1>
             <p className="text-slate-500">Transforme locatários antigos em novas reservas</p>
           </div>
         </div>
 
         {/* View Toggle */}
-        <div className="flex bg-slate-100 p-1 rounded-xl">
+        <div className="flex w-full bg-slate-100 p-1 rounded-xl lg:w-auto">
           <button 
             onClick={() => setActiveTab('campaign')}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold transition-all lg:flex-none ${
               activeTab === 'campaign' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
@@ -172,7 +172,7 @@ export default function CampaignsPage() {
           </button>
           <button 
             onClick={() => setActiveTab('history')}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold transition-all lg:flex-none ${
               activeTab === 'history' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
@@ -184,29 +184,29 @@ export default function CampaignsPage() {
       {activeTab === 'campaign' ? (
         <>
           {/* Progress Steps */}
-          <div className="flex items-center justify-between px-4">
+          <div className="grid grid-cols-2 gap-3 px-1 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-4">
             {[
               { icon: Building, label: 'Imóvel' },
               { icon: Users, label: 'Público' },
               { icon: MessageSquare, label: 'Mensagem' },
               { icon: Send, label: 'Envio' }
             ].map((s, i) => (
-              <div key={i} className="flex items-center group">
-                <div className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
+              <div key={i} className="flex items-center justify-center sm:justify-start group">
+                <div className={`flex w-full items-center justify-center gap-2 px-4 py-2 rounded-full transition-all sm:w-auto ${
                   step === i + 1 ? 'bg-blue-600 text-white shadow-md scale-105' : 
                   step > i + 1 ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'
                 }`}>
                   <s.icon size={18} />
-                  <span className="text-sm font-bold truncate hidden sm:inline">{s.label}</span>
+                  <span className="text-sm font-bold truncate">{s.label}</span>
                   {step > i + 1 && <CheckCircle2 size={14} />}
                 </div>
-                {i < 3 && <div className={`w-8 h-0.5 mx-2 bg-slate-100 ${step > i + 1 ? 'bg-emerald-200' : ''}`} />}
+                {i < 3 && <div className={`hidden h-0.5 w-8 mx-2 bg-slate-100 sm:block ${step > i + 1 ? 'bg-emerald-200' : ''}`} />}
               </div>
             ))}
           </div>
 
           {/* Step Content */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm min-h-[500px] flex flex-col">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm min-h-[500px] flex flex-col overflow-hidden">
             
             {/* Step 1: Property Selection */}
             {step === 1 && (
@@ -305,7 +305,7 @@ export default function CampaignsPage() {
                   <p className="text-slate-500 italic">Use as variáveis entre colchetes para personalizar automaticamente</p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 pt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 pt-4">
                   <div className="space-y-4">
                     <label className="block text-sm font-bold text-slate-700 uppercase tracking-wider">Editor Template</label>
                     <textarea 
@@ -328,7 +328,7 @@ export default function CampaignsPage() {
 
                   <div className="space-y-4">
                     <label className="block text-sm font-bold text-slate-700 uppercase tracking-wider">Prévia (Exemplo)</label>
-                    <div className="w-full h-64 p-6 rounded-2xl bg-[#E9FED8] border border-[#d5edc4] relative overflow-hidden flex flex-col">
+                    <div className="w-full h-64 p-4 sm:p-6 rounded-2xl bg-[#E9FED8] border border-[#d5edc4] relative overflow-hidden flex flex-col">
                       {/* Whatsapp UI Mockup */}
                       <div className="absolute top-0 left-0 right-0 h-2 bg-[#075e54]"></div>
                       <div className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm text-slate-800 pt-4 font-sans">
@@ -388,11 +388,11 @@ export default function CampaignsPage() {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between mt-auto pt-8 border-t border-slate-100">
+            <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between sm:pt-8">
               <button
                 onClick={() => setStep(prev => Math.max(1, prev - 1))}
                 disabled={step === 1}
-                className={`flex items-center gap-2 px-10 py-4 rounded-2xl font-black transition-all text-lg shadow-lg active:scale-95 ${
+                className={`flex w-full items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black transition-all text-base shadow-lg active:scale-95 sm:w-auto sm:px-10 sm:text-lg ${
                   step === 1 ? 'opacity-0 pointer-events-none' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:-translate-y-1 hover:shadow-xl shadow-slate-200/50'
                 }`}
               >
@@ -412,14 +412,14 @@ export default function CampaignsPage() {
                     }
                     setStep(prev => Math.min(4, prev + 1));
                   }}
-                  className="flex items-center gap-2 px-10 py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-600/30 active:scale-95 transition-all text-lg"
+                  className="flex w-full items-center justify-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-600/30 active:scale-95 transition-all text-base sm:w-auto sm:px-10 sm:text-lg"
                 >
                   Próximo Passo <ChevronRight size={20} />
                 </button>
               ) : (
                 <button 
                   onClick={() => router.push('/dashboard')}
-                  className="flex items-center gap-2 px-10 py-4 bg-slate-900 text-white rounded-2xl font-black shadow-lg shadow-black/20 hover:bg-slate-800 hover:-translate-y-1 active:scale-95 transition-all text-lg"
+                  className="flex w-full items-center justify-center gap-2 px-6 py-4 bg-slate-900 text-white rounded-2xl font-black shadow-lg shadow-black/20 hover:bg-slate-800 hover:-translate-y-1 active:scale-95 transition-all text-base sm:w-auto sm:px-10 sm:text-lg"
                 >
                   Finalizar Campanha
                 </button>

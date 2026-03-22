@@ -10,7 +10,7 @@ import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '@/lib/utils';
 import { toast } from 'react-toastify';
 
 export default function RegisterPage() {
-  const { signUp, user, loading } = useAuth();
+  const { signUp, signInWithGoogle, user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [nome, setNome] = useState('');
@@ -24,7 +24,39 @@ export default function RegisterPage() {
     if (!loading && user && !external) {
       router.push('/dashboard');
     }
+
+    // Inicializar Google Identity Services
+    if (typeof window !== 'undefined' && (window as any).google) {
+      (window as any).google.accounts.id.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+
+      // Opcional: Mostrar One-tap automaticamente
+      (window as any).google.accounts.id.prompt();
+    }
   }, [user, loading, router, searchParams]);
+
+  async function handleGoogleResponse(response: any) {
+    if (response.credential) {
+      try {
+        setRegisterLoading(true);
+        await signInWithGoogle(response.credential);
+      } catch (error) {
+        console.error('Erro no callback do Google:', error);
+      } finally {
+        setRegisterLoading(false);
+      }
+    }
+  }
+
+  const handleGoogleClick = () => {
+    if (typeof window !== 'undefined' && (window as any).google) {
+      (window as any).google.accounts.id.prompt();
+    }
+  };
 
   if (loading) {
     return (
@@ -72,7 +104,9 @@ export default function RegisterPage() {
           <div className="space-y-4">
             <button
               type="button"
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all active:scale-95"
+              onClick={handleGoogleClick}
+              disabled={registerLoading}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all active:scale-95 disabled:opacity-70"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path

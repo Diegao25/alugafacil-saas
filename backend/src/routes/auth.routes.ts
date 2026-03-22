@@ -12,6 +12,7 @@ import {
 import { acceptCurrentTerms, getCurrentTerms } from '../controllers/terms.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { createRateLimitMiddleware, getRequesterIp } from '../middleware/rateLimit.middleware';
+import { googleLogin } from '../controllers/googleAuth.controller';
 
 function getNormalizedEmail(value: unknown) {
   return typeof value === 'string' && value.trim()
@@ -39,6 +40,7 @@ const router = Router();
 
 router.post('/register', register);
 router.post('/login', loginRateLimit, login);
+router.post('/google', googleLogin);
 router.post('/forgot-password', forgotPasswordRateLimit, requestPasswordReset);
 router.post('/reset-password', resetPassword);
 router.get('/me', authenticate, getMe);

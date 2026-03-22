@@ -55,6 +55,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <ToastContainer position="top-right" autoClose={3000} />
+          <script src="https://accounts.google.com/gsi/client" async defer></script>
         </AuthProvider>
       </body>
     </html>

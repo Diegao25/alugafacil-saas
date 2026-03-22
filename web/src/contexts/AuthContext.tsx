@@ -31,6 +31,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signIn: (data: any) => Promise<void>;
+  signInWithGoogle: (credential: string) => Promise<void>;
   signOut: (redirectTo?: string) => void; // redirectTo defaults to /dashboard
   signUp: (data: any) => Promise<void>;
   syncUser: () => Promise<void>;
@@ -72,18 +73,7 @@ export function AuthProvider({ children }) {
       const response = await api.post('/auth/login', { email, senha });
       const { user: userData, token } = response.data;
 
-      if (typeof window !== 'undefined') {
-        if (token) {
-          // Fallback for mobile/Safari when cross-site cookies are restricted.
-          window.localStorage.setItem(AUTH_STORAGE_KEY, token);
-        } else {
-          window.localStorage.removeItem(AUTH_STORAGE_KEY);
-        }
-      }
-
-      Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
-
-      setUser(userData);
+      handleAuthSuccess(userData, token);
       router.push('/dashboard');
       toast.success('Login realizado com sucesso!');
     } catch (error: any) {
@@ -95,6 +85,35 @@ export function AuthProvider({ children }) {
       console.error('Erro ao realizar login', error);
       throw error;
     }
+  }
+
+  async function signInWithGoogle(credential: string) {
+    try {
+      const response = await api.post('/auth/google', { credential });
+      const { user: userData, token } = response.data;
+
+      handleAuthSuccess(userData, token);
+      router.push('/dashboard');
+      toast.success('Login com Google realizado com sucesso!');
+    } catch (error: any) {
+      const message = error?.response?.data?.error || 'Erro na autenticação com Google';
+      toast.error(message);
+      console.error('Erro no Google Login', error);
+      throw error;
+    }
+  }
+
+  function handleAuthSuccess(userData: User, token?: string) {
+    if (typeof window !== 'undefined') {
+      if (token) {
+        window.localStorage.setItem(AUTH_STORAGE_KEY, token);
+      } else {
+        window.localStorage.removeItem(AUTH_STORAGE_KEY);
+      }
+    }
+
+    Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
+    setUser(userData);
   }
 
   async function signUp({ nome, email, senha }: any) {
@@ -137,7 +156,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut, signUp, syncUser }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signInWithGoogle, signOut, signUp, syncUser }}>
       {children}
     </AuthContext.Provider>
   );

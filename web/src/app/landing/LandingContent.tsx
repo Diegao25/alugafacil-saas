@@ -171,7 +171,7 @@ export default function LandingPage() {
     {
       title: '5. Contato',
       content:
-        'Para acessar ou excluir dados, envie um e-mail para privacidade@alugafacil.com.br. Respondemos em até 7 dias úteis.'
+        'Para acessar ou excluir dados, envie um e-mail para diegohga@gmail.com. Respondemos em até 7 dias úteis.'
     }
   ];
 
@@ -637,7 +637,7 @@ export default function LandingPage() {
                   </div>
                 ))}
                 <p className="text-xs text-slate-400">
-                  Em caso de dúvidas, entre em contato pelo e-mail suporte@alugafacil.com.br. Atualizamos estes termos periodicamente; as mudanças entram em vigor imediatamente após a publicação.
+                   Em caso de dúvidas, entre em contato pelo e-mail diegohga@gmail.com. Atualizamos estes termos periodicamente; as mudanças entram em vigor imediatamente após a publicação.
                 </p>
                 <div className="flex justify-end">
                   <button
@@ -681,7 +681,7 @@ export default function LandingPage() {
                   </div>
                 ))}
                 <p className="text-xs text-slate-400">
-                  Para dúvidas adicionais, envie um e-mail para privacidade@alugafacil.com.br.
+                  Para dúvidas adicionais, envie um e-mail para diegohga@gmail.com.
                 </p>
                 <div className="flex justify-end">
                   <button

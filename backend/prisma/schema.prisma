@@ -13,7 +13,7 @@ model User {
   nome         String
   email        String     @unique
   senha        String
-  cpf_cnpj     String?
+  cpf_cnpj     String?    @unique
   telefone     String?
   endereco     String?
   is_admin     Boolean    @default(false)

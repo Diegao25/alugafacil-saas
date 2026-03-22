@@ -281,6 +281,19 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    // Verifica se já existe outra conta usando este CPF/CNPJ
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        cpf_cnpj,
+        id: { not: targetUserId }
+      }
+    });
+
+    if (existingUser) {
+      res.status(400).json({ error: 'Este CPF/CNPJ já está cadastrado em outra conta no sistema.' });
+      return;
+    }
+
     const user = await prisma.user.update({
       where: { id: targetUserId },
       data: {

@@ -452,11 +452,17 @@ export default function DashboardPage() {
                 <div className="text-3xl font-black text-slate-900 text-center">{npsScore !== null ? npsScore : '-'}</div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-[0.3em] text-slate-500">Comentário (opcional)</label>
+                <div className="flex justify-between items-center">
+                  <label className="text-xs uppercase tracking-[0.3em] text-slate-500">Comentário (opcional)</label>
+                  <span className={`text-[10px] font-mono ${npsComment.length >= 500 ? 'text-red-500 font-bold' : 'text-slate-400'}`}>
+                    {npsComment.length}/500
+                  </span>
+                </div>
                 <textarea
                   value={npsComment}
                   onChange={(event) => setNpsComment(event.target.value)}
                   rows={3}
+                  maxLength={500}
                   className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition"
                   placeholder="Conte o que você mais gosta ou o que podemos melhorar."
                 />

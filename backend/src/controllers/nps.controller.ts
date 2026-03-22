@@ -51,6 +51,11 @@ export const submitNps = async (req: AuthRequest, res: Response): Promise<void> 
       return;
     }
 
+    if (comment && String(comment).length > 500) {
+      res.status(400).json({ error: 'O comentário deve ter no máximo 500 caracteres.' });
+      return;
+    }
+
     const existing = await prisma.npsResponse.findFirst({
       where: { usuario_id: userId }
     });

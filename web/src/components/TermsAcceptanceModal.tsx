@@ -78,9 +78,9 @@ export default function TermsAcceptanceModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur-sm">
-      <div className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
-        <div className="border-b border-slate-200 px-6 py-5">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/70 px-3 py-3 backdrop-blur-sm sm:px-4 sm:py-6">
+      <div className="relative flex max-h-[94vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+        <div className="border-b border-slate-200 px-4 py-4 sm:px-6 sm:py-5">
           <div className="flex items-start gap-4">
             <div className="rounded-2xl bg-blue-50 p-3 text-blue-700">
               <FileText className="h-6 w-6" />
@@ -89,7 +89,7 @@ export default function TermsAcceptanceModal() {
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
                 Aceite obrigatório
               </p>
-              <h3 className="text-2xl font-bold text-slate-900">
+              <h3 className="text-xl font-bold text-slate-900 sm:text-2xl">
                 {terms?.title || 'Termos de Uso'}
               </h3>
               <p className="text-sm text-slate-500">
@@ -99,7 +99,7 @@ export default function TermsAcceptanceModal() {
           </div>
         </div>
 
-        <div className="max-h-[calc(90vh-184px)] overflow-y-auto px-6 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
           {fetching ? (
             <div className="flex h-48 items-center justify-center">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
@@ -111,7 +111,7 @@ export default function TermsAcceptanceModal() {
                 {terms?.version || user.current_terms_version || 'pendente'}
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white p-5">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <pre className="whitespace-pre-wrap font-sans text-sm leading-7 text-slate-700">
                   {terms?.content || 'Os termos de uso não puderam ser carregados.'}
                 </pre>
@@ -133,7 +133,10 @@ export default function TermsAcceptanceModal() {
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-4 border-t border-slate-200 px-6 py-4">
+        <div
+          className="sticky bottom-0 flex flex-col gap-3 border-t border-slate-200 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+          style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+        >
           <div className="flex items-center gap-2 text-sm text-slate-500">
             <ShieldCheck className="h-4 w-4 text-emerald-600" />
             Seu aceite ficará registrado para auditoria.
@@ -142,7 +145,7 @@ export default function TermsAcceptanceModal() {
             type="button"
             onClick={handleAccept}
             disabled={loading || fetching || !terms}
-            className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             {loading ? 'Registrando aceite...' : 'Aceitar e continuar'}
           </button>

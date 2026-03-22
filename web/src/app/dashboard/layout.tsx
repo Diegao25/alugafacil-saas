@@ -85,7 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <PlanBanner />
         <TrialBlockingModal />
         <TermsAcceptanceModal />
-        {inAppWhatsappSupportEnabled && normalizePhone(SUPPORT_WHATSAPP_NUMBER) && (
+        {inAppWhatsappSupportEnabled && !user.terms_pending && normalizePhone(SUPPORT_WHATSAPP_NUMBER) && (
           <a
             href={`https://wa.me/${normalizePhone(SUPPORT_WHATSAPP_NUMBER)}?text=${encodeURIComponent(
               [

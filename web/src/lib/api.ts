@@ -14,9 +14,9 @@ const getBaseUrl = () => {
 
   if (API_URL) return API_URL;
 
-  // Último recurso: Se estivermos no Railway, tentamos o endpoint de produção conhecido
-  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
-    return 'https://easygoing-backend-production.up.railway.app/api';
+  // Se não houver variável, avisamos no console
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+    console.error('ERROR: NEXT_PUBLIC_API_URL is NOT defined! API calls will fail.');
   }
 
   if (typeof window !== 'undefined') {

@@ -2,10 +2,9 @@
     "name": "gestao_locacoes",
     "private": true,
     "scripts": {
-        "dev": "cross-env NODE_OPTIONS='--max-old-space-size=4096' concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix web\""
+        "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix web\""
     },
     "devDependencies": {
-        "concurrently": "^8.2.2",
-        "cross-env": "^7.0.3"
+        "concurrently": "^8.2.2"
     }
 }

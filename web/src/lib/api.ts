@@ -14,6 +14,13 @@ const getBaseUrl = () => {
 
   if (API_URL) return API_URL;
 
+  // No Railway em produção, se a variável sumir, tentamos usar o nome do projeto que estava no código
+  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
+    const fallbackUrl = 'https://easygoing-backend-production.up.railway.app/api';
+    console.warn('WARNING: NEXT_PUBLIC_API_URL is missing! Using fallback:', fallbackUrl);
+    return fallbackUrl;
+  }
+
   // Se não houver variável, avisamos no console
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
     console.error('ERROR: NEXT_PUBLIC_API_URL is NOT defined! API calls will fail.');

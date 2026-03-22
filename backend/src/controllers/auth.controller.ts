@@ -417,7 +417,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     });
 
     if (!user) {
-      res.status(400).json({ error: 'Token invÃ¡lido ou expirado.' });
+      res.status(400).json({ error: 'Token inválido ou expirado.' });
       return;
     }
 

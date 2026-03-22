@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
-import { Plus, Trash2, Edit3, X, Eye, EyeOff, Send } from 'lucide-react';
-import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '@/lib/utils';
+import { Plus, Trash2, Edit3, X, Send } from 'lucide-react';
 
 type UserItem = {
   id: string;
@@ -19,10 +18,9 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingUser, setEditingUser] = useState<UserItem | null>(null);
-  const [editingData, setEditingData] = useState({ nome: '', email: '', senha: '' });
+  const [editingData, setEditingData] = useState({ nome: '', email: '' });
   const [editingLoading, setEditingLoading] = useState(false);
   const [resendingUserId, setResendingUserId] = useState<string | null>(null);
-  const [showEditPassword, setShowEditPassword] = useState(false);
   const [formData, setFormData] = useState({
     nome: '',
     email: ''
@@ -84,27 +82,19 @@ export default function UsersPage() {
 
   function openEdit(user: UserItem) {
     setEditingUser(user);
-    setEditingData({ nome: user.nome, email: user.email, senha: '' });
+    setEditingData({ nome: user.nome, email: user.email });
   }
 
   async function handleEdit(e: React.FormEvent) {
     e.preventDefault();
     if (!editingUser) return;
 
-    if (editingData.senha && !isStrongPassword(editingData.senha)) {
-      toast.error(PASSWORD_POLICY_MESSAGE);
-      return;
-    }
-
     setEditingLoading(true);
     try {
-      const payload: { nome?: string; email?: string; senha?: string } = {
+      const payload = {
         nome: editingData.nome,
         email: editingData.email
       };
-      if (editingData.senha) {
-        payload.senha = editingData.senha;
-      }
       const response = await api.put(`/users/${editingUser.id}`, payload);
       setUsers((prev) => prev.map((item) => (item.id === editingUser.id ? response.data : item)));
       toast.success('Usuário atualizado');
@@ -287,27 +277,7 @@ export default function UsersPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Nova senha (opcional)</label>
-                <div className="relative">
-                  <input
-                    type={showEditPassword ? 'text' : 'password'}
-                    value={editingData.senha}
-                    onChange={(e) => setEditingData({ ...editingData, senha: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 pr-11 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                    placeholder="Deixe em branco para manter"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowEditPassword((prev) => !prev)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition"
-                    aria-label={showEditPassword ? 'Ocultar senha' : 'Mostrar senha'}
-                  >
-                    {showEditPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                <p className="text-xs text-slate-500">{PASSWORD_POLICY_MESSAGE}</p>
-              </div>
+
 
               <div className="flex justify-end gap-2 pt-2">
                 <button

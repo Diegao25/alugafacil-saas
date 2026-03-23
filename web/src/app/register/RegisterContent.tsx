@@ -26,7 +26,7 @@ export default function RegisterPage() {
     }
 
     // Inicializar Google Identity Services
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '136105438202-hcn3vukt3phsjvt07q1pvc7bc35hdotr.apps.googleusercontent.com';
     console.log('Google Auth Init - Client ID present:', !!clientId);
 
     if (typeof window !== 'undefined' && (window as any).google && clientId) {

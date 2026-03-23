@@ -146,12 +146,17 @@ export function AuthProvider({ children }) {
       
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
-    } catch (error) {
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch (error: any) {
+      // SÃ³ deslogar se for explicitamente nÃ£o autorizado (401)
+      if (error?.response?.status === 401) {
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+        Cookies.remove('gestaolocacoes.user');
+        setUser(null);
+      } else {
+        console.warn('SyncUser falhou, mas mantendo sessÃ£o local:', error?.message);
       }
-      Cookies.remove('gestaolocacoes.user');
-      setUser(null);
     }
   }
 

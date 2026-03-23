@@ -12,11 +12,14 @@ const getBaseUrl = () => {
      console.log('NEXT_PUBLIC_API_URL (baked):', API_URL);
   }
 
-  if (API_URL) return API_URL;
+  // Se a variável estiver definida e NÃO for o próprio domínio do site (evita loop/404)
+  if (API_URL && typeof window !== 'undefined' && !API_URL.includes(window.location.hostname)) {
+    return API_URL;
+  }
 
-  // Último recurso: Se estivermos no Railway, tentamos o endpoint de produção do Aluga Fácil
+  // Último recurso: Se estivermos no Railway, usamos o endpoint que sabemos que está ativo
   if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
-    return 'https://alugafacil-backend-production.up.railway.app/api';
+    return 'https://easygoing-backend-production.up.railway.app/api';
   }
 
   if (typeof window !== 'undefined') {

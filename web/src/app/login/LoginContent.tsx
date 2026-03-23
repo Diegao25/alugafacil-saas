@@ -29,9 +29,12 @@ export default function LoginPage() {
     }
 
     // Inicializar Google Identity Services
-    if (typeof window !== 'undefined' && (window as any).google) {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    console.log('Google Auth Init - Client ID present:', !!clientId);
+
+    if (typeof window !== 'undefined' && (window as any).google && clientId) {
       (window as any).google.accounts.id.initialize({
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        client_id: clientId,
         callback: handleGoogleResponse,
         auto_select: false,
         use_fedcm_for_prompt: false, 

@@ -24,7 +24,7 @@ const PLANS = [
       'Gestão Financeira completa',
       'Contratos digitais ilimitados',
       'Suporte prioritário',
-      'Relatórios de ocupação e lucratividade'
+      'Visão geral do negócio em tempo real',
     ],
     buttonText: 'Começar Agora',
     highlight: true
@@ -354,29 +354,22 @@ export default function PlansPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <button 
-              onClick={() => setShowPlans(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-black px-10 py-5 rounded-3xl transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2 group"
-            >
-              <ArrowRightLeft size={20} className="group-hover:rotate-180 transition-transform duration-500" />
-              Alterar Plano (Upgrade/Downgrade)
-            </button>
-            
-            {isCancelled ? (
-              <button
-                type="button"
-                disabled
-                className="px-10 py-5 rounded-3xl border border-slate-200 text-slate-400 font-bold bg-slate-50 cursor-not-allowed text-center"
-              >
-                Assinatura já cancelada
-              </button>
-            ) : (
+            {!isCancelled && (
               <Link 
                 href="/dashboard/plans/cancel"
                 className="px-10 py-5 rounded-3xl border border-slate-200 text-slate-500 font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all text-center"
               >
                 Cancelar Assinatura
               </Link>
+            )}
+            {isCancelled && (
+              <button
+                onClick={() => setShowPlans(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-black px-10 py-5 rounded-3xl transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2"
+              >
+                <Rocket size={20} />
+                Reativar Assinatura
+              </button>
             )}
           </div>
         </div>
@@ -394,7 +387,7 @@ export default function PlansPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {PLANS.map((plan) => {
-              const matchesCurrent = plan.name.toLowerCase() === user?.plan_name?.toLowerCase();
+              const matchesCurrent = !isCancelled && plan.name.toLowerCase() === user?.plan_name?.toLowerCase();
               return (
                 <div 
                   key={plan.name}
@@ -454,6 +447,8 @@ export default function PlansPage() {
                   >
                     {loadingPlan === plan.name ? (
                       <Loader2 className="animate-spin" size={20} />
+                    ) : isCancelled && plan.name.toLowerCase() === user?.plan_name?.toLowerCase() ? (
+                      'Recontratar'
                     ) : matchesCurrent ? (
                       'Plano Atual'
                     ) : (
@@ -476,11 +471,6 @@ export default function PlansPage() {
                   Utilizamos criptografia de ponta a ponta para garantir a segurança dos seus dados financeiros. 
                   Sem carência ou taxas de cancelamento.
                 </p>
-              </div>
-              <div className="flex gap-4 md:ml-auto">
-                <div className="h-10 w-16 bg-white rounded-lg border border-blue-100 shadow-sm flex items-center justify-center grayscale opacity-50 font-bold text-xs">VISA</div>
-                <div className="h-10 w-16 bg-white rounded-lg border border-blue-100 shadow-sm flex items-center justify-center grayscale opacity-50 font-bold text-xs">MC</div>
-                <div className="h-10 w-16 bg-white rounded-lg border border-blue-100 shadow-sm flex items-center justify-center grayscale opacity-50 font-bold text-xs">PIX</div>
               </div>
             </div>
           )}

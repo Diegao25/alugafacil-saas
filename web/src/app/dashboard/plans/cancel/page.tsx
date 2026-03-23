@@ -98,25 +98,8 @@ export default function CancelPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-slate-200 rounded-2xl p-5 bg-slate-50 flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-slate-800">
-                  <Shield size={18} className="text-blue-600" />
-                  <span className="text-sm font-black">Trocar de plano</span>
-                </div>
-                <p className="text-xs text-slate-500 font-medium">
-                  Se o problema for preço ou momento do negócio, você pode mudar para um plano mais enxuto sem perder seus cadastros.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => router.push('/dashboard/plans?mode=plans')}
-                  className="mt-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700"
-                >
-                  Ver outros planos
-                  <ArrowRight size={14} />
-                </button>
-              </div>
-
+            <div className="grid grid-cols-1 gap-4">
+              {/* Card Trocar de Plano: oculto até existirem múltiplos planos */}
               <div className="border border-slate-200 rounded-2xl p-5 bg-slate-50 flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-slate-800">
                   <Pause size={18} className="text-amber-500" />

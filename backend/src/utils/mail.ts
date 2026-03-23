@@ -136,3 +136,110 @@ export async function sendInvitedUserWelcomeEmail(
     throw err;
   }
 }
+export async function sendSubscriptionConfirmationEmail(
+  email: string,
+  nome: string,
+  planName: string,
+  amount: number,
+  date: Date
+) {
+  const formattedAmount = (amount).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: getFromAddress(),
+      to: [email],
+      subject: `Assinatura Confirmada: ${planName} - Aluga Fácil`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h1 style="color: #2563eb; margin-bottom: 24px;">Aluga Fácil</h1>
+          <p>Olá <strong>${nome}</strong>,</p>
+          <p>Parabéns! Sua assinatura do <strong>${planName}</strong> foi confirmada com sucesso.</p>
+          
+          <div style="background-color: #f8fafc; padding: 20px; border-radius: 12px; margin: 24px 0; border: 1px solid #e2e8f0;">
+            <h3 style="margin-top: 0; color: #1e293b;">Detalhes da Assinatura</h3>
+            <p style="margin: 8px 0;"><strong>Plano:</strong> ${planName}</p>
+            <p style="margin: 8px 0;"><strong>Valor:</strong> ${formattedAmount}</p>
+            <p style="margin: 8px 0;"><strong>Data:</strong> ${formattedDate}</p>
+            <p style="margin: 8px 0;"><strong>Status:</strong> Ativo</p>
+          </div>
+
+          <p>Você agora tem acesso ilimitado a todas as ferramentas premium da plataforma.</p>
+          
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${process.env.FRONTEND_URL}/dashboard" style="background-color: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
+              Acessar Painel
+            </a>
+          </div>
+
+          <p style="color: #64748b; font-size: 14px;">Dúvidas? Responda a este e-mail que nossa equipe te ajudará.</p>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="color: #94a3b8; font-size: 12px; text-align: center;">Aluga Fácil - Gestão Inteligente para Corretores e Proprietários</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error('Erro ao enviar e-mail de confirmação via Resend:', error);
+      throw new Error(error.message);
+    }
+    return data;
+  } catch (err) {
+    console.error('Falha crítica no envio de e-mail de confirmação:', err);
+    throw err;
+  }
+}
+
+export async function sendSubscriptionCancellationEmail(
+  email: string,
+  nome: string,
+  planName: string,
+  cancellationDate: Date,
+  accessUntil: Date
+) {
+  const formattedCancellationDate = cancellationDate.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  const formattedAccessUntil = accessUntil.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: getFromAddress(),
+      to: [email],
+      subject: `Cancelamento de Assinatura - Aluga Fácil`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h1 style="color: #ef4444; margin-bottom: 24px;">Aluga Fácil</h1>
+          <p>Olá <strong>${nome}</strong>,</p>
+          <p>Confirmamos a solicitação de cancelamento da sua assinatura do <strong>${planName}</strong> realizada em ${formattedCancellationDate}.</p>
+          
+          <div style="background-color: #fff1f2; padding: 20px; border-radius: 12px; margin: 24px 0; border: 1px solid #fecaca;">
+            <p style="margin: 0; color: #991b1b; font-weight: bold;">Importante:</p>
+            <p style="margin: 8px 0; color: #991b1b;">Você continuará tendo acesso a todas as funcionalidades premium até o dia <strong>${formattedAccessUntil}</strong>.</p>
+          </div>
+
+          <p>Após essa data, sua conta será migrada para o plano gratuito e você perderá o acesso às ferramentas avançadas.</p>
+          
+          <p><strong>Mudou de ideia?</strong> Você pode reativar sua assinatura a qualquer momento diretamente no seu painel.</p>
+
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${process.env.FRONTEND_URL}/dashboard/plans" style="background-color: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
+              Ver Planos / Reativar
+            </a>
+          </div>
+
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="color: #94a3b8; font-size: 12px; text-align: center;">Sentiremos sua falta! Se houver algo que possamos fazer por você, entre em contato.</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error('Erro ao enviar e-mail de cancelamento via Resend:', error);
+      throw new Error(error.message);
+    }
+    return data;
+  } catch (err) {
+    console.error('Falha crítica no envio de e-mail de cancelamento:', err);
+    throw err;
+  }
+}

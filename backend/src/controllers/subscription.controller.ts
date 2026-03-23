@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { stripe } from '../config/stripe';
 import { prisma } from '../prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { sendSubscriptionConfirmationEmail, sendSubscriptionCancellationEmail } from '../utils/mail';
 
 // Mapeamento de planos para preços do Stripe (ID de Teste)
 // Nota: Em um ambiente real, esses IDs viriam de variáveis de ambiente
@@ -167,6 +168,19 @@ export const cancelSubscription = async (req: AuthRequest, res: Response): Promi
         }
       })
     ]);
+    
+    // Enviar e-mail de cancelamento
+    try {
+      await sendSubscriptionCancellationEmail(
+        user.email,
+        user.nome,
+        user.plan_name || 'Plano Completo',
+        now,
+        accessUntil
+      );
+    } catch (e) {
+      console.error('Erro ao enviar e-mail de cancelamento (manual):', e);
+    }
 
     res.json({
       success: true,
@@ -230,6 +244,21 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
           });
         }
         await recordSubscriptionHistory(userId, planName, planAmount);
+        
+        // Enviar e-mail de confirmação (pelo frontend redirect)
+        if (existingUser) {
+          try {
+            await sendSubscriptionConfirmationEmail(
+              existingUser.email,
+              existingUser.nome,
+              planName,
+              planAmount,
+              new Date()
+            );
+          } catch (e) {
+            console.error('Erro ao enviar e-mail de confirmação (verifySession):', e);
+          }
+        }
       }
 
       // Retornar detalhes para o frontend
@@ -312,6 +341,23 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
         });
       }
       await recordSubscriptionHistory(userId, planName, planAmount);
+      
+      // Enviar e-mail de confirmação (pelo webhook)
+      // Nota: Podemos ter lógica de desduplicação se necessário, 
+      // mas o Resend/Stripe lidam bem com isso se os IDs forem consistentes.
+      if (existingUser) {
+        try {
+          await sendSubscriptionConfirmationEmail(
+            existingUser.email,
+            existingUser.nome,
+            planName,
+            planAmount,
+            new Date()
+          );
+        } catch (e) {
+          console.error('Erro ao enviar e-mail de confirmação (webhook):', e);
+        }
+      }
       break;
     
     case 'invoice.paid': {
@@ -356,6 +402,25 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
           plan_type: 'free'
         } as any
       });
+
+      // Se conseguirmos encontrar o usuário pelo subscriptionId, enviamos o e-mail
+      const userToNotify = await prisma.user.findFirst({
+        where: { stripe_subscription_id: subscription.id } as any
+      });
+
+      if (userToNotify) {
+        try {
+          await sendSubscriptionCancellationEmail(
+            userToNotify.email,
+            userToNotify.nome,
+            userToNotify.plan_name || 'Plano Completo',
+            new Date(),
+            userToNotify.access_until || new Date()
+          );
+        } catch (e) {
+          console.error('Erro ao enviar e-mail de cancelamento (webhook):', e);
+        }
+      }
       break;
     }
 

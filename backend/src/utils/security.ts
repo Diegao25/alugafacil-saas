@@ -17,7 +17,8 @@ export function getJwtSecret() {
 export function getAllowedOrigins() {
   const configuredOrigins = [
     process.env.FRONTEND_URL,
-    process.env.WEB_BASE_URL
+    process.env.WEB_BASE_URL,
+    process.env.BACKEND_URL
   ].filter((origin): origin is string => Boolean(origin));
 
   const developmentOrigins = [
@@ -25,11 +26,16 @@ export function getAllowedOrigins() {
     'http://127.0.0.1:3000'
   ];
 
+  // Suporte a múltiplas URLs separadas por vírgula em uma única variável
+  const splitOrigins = configuredOrigins.flatMap(origin => 
+    origin.split(',').map(s => s.trim().replace(/\/+$/, ''))
+  );
+
   const allowedOrigins = Array.from(
     new Set(
       process.env.NODE_ENV === 'production'
-        ? configuredOrigins
-        : [...configuredOrigins, ...developmentOrigins]
+        ? splitOrigins
+        : (splitOrigins.length > 0 ? [...splitOrigins, ...developmentOrigins] : developmentOrigins)
     )
   );
 

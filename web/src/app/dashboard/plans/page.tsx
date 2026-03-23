@@ -14,47 +14,20 @@ import { plansAccessEnabled } from '@/lib/features';
 
 const PLANS = [
   {
-    name: 'Essencial',
-    price: 'R$ 49',
-    description: 'Ideal para quem está começando com até 3 imóveis.',
-    features: [
-      'Até 3 imóveis',
-      'Agenda de reservas ilimitada',
-      'Gestão de locatários',
-      'Contratos básicos',
-      'Suporte via e-mail'
-    ],
-    buttonText: 'Assinar Plano',
-    highlight: false
-  },
-  {
-    name: 'Profissional',
-    price: 'R$ 97',
-    description: 'O melhor custo-benefício para crescer seu negócio.',
+    name: 'Plano Completo',
+    price: 'R$ 49,90',
+    description: 'Gestão total do seu negócio de locações sem limites.',
     features: [
       'Imóveis ilimitados',
+      'Agenda de reservas inteligente',
       'Mala Direta via WhatsApp',
       'Gestão Financeira completa',
-      'Contratos customizáveis',
+      'Contratos digitais ilimitados',
       'Suporte prioritário',
-      'Relatórios avançados'
+      'Relatórios de ocupação e lucratividade'
     ],
     buttonText: 'Começar Agora',
     highlight: true
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    description: 'Soluções personalizadas para grandes administradoras.',
-    features: [
-      'Múltiplos usuários',
-      'API de integração',
-      'Treinamento da equipe',
-      'Gerente de conta dedicado',
-      'Funcionalidades sob medida'
-    ],
-    buttonText: 'Falar com Consultor',
-    highlight: false
   }
 ];
 
@@ -70,7 +43,7 @@ export default function PlansPage() {
   const isActive = user?.subscription_status === 'active_subscription';
   const isCancelled = user?.subscription_status === 'cancelled';
   const hasSubscriptionDetails = isActive || isCancelled;
-  const currentPlan = PLANS.find(p => p.name.toLowerCase() === user?.plan_name?.toLowerCase()) || PLANS[1]; // Default to Profissional for demo
+  const currentPlan = PLANS.find(p => p.name.toLowerCase() === user?.plan_name?.toLowerCase()) || PLANS[0];
 
   useEffect(() => {
     if (!plansAccessEnabled) {
@@ -288,7 +261,7 @@ export default function PlansPage() {
               <span className="font-black text-blue-600">
                 {user?.subscription_amount 
                   ? `R$ ${user.subscription_amount.toFixed(2).replace('.', ',')}` 
-                  : 'R$ 97,00'}
+                  : 'R$ 49,90'}
               </span>
             </div>
 

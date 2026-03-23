@@ -12,19 +12,32 @@ const getBaseUrl = () => {
      console.log('NEXT_PUBLIC_API_URL (baked):', API_URL);
   }
 
+  // PRIORIDADE 1: Variável de ambiente (Ideal para produção)
   // Se a variável estiver definida e NÃO for o próprio domínio do site (evita loop/404)
   if (API_URL && typeof window !== 'undefined' && !API_URL.includes(window.location.hostname)) {
-    return API_URL;
+    return API_URL.replace(/\/+$/, '');
   }
 
-  // Último recurso: Se estivermos no Railway, usamos o endpoint que sabemos que está ativo
-  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
-    return 'https://easygoing-backend-production.up.railway.app/api';
-  }
-
+  // FALLBACK SEGURO PARA CLIENT-SIDE
   if (typeof window !== 'undefined') {
-    return `http://${window.location.hostname}:3333/api`;
+    const hostname = window.location.hostname;
+    
+    // Ambiente Local
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `http://localhost:3333/api`;
+    }
+
+    // Último recurso: Se estivermos no Railway, usamos o endpoint que sabemos que está ativo
+    if (hostname.includes('railway.app')) {
+      return 'https://easygoing-backend-production.up.railway.app/api';
+    }
+
+    // Em produção fora do railway ou se o hostname for desconhecido
+    // Nunca usamos a porta 3333 fora do localhost 
+    return `${window.location.protocol}//${hostname}/api`;
   }
+
+  // Fallback para SSR
   return 'http://localhost:3333/api';
 };
 

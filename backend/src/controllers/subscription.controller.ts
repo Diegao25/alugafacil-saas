@@ -5,9 +5,12 @@ import { AuthRequest } from '../middleware/auth.middleware';
 
 // Mapeamento de planos para preços do Stripe (ID de Teste)
 // Nota: Em um ambiente real, esses IDs viriam de variáveis de ambiente
-const PLAN_PRICE_MAPPING: Record<string, string> = {
-  'Essencial': 'price_1R1XXXXXXXXXXXX', // O usuário precisará criar estes preços no dashboard do Stripe
-  'Profissional': 'price_1R2XXXXXXXXXXXX',
+// Mapeamento de planos para preços do Stripe
+const STRIPE_PRICE_ESSENTIAL = process.env.STRIPE_PRICE_ESSENTIAL;
+const STRIPE_PRICE_PROFESSIONAL = process.env.STRIPE_PRICE_PROFESSIONAL;
+
+const PLAN_PRICE_MAPPING: Record<string, string | undefined> = {
+  'Plano Completo': STRIPE_PRICE_ESSENTIAL, // Usando a mesma env por enquanto
 };
 
 export const createCheckoutSession = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -51,7 +54,7 @@ export const createCheckoutSession = async (req: AuthRequest, res: Response): Pr
 
       await prisma.user.update({
         where: { id: userId },
-        data: { stripe_customer_id: stripeCustomerId } as any
+        data: { stripe_customer_id: stripeCustomerId }
       });
       console.log('Usuário atualizado com Stripe Customer ID no banco.');
     }
@@ -61,23 +64,30 @@ export const createCheckoutSession = async (req: AuthRequest, res: Response): Pr
     // Para simplificar o teste inicial, usaremos um produto genérico se o ID não estiver mapeado.
     
     console.log('Criando sessão de checkout no Stripe...');
+    const priceId = PLAN_PRICE_MAPPING[planName as string];
+    const lineItem: any = {
+      quantity: 1,
+    };
+
+    if (priceId) {
+      lineItem.price = priceId;
+    } else {
+      lineItem.price_data = {
+        currency: 'brl',
+        product_data: {
+          name: planName,
+          description: 'Acesso total ao sistema Aluga Fácil',
+        },
+        unit_amount: 4990,
+        recurring: { interval: 'month' },
+      };
+    }
+
+    console.log('Criando sessão de checkout no Stripe com Line Item:', JSON.stringify(lineItem));
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
-      payment_method_types: ['card'], // Pode adicionar 'pix' se a conta stripe-br permitir
-      line_items: [
-        {
-          price_data: {
-            currency: 'brl',
-            product_data: {
-              name: `Plano ${planName} - Gestão de Locações`,
-              description: `Assinatura mensal do plano ${planName}`,
-            },
-            unit_amount: planName === 'Essencial' ? 4900 : 9700,
-            recurring: { interval: 'month' },
-          },
-          quantity: 1,
-        },
-      ],
+      payment_method_types: ['card'],
+      line_items: [lineItem],
       mode: 'subscription',
       success_url: `${process.env.FRONTEND_URL}/dashboard/plans/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL}/dashboard/plans`,
@@ -90,7 +100,12 @@ export const createCheckoutSession = async (req: AuthRequest, res: Response): Pr
     console.log('Sessão criada:', session.id);
     res.json({ url: session.url });
   } catch (error: any) {
-    console.error('Stripe Checkout Error:', error);
+    console.error('=== Stripe Checkout Error ===');
+    console.error('Message:', error.message);
+    console.error('Type:', error.type);
+    console.error('Code:', error.code);
+    console.error('Param:', error.param);
+    if (error.raw) console.error('Raw:', JSON.stringify(error.raw, null, 2));
     res.status(500).json({ error: 'Erro ao criar sessão de checkout', message: error.message });
   }
 };
@@ -133,14 +148,14 @@ export const cancelSubscription = async (req: AuthRequest, res: Response): Promi
           access_until: accessUntil,
           subscription_status: 'cancelled',
           plan_type: 'free'
-        } as any
+        }
       }),
       prisma.subscriptionHistory.create({
         data: {
           plan_name: 'Cancelamento',
           amount: 0,
           usuario_id: userId
-        } as any
+        }
       }),
       prisma.cancellationFeedback.create({
         data: {
@@ -149,7 +164,7 @@ export const cancelSubscription = async (req: AuthRequest, res: Response): Promi
           accepted_discount: !!accepted_discount,
           accepted_downgrade: !!accepted_downgrade,
           usuario_id: userId
-        } as any
+        }
       })
     ]);
 
@@ -193,18 +208,18 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
         await prisma.user.update({
           where: { id: userId },
           data: {
-            plan_type: planName.toLowerCase(),
+            plan_type: 'pro',
             plan_name: planName,
             subscription_status: 'active_subscription',
             stripe_subscription_id: subscriptionId,
             trial_end_date: null,
             subscription_date: new Date(),
-            subscription_amount: planName === 'Essencial' ? 49.00 : 97.00,
+            subscription_amount: 49.90,
             payment_method: 'Cartão de Crédito' // Simplificado
-          } as any
+          }
         });
 
-        const planAmount = planName === 'Essencial' ? 49.00 : 97.00;
+        const planAmount = 49.90;
         if (existingUser?.subscription_status === 'cancelled') {
           await prisma.subscriptionHistory.create({
             data: {
@@ -233,18 +248,12 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
       res.status(400).json({ error: 'Pagamento não concluído' });
     }
   } catch (error: any) {
-    console.error('Verify Session Error:', error);
-    // Escrever erro detalhado em um arquivo para o agente ler
-    try {
-      const fs = require('fs');
-      const errorDetail = JSON.stringify({
-        message: error.message,
-        stack: error.stack,
-        prisma: error.meta,
-        code: error.code
-      }, null, 2);
-      fs.writeFileSync('c:/Users/Davi e Sarah/.gemini/antigravity/scratch/gestao_locacoes/backend/error_log.json', errorDetail);
-    } catch (e) {}
+    console.error('Verify Session Error:', {
+      message: error.message,
+      stack: error.stack,
+      prisma: error.meta,
+      code: error.code
+    });
     
     res.status(500).json({ error: 'Erro ao verificar sessão', message: error.message });
   }
@@ -281,31 +290,64 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
       await prisma.user.update({
         where: { id: userId },
         data: {
-          plan_type: planName.toLowerCase(),
+          plan_type: 'pro',
           plan_name: planName,
           subscription_status: 'active_subscription',
           stripe_subscription_id: subscriptionId,
           trial_end_date: null,
           subscription_date: new Date(),
-          subscription_amount: planName === 'Essencial' ? 49.00 : 97.00,
+          subscription_amount: 49.90,
           payment_method: 'Cartão de Crédito'
-        } as any
+        }
       });
 
-      const planAmount = planName === 'Essencial' ? 49.00 : 97.00;
+      const planAmount = 49.90;
       if (existingUser?.subscription_status === 'cancelled') {
         await prisma.subscriptionHistory.create({
           data: {
             plan_name: 'Reativação',
             amount: planAmount,
             usuario_id: userId
-          } as any
+          }
         });
       }
       await recordSubscriptionHistory(userId, planName, planAmount);
       break;
     
-    case 'customer.subscription.deleted':
+    case 'invoice.paid': {
+      const invoice = event.data.object as any;
+      const subscriptionId = invoice.subscription;
+      
+      if (subscriptionId) {
+        // Atualiza a data de acesso toda vez que uma fatura é paga
+        await prisma.user.updateMany({
+          where: { stripe_subscription_id: subscriptionId } as any,
+          data: {
+            subscription_status: 'active_subscription',
+            last_payment_date: new Date(),
+          } as any
+        });
+      }
+      break;
+    }
+
+    case 'invoice.payment_failed': {
+      const invoice = event.data.object as any;
+      const subscriptionId = invoice.subscription;
+
+      if (subscriptionId) {
+        // Marca o usuário com problema de pagamento para que o front mostre um aviso
+        await prisma.user.updateMany({
+          where: { stripe_subscription_id: subscriptionId } as any,
+          data: {
+            subscription_status: 'payment_failed'
+          } as any
+        });
+      }
+      break;
+    }
+
+    case 'customer.subscription.deleted': {
       const subscription = event.data.object as any;
       await prisma.user.updateMany({
         where: { stripe_subscription_id: subscription.id } as any,
@@ -315,6 +357,7 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
         } as any
       });
       break;
+    }
 
     default:
       console.log(`Unhandled event type ${event.type}`);

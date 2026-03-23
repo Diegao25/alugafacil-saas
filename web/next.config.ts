@@ -17,7 +17,11 @@ const nextConfig = {
     ignoreBuildErrors: true, 
   },
   images: {
-    unoptimized: true,
+    // Re-habilitando otimização para domínios comuns
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.up.railway.app' },
+      { protocol: 'https', hostname: '**.stripe.com' },
+    ],
   },
   poweredByHeader: false,
   reactStrictMode: true,

@@ -12,11 +12,15 @@ const getBaseUrl = () => {
      console.log('NEXT_PUBLIC_API_URL (baked):', API_URL);
   }
 
-  // No Railway em produção, usamos o backend oficial do projeto
+  // No Railway em produção, derivamos a URL do backend baseada no projeto Aluga Fácil
   if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
-    const backendUrl = 'https://easygoing-backend-production.up.railway.app/api';
+    const hostname = window.location.hostname;
+    const backendUrl = `https://${hostname.replace('-production', '')}-backend-production.up.railway.app/api`;
+    
     if (process.env.NODE_ENV === 'production') {
-      console.log('Production Backend Fallback:', backendUrl);
+      console.log('--- Production Backend Connection ---');
+      console.log('Host:', hostname);
+      console.log('Target API:', backendUrl);
     }
     return backendUrl;
   }

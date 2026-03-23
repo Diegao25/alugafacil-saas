@@ -96,7 +96,8 @@ export function AuthProvider({ children }) {
       router.push('/dashboard');
       toast.success('Login com Google realizado com sucesso!');
     } catch (error: any) {
-      const message = error?.response?.data?.error || 'Erro na autenticação com Google';
+      const errorDetail = error.response ? `${error.response.status}: ${error.response.data?.error || error.message}` : error.message;
+      const message = `Erro na autenticação com Google: ${errorDetail}`;
       toast.error(message);
       console.error('Erro no Google Login', error);
       throw error;

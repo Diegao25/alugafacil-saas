@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
@@ -19,11 +19,16 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
 
+  const isInitialized = useRef(false);
+
   useEffect(() => {
     const external = searchParams.get('external');
     if (!loading && user && !external) {
       router.push('/dashboard');
+      return;
     }
+
+    if (isInitialized.current) return;
 
     // Inicializar Google Identity Services
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '136105438202-hcn3vukt3phsjvt07q1pvc7bc35hdotr.apps.googleusercontent.com';
@@ -31,6 +36,8 @@ export default function RegisterPage() {
     const initGoogle = () => {
       if (typeof window !== 'undefined' && (window as any).google && clientId) {
         console.log('Google Auth (Register) - Initializing...');
+        isInitialized.current = true;
+
         (window as any).google.accounts.id.initialize({
           client_id: clientId,
           callback: handleGoogleResponse,
@@ -59,14 +66,21 @@ export default function RegisterPage() {
     };
 
     // Tentar inicializar imediatamente
+    let interval: any;
     if (!initGoogle()) {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         if (initGoogle()) {
           clearInterval(interval);
         }
       }, 500);
-      return () => clearInterval(interval);
     }
+
+    return () => {
+      if (interval) clearInterval(interval);
+      if (typeof window !== 'undefined' && (window as any).google) {
+        (window as any).google.accounts.id.cancel();
+      }
+    };
   }, [user, loading, router, searchParams]);
 
   async function handleGoogleResponse(response: any) {

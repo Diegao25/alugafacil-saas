@@ -15,7 +15,11 @@ const getBaseUrl = () => {
   // No Railway em produção, derivamos a URL do backend baseada no projeto Aluga Fácil
   if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
     const hostname = window.location.hostname;
-    const backendUrl = `https://${hostname.replace('-production', '')}-backend-production.up.railway.app/api`;
+    // Extraímos apenas o nome do serviço (antes de .up.railway.app)
+    const serviceName = hostname.split('.up.railway.app')[0];
+    // Removemos '-production' se existir para obter a base, e adicionamos '-backend-production'
+    const backendBase = serviceName.replace('-production', '') + '-backend-production';
+    const backendUrl = `https://${backendBase}.up.railway.app/api`;
     
     if (process.env.NODE_ENV === 'production') {
       console.log('--- Production Backend Connection ---');

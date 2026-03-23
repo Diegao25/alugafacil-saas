@@ -36,12 +36,22 @@ export const metadata: Metadata = {
       },
     ],
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Aluga Fácil | Gestão Profissional de Imóveis por Temporada',
-    description: 'A solução completa para anfitriões e gestores imobiliários.',
-    images: ['/logo.svg'],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Aluga Fácil',
   },
+  formatDetection: {
+    telephone: true,
+  },
+};
+
+export const viewport = {
+  themeColor: '#2563eb',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

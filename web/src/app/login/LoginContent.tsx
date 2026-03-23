@@ -22,7 +22,7 @@ export default function LoginPage() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetLink, setResetLink] = useState<string | null>(null);
 
-  const isInitialized = useRef(false);
+  const googleInitStarted = useRef(false);
 
   useEffect(() => {
     const external = searchParams.get('external');
@@ -31,49 +31,55 @@ export default function LoginPage() {
       return;
     }
 
-    if (isInitialized.current) return;
-
-    // Inicializar Google Identity Services
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '136105438202-hcn3vukt3phsjvt07q1pvc7bc35hdotr.apps.googleusercontent.com';
     
-    const initGoogle = () => {
-      if (typeof window !== 'undefined' && (window as any).google && clientId) {
-        console.log('Google Auth - Initializing...');
-        isInitialized.current = true;
-        
-        (window as any).google.accounts.id.initialize({
+    const initAndRender = () => {
+      const google = (window as any).google;
+      if (!google || !clientId) return false;
+
+      // 1. Inicializar apenas uma vez globalmente
+      if (!googleInitStarted.current) {
+        console.log('Google Auth - Initializing Global GIS...');
+        google.accounts.id.initialize({
           client_id: clientId,
           callback: handleGoogleResponse,
           auto_select: false,
           use_fedcm_for_prompt: false, 
           cancel_on_tap_outside: true,
         });
-
-        const buttonDiv = document.getElementById('google-signin-button');
-        if (buttonDiv) {
-          (window as any).google.accounts.id.renderButton(buttonDiv, { 
-            theme: 'filled_blue', 
-            size: 'large', 
-            width: buttonDiv.offsetWidth || 350,
-            text: 'signin_with',
-            shape: 'rectangular',
-            logo_alignment: 'left'
-          });
-        }
-        
-        if (!user) {
-          (window as any).google.accounts.id.prompt();
-        }
-        return true;
+        googleInitStarted.current = true;
       }
-      return false;
+
+      // 2. Renderizar o botão sempre que o componente montar/re-renderizar o efeito
+      const buttonDiv = document.getElementById('google-signin-button');
+      if (buttonDiv) {
+        console.log('Google Auth - Rendering button...');
+        google.accounts.id.renderButton(buttonDiv, { 
+          theme: 'filled_blue', 
+          size: 'large', 
+          width: buttonDiv.offsetWidth || 350,
+          text: 'signin_with',
+          shape: 'rectangular',
+          logo_alignment: 'left'
+        });
+      }
+      
+      // 3. Prompt (One Tap)
+      if (!user) {
+        try {
+          google.accounts.id.prompt();
+        } catch (e) {
+          console.warn('Google One Tap prompt failed (likely already pending):', e);
+        }
+      }
+      return true;
     };
 
-    // Tentar inicializar imediatamente
+    // Tentar inicializar/renderizar
     let interval: any;
-    if (!initGoogle()) {
+    if (!initAndRender()) {
       interval = setInterval(() => {
-        if (initGoogle()) {
+        if (initAndRender()) {
           clearInterval(interval);
         }
       }, 500);
@@ -81,6 +87,8 @@ export default function LoginPage() {
 
     return () => {
       if (interval) clearInterval(interval);
+      // Opcional: Não cancelar globalmente se mudarmos de tela rápido? 
+      // Mas para evitar o erro de NotAllowedError no prompt pendente:
       if (typeof window !== 'undefined' && (window as any).google) {
         (window as any).google.accounts.id.cancel();
       }

@@ -19,7 +19,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
 
-  const isInitialized = useRef(false);
+  const googleInitStarted = useRef(false);
 
   useEffect(() => {
     const external = searchParams.get('external');
@@ -28,48 +28,55 @@ export default function RegisterPage() {
       return;
     }
 
-    if (isInitialized.current) return;
-
-    // Inicializar Google Identity Services
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '136105438202-hcn3vukt3phsjvt07q1pvc7bc35hdotr.apps.googleusercontent.com';
     
-    const initGoogle = () => {
-      if (typeof window !== 'undefined' && (window as any).google && clientId) {
-        console.log('Google Auth (Register) - Initializing...');
-        isInitialized.current = true;
+    const initAndRender = () => {
+      const google = (window as any).google;
+      if (!google || !clientId) return false;
 
-        (window as any).google.accounts.id.initialize({
+      // 1. Inicializar apenas uma vez globalmente
+      if (!googleInitStarted.current) {
+        console.log('Google Auth (Register) - Initializing Global GIS...');
+        google.accounts.id.initialize({
           client_id: clientId,
           callback: handleGoogleResponse,
           auto_select: false,
           use_fedcm_for_prompt: false, 
           cancel_on_tap_outside: true,
         });
-
-        const buttonDiv = document.getElementById('google-register-button');
-        if (buttonDiv) {
-          (window as any).google.accounts.id.renderButton(buttonDiv, { 
-            theme: 'filled_blue', 
-            size: 'large', 
-            width: buttonDiv.offsetWidth || 350,
-            text: 'continue_with',
-            shape: 'rectangular',
-            logo_alignment: 'left'
-          });
-        }
-        if (!user) {
-          (window as any).google.accounts.id.prompt();
-        }
-        return true;
+        googleInitStarted.current = true;
       }
-      return false;
+
+      // 2. Renderizar o botão sempre que o componente montar/re-renderizar o efeito
+      const buttonDiv = document.getElementById('google-register-button');
+      if (buttonDiv) {
+        console.log('Google Auth (Register) - Rendering button...');
+        google.accounts.id.renderButton(buttonDiv, { 
+          theme: 'filled_blue', 
+          size: 'large', 
+          width: buttonDiv.offsetWidth || 350,
+          text: 'continue_with',
+          shape: 'rectangular',
+          logo_alignment: 'left'
+        });
+      }
+      
+      // 3. Prompt (One Tap)
+      if (!user) {
+        try {
+          google.accounts.id.prompt();
+        } catch (e) {
+          console.warn('Google One Tap prompt failed (Register):', e);
+        }
+      }
+      return true;
     };
 
-    // Tentar inicializar imediatamente
+    // Tentar inicializar/renderizar
     let interval: any;
-    if (!initGoogle()) {
+    if (!initAndRender()) {
       interval = setInterval(() => {
-        if (initGoogle()) {
+        if (initAndRender()) {
           clearInterval(interval);
         }
       }, 500);

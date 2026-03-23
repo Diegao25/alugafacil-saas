@@ -12,27 +12,13 @@ const getBaseUrl = () => {
      console.log('NEXT_PUBLIC_API_URL (baked):', API_URL);
   }
 
-  if (API_URL) {
-    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-      console.log('Using configured API_URL:', API_URL);
-    }
-    return API_URL;
-  }
-
-  // No Railway em produção, se a variável sumir, tentamos derivar a URL correta do backend
+  // No Railway em produção, usamos o backend oficial do projeto
   if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
-    const hostname = window.location.hostname;
-    // Se for o domínio do Aluga Fácil, tentamos o padrão conhecido
-    if (hostname.includes('alugafacil-saas')) {
-      const backendUrl = `https://alugafacil-saas-backend-production.up.railway.app/api`;
-      console.warn('Production fallback (AlugaFacil):', backendUrl);
-      return backendUrl;
+    const backendUrl = 'https://easygoing-backend-production.up.railway.app/api';
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Production Backend Fallback:', backendUrl);
     }
-    
-    // Fallback genérico tentando transformar -production em -backend-production
-    const guessedUrl = `https://${hostname.replace('-production', '')}-backend-production.up.railway.app/api`;
-    console.warn('Production fallback (Guessed):', guessedUrl);
-    return guessedUrl;
+    return backendUrl;
   }
 
   // Se não houver variável, avisamos no console

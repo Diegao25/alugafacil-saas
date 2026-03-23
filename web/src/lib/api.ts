@@ -29,7 +29,7 @@ const getBaseUrl = () => {
 
     // Último recurso: Se estivermos no Railway, usamos o endpoint que sabemos que está ativo
     if (hostname.includes('railway.app')) {
-      return 'https://alugafacil-backend-production.up.railway.app/api';
+      return 'https://easygoing-backend-production.up.railway.app/api';
     }
 
     // Em produção fora do railway ou se o hostname for desconhecido

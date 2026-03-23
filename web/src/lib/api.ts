@@ -14,9 +14,9 @@ const getBaseUrl = () => {
 
   if (API_URL) return API_URL;
 
-  // Último recurso: Se estivermos no Railway, tentamos o endpoint de produção conhecido
+  // Último recurso: Se estivermos no Railway, tentamos o endpoint de produção do Aluga Fácil
   if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
-    return 'https://easygoing-backend-production.up.railway.app/api';
+    return 'https://alugafacil-backend-production.up.railway.app/api';
   }
 
   if (typeof window !== 'undefined') {

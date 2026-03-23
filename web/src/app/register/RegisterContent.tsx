@@ -50,7 +50,9 @@ export default function RegisterPage() {
             logo_alignment: 'left'
           });
         }
-        (window as any).google.accounts.id.prompt();
+        if (!user) {
+          (window as any).google.accounts.id.prompt();
+        }
         return true;
       }
       return false;

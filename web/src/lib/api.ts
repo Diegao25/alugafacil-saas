@@ -14,11 +14,12 @@ const getBaseUrl = () => {
 
   if (API_URL) return API_URL;
 
-  // No Railway em produção, se a variável sumir, tentamos usar o nome do projeto que estava no código
-  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
-    const fallbackUrl = 'https://easygoing-backend-production.up.railway.app/api';
-    console.warn('WARNING: NEXT_PUBLIC_API_URL is missing! Using fallback:', fallbackUrl);
-    return fallbackUrl;
+  // No Railway em produção, se a variável sumir, tentamos derivar a URL correta do backend
+  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app') && window.location.protocol === 'https:') {
+    // Aluga Fácil Saas Specific Fallback
+    const backendUrl = `https://${window.location.hostname.replace('-production', '')}-backend-production.up.railway.app/api`;
+    console.warn('WARNING: NEXT_PUBLIC_API_URL is missing! Guessing backend:', backendUrl);
+    return backendUrl;
   }
 
   // Se não houver variável, avisamos no console
@@ -27,7 +28,8 @@ const getBaseUrl = () => {
   }
 
   if (typeof window !== 'undefined') {
-    return `http://${window.location.hostname}:3333/api`;
+    const protocol = window.location.protocol;
+    return `${protocol}//${window.location.hostname}:3333/api`;
   }
   return 'http://localhost:3333/api';
 };

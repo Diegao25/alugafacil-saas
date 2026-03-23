@@ -24,7 +24,6 @@ const PLANS = [
       'Gestão Financeira completa',
       'Contratos digitais ilimitados',
       'Suporte prioritário',
-      'Visão geral do negócio em tempo real',
     ],
     buttonText: 'Começar Agora',
     highlight: true

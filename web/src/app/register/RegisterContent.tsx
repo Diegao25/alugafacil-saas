@@ -27,32 +27,43 @@ export default function RegisterPage() {
 
     // Inicializar Google Identity Services
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '136105438202-hcn3vukt3phsjvt07q1pvc7bc35hdotr.apps.googleusercontent.com';
-    console.log('Google Auth Init - Client ID present:', !!clientId);
+    
+    const initGoogle = () => {
+      if (typeof window !== 'undefined' && (window as any).google && clientId) {
+        console.log('Google Auth (Register) - Initializing...');
+        (window as any).google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleResponse,
+          auto_select: false,
+          use_fedcm_for_prompt: false, 
+          cancel_on_tap_outside: true,
+        });
 
-    if (typeof window !== 'undefined' && (window as any).google && clientId) {
-      (window as any).google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleResponse,
-        auto_select: false,
-        use_fedcm_for_prompt: false, 
-        cancel_on_tap_outside: true,
-      });
-
-      // Renderizar o botão oficial da Google
-      (window as any).google.accounts.id.renderButton(
-        document.getElementById('google-register-button'),
-        { 
-          theme: 'filled_blue', 
-          size: 'large', 
-          width: '100%',
-          text: 'continue_with',
-          shape: 'rectangular',
-          logo_alignment: 'left'
+        const buttonDiv = document.getElementById('google-register-button');
+        if (buttonDiv) {
+          (window as any).google.accounts.id.renderButton(buttonDiv, { 
+            theme: 'filled_blue', 
+            size: 'large', 
+            width: buttonDiv.offsetWidth || 350,
+            text: 'continue_with',
+            shape: 'rectangular',
+            logo_alignment: 'left'
+          });
         }
-      );
+        (window as any).google.accounts.id.prompt();
+        return true;
+      }
+      return false;
+    };
 
-      // Opcional: Mostrar One-tap automaticamente
-      (window as any).google.accounts.id.prompt();
+    // Tentar inicializar imediatamente
+    if (!initGoogle()) {
+      const interval = setInterval(() => {
+        if (initGoogle()) {
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
     }
   }, [user, loading, router, searchParams]);
 

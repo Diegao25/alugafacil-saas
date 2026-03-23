@@ -61,7 +61,8 @@ export default function RegisterPage() {
         });
       }
       
-      // 3. Prompt (One Tap)
+      // 3. Prompt (One Tap) - Desativado para evitar conflitos no mobile
+      /*
       if (!user) {
         try {
           google.accounts.id.prompt();
@@ -69,6 +70,7 @@ export default function RegisterPage() {
           console.warn('Google One Tap prompt failed (Register):', e);
         }
       }
+      */
       return true;
     };
 

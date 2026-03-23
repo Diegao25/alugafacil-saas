@@ -23,18 +23,13 @@ const getBaseUrl = () => {
     const hostname = window.location.hostname;
     
     // Ambiente Local
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return `http://localhost:3333/api`;
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
+      return `http://${hostname}:3333/api`;
     }
 
-    // Último recurso: Se estivermos no Railway, usamos o endpoint que sabemos que está ativo
-    if (hostname.includes('railway.app')) {
-      return 'https://easygoing-backend-production.up.railway.app/api';
-    }
-
-    // Em produção fora do railway ou se o hostname for desconhecido
-    // Nunca usamos a porta 3333 fora do localhost 
-    return `${window.location.protocol}//${hostname}/api`;
+    // Ambiente de Produção (Railway ou Domínios Customizados)
+    // Se não for localhost, tentamos usar o backend de produção conhecido
+    return 'https://easygoing-backend-production.up.railway.app/api';
   }
 
   // Fallback para SSR

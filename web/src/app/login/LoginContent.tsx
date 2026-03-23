@@ -64,14 +64,8 @@ export default function LoginPage() {
         });
       }
       
-      // 3. Prompt (One Tap)
-      if (!user) {
-        try {
-          google.accounts.id.prompt();
-        } catch (e) {
-          console.warn('Google One Tap prompt failed (likely already pending):', e);
-        }
-      }
+      // 3. Prompt (One Tap) - Desativado no mobile para evitar erros de NotAllowedError
+      // Se necessÃ¡rio, o usuÃ¡rio clica no botÃ£o azul explÃ­cito.
       return true;
     };
 

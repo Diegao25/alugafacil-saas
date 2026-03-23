@@ -46,21 +46,33 @@ export function AuthProvider({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    const userStr = Cookies.get('gestaolocacoes.user');
-
-    if (userStr) {
-      setUser(JSON.parse(userStr));
+    if (typeof window !== 'undefined') {
+      const userStr = window.localStorage.getItem('gestaolocacoes.user') || Cookies.get('gestaolocacoes.user');
+      if (userStr) {
+        try {
+          setUser(JSON.parse(userStr));
+        } catch (e) {
+          console.warn('Erro ao decodificar usuÃ¡rio local:', e);
+        }
+      }
     }
     void syncUser().finally(() => setLoading(false));
 
     // Listener para o evento de trial expirado
     const handleTrialExpired = () => {
-      const currentUserStr = Cookies.get('gestaolocacoes.user');
-      if (currentUserStr) {
-        const currentUser = JSON.parse(currentUserStr);
-        const updatedUser = { ...currentUser, subscription_status: 'trial_expired' };
-        setUser(updatedUser);
-        Cookies.set('gestaolocacoes.user', JSON.stringify(updatedUser), { expires: 7 });
+      if (typeof window !== 'undefined') {
+        const currentUserStr = window.localStorage.getItem('gestaolocacoes.user') || Cookies.get('gestaolocacoes.user');
+        if (currentUserStr) {
+          try {
+            const currentUser = JSON.parse(currentUserStr);
+            const updatedUser = { ...currentUser, subscription_status: 'trial_expired' };
+            setUser(updatedUser);
+            Cookies.set('gestaolocacoes.user', JSON.stringify(updatedUser), { expires: 7 });
+            window.localStorage.setItem('gestaolocacoes.user', JSON.stringify(updatedUser));
+          } catch (e) {
+            console.warn('Erro ao atualizar trial no local:', e);
+          }
+        }
       }
     };
 
@@ -113,6 +125,9 @@ export function AuthProvider({ children }) {
     }
 
     Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('gestaolocacoes.user', JSON.stringify(userData));
+    }
     setUser(userData);
   }
 
@@ -128,11 +143,13 @@ export function AuthProvider({ children }) {
   }
 
   function signOut(redirectTo = '/dashboard') {
-    void api.post('/auth/logout').catch(() => {
-      // The UI should still log out locally even if the network request fails.
+    console.log('--- Auth - signOut called ---', { redirectTo });
+    void api.post('/auth/logout').catch((e) => {
+      console.warn('Auth - logout request failed (can be ignored):', e.message);
     });
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(AUTH_STORAGE_KEY);
+      window.localStorage.removeItem('gestaolocacoes.user');
     }
     Cookies.remove('gestaolocacoes.user');
     setUser(null);
@@ -147,10 +164,13 @@ export function AuthProvider({ children }) {
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
     } catch (error: any) {
+      console.warn('Auth - syncUser error:', error?.response?.status, error?.message);
       // SÃ³ deslogar se for explicitamente nÃ£o autorizado (401)
       if (error?.response?.status === 401) {
+        console.log('Auth - Logout triggered by 401 in syncUser');
         if (typeof window !== 'undefined') {
           window.localStorage.removeItem(AUTH_STORAGE_KEY);
+          window.localStorage.removeItem('gestaolocacoes.user');
         }
         Cookies.remove('gestaolocacoes.user');
         setUser(null);

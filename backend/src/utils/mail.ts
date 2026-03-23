@@ -214,10 +214,8 @@ export async function sendSubscriptionCancellationEmail(
           
           <div style="background-color: #fff1f2; padding: 20px; border-radius: 12px; margin: 24px 0; border: 1px solid #fecaca;">
             <p style="margin: 0; color: #991b1b; font-weight: bold;">Importante:</p>
-            <p style="margin: 8px 0; color: #991b1b;">Você continuará tendo acesso a todas as funcionalidades premium até o dia <strong>${formattedAccessUntil}</strong>.</p>
+            <p style="margin: 8px 0; color: #991b1b;">Você continuará tendo acesso a todas as funcionalidades premium até o dia <strong>${formattedAccessUntil}</strong>. Após essa data você perderá o acesso ao sistema.</p>
           </div>
-
-          <p>Após essa data, sua conta será migrada para o plano gratuito e você perderá o acesso às ferramentas avançadas.</p>
           
           <p><strong>Mudou de ideia?</strong> Você pode reativar sua assinatura a qualquer momento diretamente no seu painel.</p>
 

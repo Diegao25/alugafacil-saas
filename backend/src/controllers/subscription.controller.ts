@@ -243,22 +243,7 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
             } as any
           });
         }
-        await recordSubscriptionHistory(userId, planName, planAmount);
-        
-        // Enviar e-mail de confirmação (pelo frontend redirect)
-        if (existingUser) {
-          try {
-            await sendSubscriptionConfirmationEmail(
-              existingUser.email,
-              existingUser.nome,
-              planName,
-              planAmount,
-              new Date()
-            );
-          } catch (e) {
-            console.error('Erro ao enviar e-mail de confirmação (verifySession):', e);
-          }
-        }
+        await recordSubscriptionHistory(userId, planName, planAmount, existingUser);
       }
 
       // Retornar detalhes para o frontend
@@ -340,24 +325,7 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
           }
         });
       }
-      await recordSubscriptionHistory(userId, planName, planAmount);
-      
-      // Enviar e-mail de confirmação (pelo webhook)
-      // Nota: Podemos ter lógica de desduplicação se necessário, 
-      // mas o Resend/Stripe lidam bem com isso se os IDs forem consistentes.
-      if (existingUser) {
-        try {
-          await sendSubscriptionConfirmationEmail(
-            existingUser.email,
-            existingUser.nome,
-            planName,
-            planAmount,
-            new Date()
-          );
-        } catch (e) {
-          console.error('Erro ao enviar e-mail de confirmação (webhook):', e);
-        }
-      }
+      await recordSubscriptionHistory(userId, planName, planAmount, existingUser);
       break;
     
     case 'invoice.paid': {
@@ -408,7 +376,7 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
         where: { stripe_subscription_id: subscription.id } as any
       });
 
-      if (userToNotify) {
+      if (userToNotify && userToNotify.subscription_status !== 'cancelled') {
         try {
           await sendSubscriptionCancellationEmail(
             userToNotify.email,
@@ -451,16 +419,16 @@ export const getSubscriptionHistory = async (req: AuthRequest, res: Response): P
   }
 };
 
-// Helper para evitar duplicatas no histórico
-async function recordSubscriptionHistory(userId: string, planName: string, amount: number) {
+// Helper para evitar duplicatas no histórico e no envio de e-mails
+async function recordSubscriptionHistory(userId: string, planName: string, amount: number, user?: any) {
   const lastEntry = await prisma.subscriptionHistory.findFirst({
     where: { usuario_id: userId },
     orderBy: { date: 'desc' }
   });
 
-  // Só cria se não houver histórico ou se o plano mudou
+  // Só cria se não houver histórico ou se o plano mudou (evita duplicatas disparadas por webhooks+redirects)
   if (!lastEntry || lastEntry.plan_name !== planName) {
-    console.log(`Registrando mudança de plano para ${planName} no histórico.`);
+    console.log(`Registrando mudança de plano para ${planName} no histórico para o usuário ${userId}.`);
     await prisma.subscriptionHistory.create({
       data: {
         plan_name: planName,
@@ -468,7 +436,23 @@ async function recordSubscriptionHistory(userId: string, planName: string, amoun
         usuario_id: userId
       }
     });
+
+    // Enviar e-mail de confirmação se for uma contratação ou reativação
+    if (planName !== 'Cancelamento' && user) {
+      try {
+        console.log(`Enviando e-mail de confirmação única para ${user.email} (Plano: ${planName})`);
+        await sendSubscriptionConfirmationEmail(
+          user.email,
+          user.nome,
+          planName,
+          amount,
+          new Date()
+        );
+      } catch (e) {
+        console.error('Erro ao enviar e-mail de confirmação centralizado:', e);
+      }
+    }
   } else {
-    console.log(`Plano ${planName} já é o último registrado no histórico. Pulando.`);
+    console.log(`Plano ${planName} já é o último registrado para o usuário ${userId}. Pulando histórico e e-mail.`);
   }
 }

@@ -7,6 +7,7 @@ import { Plus, MapPin, Users, DollarSign, Trash2, Edit, MessageCircle, Instagram
 import { toast } from 'react-toastify';
 import CopyLinkButton from '@/components/CopyLinkButton';
 import { formatCurrencyBR, unmask } from '@/lib/utils';
+import ConfirmModal from '@/components/ConfirmModal';
 
 interface Property {
   id: string;
@@ -24,6 +25,7 @@ export default function PropertiesPage() {
   const [shareDialog, setShareDialog] = useState<Property | null>(null);
   const [selectedTenant, setSelectedTenant] = useState('');
   const [loadingTenants, setLoadingTenants] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProperties();
@@ -54,14 +56,24 @@ export default function PropertiesPage() {
   }
 
   async function handleDelete(id: string) {
-    if (confirm('Tem certeza que deseja excluir este imóvel?')) {
-      try {
-        await api.delete(`/properties/${id}`);
-        setProperties(properties.filter((p) => p.id !== id));
-        toast.success('Imóvel excluído!');
-      } catch (error) {
-        toast.error('Erro ao excluir imóvel');
+    try {
+      await api.delete(`/properties/${id}`);
+      setProperties(properties.filter((p) => p.id !== id));
+      toast.success('Imóvel excluído!');
+    } catch (error: any) {
+      console.error('ERRO NA EXCLUSÃO - FULL ERROR:', error);
+      
+      let message = 'Erro desconhecido ao excluir imóvel';
+      
+      if (error.response?.status === 401) {
+        message = 'Sua sessão expirou. Por favor, faça login novamente.';
+      } else if (error.response?.data?.error) {
+        message = error.response.data.error;
+      } else if (error.message) {
+        message = `Erro: ${error.message}`;
       }
+      
+      toast.error(message);
     }
   }
 
@@ -154,7 +166,7 @@ function normalizeExternalUrl(url?: string | null) {
                   <Link href={`/dashboard/properties/${property.id}`} className="p-1.5 text-slate-400 hover:text-blue-600 bg-slate-50 rounded-lg hover:bg-blue-50 transition-colors">
                     <Edit className="h-4 w-4" />
                   </Link>
-                  <button onClick={() => handleDelete(property.id)} className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 rounded-lg hover:bg-red-50 transition-colors">
+                  <button onClick={() => setPropertyToDelete(property.id)} className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 rounded-lg hover:bg-red-50 transition-colors">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
@@ -280,6 +292,16 @@ function normalizeExternalUrl(url?: string | null) {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!propertyToDelete}
+        onClose={() => setPropertyToDelete(null)}
+        onConfirm={() => propertyToDelete && handleDelete(propertyToDelete)}
+        title="Excluir Imóvel"
+        message="Tem certeza que deseja excluir este imóvel? Esta ação não pode ser desfeita e todos os vínculos (reservas, fotos, etc) serão perdidos."
+        confirmText="Excluir"
+        cancelText="Manter Imóvel"
+      />
     </div>
   );
 }

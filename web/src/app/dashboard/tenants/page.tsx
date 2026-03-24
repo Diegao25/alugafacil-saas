@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Plus, Trash2, Edit, Phone, Mail, IdCard, MessageSquare } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { maskPhone, maskCpfCnpj, unmask } from '@/lib/utils';
+import ConfirmModal from '@/components/ConfirmModal';
 
 interface Tenant {
   id: string;
@@ -18,6 +19,7 @@ interface Tenant {
 export default function TenantsPage() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tenantToDelete, setTenantToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTenants();
@@ -35,15 +37,22 @@ export default function TenantsPage() {
   }
 
   async function handleDelete(id: string) {
-    if (confirm('Excluir este locatário? Histórico de reservas pode ser impactado.')) {
-      try {
-        await api.delete(`/tenants/${id}`);
-        setTenants(tenants.filter((t) => t.id !== id));
-        toast.success('Locatário excluído!');
-      } catch (error: any) {
-        const message = error?.response?.data?.error || 'Erro ao excluir locatário';
-        toast.error(message);
+    try {
+      await api.delete(`/tenants/${id}`);
+      setTenants(tenants.filter((t) => t.id !== id));
+      toast.success('Locatário excluído!');
+    } catch (error: any) {
+      let message = 'Erro desconhecido ao excluir locatário';
+      
+      if (error.response?.status === 401) {
+        message = 'Sua sessão expirou. Por favor, faça login novamente.';
+      } else if (error.response?.data?.error) {
+        message = error.response.data.error;
+      } else if (error.message) {
+        message = `Erro: ${error.message}`;
       }
+      
+      toast.error(message);
     }
   }
 
@@ -120,7 +129,7 @@ export default function TenantsPage() {
                         <Link href={`/dashboard/tenants/${tenant.id}`} className="p-2 text-slate-400 hover:text-blue-600 bg-white border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50 transition-all shadow-sm">
                           <Edit className="h-4 w-4" />
                         </Link>
-                        <button onClick={() => handleDelete(tenant.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white border border-slate-200 rounded-lg hover:border-red-200 hover:bg-red-50 transition-all shadow-sm">
+                        <button onClick={() => setTenantToDelete(tenant.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white border border-slate-200 rounded-lg hover:border-red-200 hover:bg-red-50 transition-all shadow-sm">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -132,6 +141,15 @@ export default function TenantsPage() {
           </table>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={!!tenantToDelete}
+        onClose={() => setTenantToDelete(null)}
+        onConfirm={() => tenantToDelete && handleDelete(tenantToDelete)}
+        title="Excluir Locatário"
+        message="Tem certeza que deseja excluir este locatário? O histórico de reservas vinculado a ele poderá ser impactado."
+        confirmText="Excluir"
+        cancelText="Manter Locatário"
+      />
     </div>
   );
 }

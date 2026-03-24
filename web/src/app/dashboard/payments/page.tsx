@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { formatCurrencyBR } from '@/lib/utils';
+import ConfirmModal from '@/components/ConfirmModal';
 
 type Payment = {
   id: string;
@@ -79,6 +80,7 @@ export default function PaymentsPage() {
   const filterDebounce = useRef<NodeJS.Timeout | null>(null);
   const [methodDialog, setMethodDialog] = useState<{ paymentId: string } | null>(null);
   const [methodMap, setMethodMap] = useState<Record<string, string>>({});
+  const [paymentToCancel, setPaymentToCancel] = useState<Payment | null>(null);
 
   const applyFilters = useCallback(() => {
     setAppliedFilters({
@@ -146,11 +148,6 @@ export default function PaymentsPage() {
   }
 
   async function handleDeletePayment(payment: Payment) {
-    const confirmed = window.confirm(
-      'Deseja cancelar a baixa deste pagamento? A parcela ficará pendente.'
-    );
-    if (!confirmed) return;
-
     try {
       await api.patch(`/payments/${payment.id}/status`, { status: 'Pendente', meio_pagamento: null });
       setPayments((current) =>
@@ -425,7 +422,7 @@ export default function PaymentsPage() {
                         {payment.status === 'Pago' && (
                           <button
                             type="button"
-                            onClick={() => handleDeletePayment(payment)}
+                            onClick={() => setPaymentToCancel(payment)}
                             className="inline-flex h-9 items-center gap-1 rounded-lg border border-rose-200 px-3 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
                           >
                             <Trash className="h-4 w-4" />
@@ -537,6 +534,16 @@ export default function PaymentsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!paymentToCancel}
+        onClose={() => setPaymentToCancel(null)}
+        onConfirm={() => paymentToCancel && handleDeletePayment(paymentToCancel)}
+        title="Cancelar Baixa"
+        message="Deseja realmente cancelar a baixa deste pagamento? A parcela voltará para o status Pendente."
+        confirmText="Confirmar"
+        cancelText="Manter como Pago"
+      />
     </div>
   );
 }

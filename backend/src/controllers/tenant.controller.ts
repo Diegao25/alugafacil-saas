@@ -3,6 +3,7 @@ import { prisma } from '../prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { isValidCpfCnpj } from '../utils/document';
 import { resolveOwnerId } from '../utils/owner';
+import { Prisma } from '@prisma/client';
 
 export const createTenant = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -175,9 +176,15 @@ export const deleteTenant = async (req: AuthRequest, res: Response): Promise<voi
     }
 
     await prisma.tenant.delete({ where: { id } });
-
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao excluir locatário' });
+  } catch (error: any) {
+    if (error.code === 'P2003' || (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003')) {
+      res.status(400).json({ 
+        error: 'Não é possível excluir este locatário pois ele possui reservas ou outros registros vinculados.' 
+      });
+      return;
+    }
+    console.error('DEBUG - Erro ao excluir locatário:', error);
+    res.status(500).json({ error: 'Erro interno ao excluir locatário' });
   }
 };

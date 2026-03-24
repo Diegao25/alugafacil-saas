@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
 import { Plus, Trash2, Edit3, X, Send } from 'lucide-react';
+import ConfirmModal from '@/components/ConfirmModal';
 
 type UserItem = {
   id: string;
@@ -25,6 +26,7 @@ export default function UsersPage() {
     nome: '',
     email: ''
   });
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -58,13 +60,22 @@ export default function UsersPage() {
   }
 
   async function handleDelete(userId: string) {
-    if (!window.confirm('Tem certeza que deseja excluir este usuário?')) return;
     try {
       await api.delete(`/users/${userId}`);
       setUsers((prev) => prev.filter((item) => item.id !== userId));
       toast.success('Usuário excluído');
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Erro ao excluir usuário');
+      let message = 'Erro desconhecido ao excluir usuário';
+      
+      if (error.response?.status === 401) {
+        message = 'Sua sessão expirou. Por favor, faça login novamente.';
+      } else if (error.response?.data?.error) {
+        message = error.response.data.error;
+      } else if (error.message) {
+        message = `Erro: ${error.message}`;
+      }
+      
+      toast.error(message);
     }
   }
 
@@ -216,7 +227,7 @@ export default function UsersPage() {
                         {!user.is_admin && (
                           <button
                             type="button"
-                            onClick={() => handleDelete(user.id)}
+                            onClick={() => setUserToDelete(user.id)}
                             className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -299,6 +310,16 @@ export default function UsersPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!userToDelete}
+        onClose={() => setUserToDelete(null)}
+        onConfirm={() => userToDelete && handleDelete(userToDelete)}
+        title="Excluir Usuário"
+        message="Tem certeza que deseja excluir este usuário? Esta ação removerá o acesso dele ao sistema permanentemente."
+        confirmText="Excluir"
+        cancelText="Manter Usuário"
+      />
     </div>
   );
 }

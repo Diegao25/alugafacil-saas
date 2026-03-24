@@ -64,7 +64,15 @@ export default function RootLayout({
       <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}>
         <AuthProvider>
           {children}
-          <ToastContainer position="top-right" autoClose={3000} />
+          <ToastContainer 
+            position="top-right" 
+            autoClose={3000} 
+            hideProgressBar={true}
+            closeOnClick
+            pauseOnHover
+            theme="light"
+            limit={3}
+          />
           <script src="https://accounts.google.com/gsi/client" async defer></script>
         </AuthProvider>
       </body>

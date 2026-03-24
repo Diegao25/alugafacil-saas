@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { prisma } from '../prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { resolveOwnerId } from '../utils/owner';
+import { Prisma } from '@prisma/client';
 
 export const createProperty = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -127,9 +128,26 @@ export const deleteProperty = async (req: AuthRequest, res: Response): Promise<v
     }
 
     await prisma.property.delete({ where: { id } });
-
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao excluir imóvel' });
+  } catch (error: any) {
+    const isP2003 = error.code === 'P2003' || 
+                    (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') ||
+                    (error.message && (
+                      error.message.includes('P2003') || 
+                      error.message.includes('foreign key constraint') ||
+                      error.message.includes('violação de chave estrangeira')
+                    ));
+
+    if (isP2003) {
+      res.status(400).json({ 
+        error: 'Não é possível excluir este imóvel pois ele possui reservas ou outros registros vinculados.' 
+      });
+      return;
+    }
+    
+    console.error('DEBUG - Erro na exclusão (objeto completo):', error);
+    if (error.code) console.error('DEBUG - Código detectado:', error.code);
+    
+    res.status(500).json({ error: 'Erro interno ao excluir imóvel' });
   }
 };

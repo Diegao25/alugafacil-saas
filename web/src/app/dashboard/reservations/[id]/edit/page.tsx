@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { addDays, format, parseISO } from 'date-fns';
 import { LogOut, Save } from 'lucide-react';
 import { formatCurrencyBR, formatCurrencyInput, parseCurrencyBR } from '@/lib/utils';
+import ConfirmModal from '@/components/ConfirmModal';
 
 export default function EditReservationPage() {
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function EditReservationPage() {
   const paymentMethodOptions = ['PIX', 'Dinheiro', 'Cartão de crédito', 'Cartão de débito'] as const;
 
   const [hasPaidPayments, setHasPaidPayments] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -231,6 +233,26 @@ export default function EditReservationPage() {
       toast.error(error.response?.data?.error || 'Erro ao atualizar reserva');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    try {
+      await api.delete(`/reservations/${id}`);
+      toast.success('Reserva excluída!');
+      router.push('/dashboard/reservations');
+    } catch (error: any) {
+      let message = 'Erro desconhecido ao excluir reserva';
+      
+      if (error.response?.status === 401) {
+        message = 'Sua sessão expirou. Por favor, faça login novamente.';
+      } else if (error.response?.data?.error) {
+        message = error.response.data.error;
+      } else if (error.message) {
+        message = `Erro: ${error.message}`;
+      }
+      
+      toast.error(message);
     }
   }
 
@@ -502,17 +524,7 @@ export default function EditReservationPage() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={async () => {
-                  if (window.confirm('Deseja realmente excluir esta reserva? Todos os pagamentos e o contrato também serão removidos.')) {
-                    try {
-                      await api.delete(`/reservations/${id}`);
-                      toast.success('Reserva excluída!');
-                      router.push('/dashboard/reservations');
-                    } catch (error) {
-                      toast.error('Erro ao excluir reserva');
-                    }
-                  }
-                }}
+                onClick={() => setIsDeleteModalOpen(true)}
                 className="bg-rose-50 hover:bg-rose-100 text-rose-700 px-6 py-3 rounded-xl font-bold shadow-sm border border-rose-200 flex items-center gap-2 transition-all active:scale-95"
               >
                 Excluir Reserva
@@ -554,6 +566,15 @@ export default function EditReservationPage() {
           </div>
         </form>
       </div>
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Excluir Reserva"
+        message="Deseja realmente excluir esta reserva? Todos os pagamentos e o contrato também serão removidos permanentemente."
+        confirmText="Excluir"
+        cancelText="Manter Reserva"
+      />
     </div>
   );
 }

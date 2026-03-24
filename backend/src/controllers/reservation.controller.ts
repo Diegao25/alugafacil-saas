@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { prisma } from '../prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { resolveOwnerId } from '../utils/owner';
+import { Prisma } from '@prisma/client';
 
 export const createReservation = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -463,9 +464,15 @@ export const deleteReservation = async (req: AuthRequest, res: Response): Promis
     }
 
     await prisma.reservation.delete({ where: { id } });
-
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao excluir reserva' });
+  } catch (error: any) {
+    if (error.code === 'P2003' || (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003')) {
+      res.status(400).json({ 
+        error: 'Não é possível excluir esta reserva pois existem pagamentos ou contratos vinculados a ela.' 
+      });
+      return;
+    }
+    console.error('DEBUG - Erro ao excluir reserva:', error);
+    res.status(500).json({ error: 'Erro interno ao excluir reserva' });
   }
 };

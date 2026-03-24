@@ -26,7 +26,7 @@ export const checkTrial = async (req: AuthRequest, res: Response, next: NextFunc
     });
 
     if (!user) {
-      res.status(404).json({ error: 'UsuÃ¡rio nÃ£o encontrado' });
+      res.status(401).json({ error: 'Sessão inválida ou usuário não encontrado' });
       return;
     }
 

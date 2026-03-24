@@ -161,13 +161,13 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
     if (userId) {
       const profileInfo = await prisma.user.findUnique({
         where: { id: userId },
-        select: { cpf_cnpj: true, telefone: true, endereco: true }
+        select: { nome: true, cpf_cnpj: true, telefone: true, endereco: true }
       });
 
       profileCompleted = Boolean(
-        profileInfo?.cpf_cnpj &&
-        profileInfo?.telefone &&
-        profileInfo?.endereco
+        profileInfo?.cpf_cnpj?.trim() && 
+        profileInfo?.telefone?.trim() && 
+        profileInfo?.endereco?.trim()
       );
     }
 

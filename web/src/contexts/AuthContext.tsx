@@ -10,6 +10,9 @@ interface User {
   id: string;
   nome: string;
   email: string;
+  cpf_cnpj?: string;
+  telefone?: string;
+  endereco?: string;
   is_admin?: boolean;
   can_manage_users?: boolean;
   owner_user_id?: string | null;

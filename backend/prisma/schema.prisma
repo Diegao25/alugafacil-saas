@@ -51,6 +51,17 @@ model User {
   cancellation_feedbacks CancellationFeedback[]
   nps_responses        NpsResponse[]
   terms_acceptances    UserTermsAcceptance[]
+  ces_responses        CesResponse[]
+}
+
+model CesResponse {
+  id          String   @id @default(uuid())
+  score       Int      // 1 a 7 (Likert Scale)
+  task_type   String   @default("onboarding") 
+  comment     String?
+  createdAt   DateTime @default(now())
+  usuario_id  String
+  user        User     @relation(fields: [usuario_id], references: [id])
 }
 
 model TermsVersion {

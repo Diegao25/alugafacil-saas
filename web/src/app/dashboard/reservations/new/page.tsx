@@ -165,7 +165,7 @@ export default function NewReservationPage() {
         }
       }
 
-      router.push('/dashboard/reservations');
+      router.push('/dashboard');
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Erro ao criar reserva');
     } finally {

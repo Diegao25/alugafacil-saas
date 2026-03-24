@@ -13,6 +13,7 @@ import userRoutes from './routes/user.routes';
 import subscriptionRoutes from './routes/subscription.routes';
 import { campaignRoutes } from './routes/campaign.routes';
 import npsRoutes from './routes/nps.routes';
+import cesRoutes from './routes/ces.routes';
 import { getAllowedOrigins, getJwtSecret } from './utils/security';
 
 const app = express();
@@ -49,6 +50,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/nps', npsRoutes);
+app.use('/api/ces', cesRoutes);
 
 const PORT = process.env.PORT || 3333;
 

@@ -9,6 +9,7 @@ import { formatCurrencyBR } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import OnboardingChecklist from '@/components/OnboardingChecklist';
+import CESModal from '@/components/CESModal';
 import { Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { trialEnforcementEnabled } from '@/lib/features';
@@ -58,6 +59,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showNpsModal, setShowNpsModal] = useState(false);
+  const [showCesModal, setShowCesModal] = useState(false);
   const [npsScore, setNpsScore] = useState<number | null>(null);
   const [npsComment, setNpsComment] = useState('');
   const [npsSubmitting, setNpsSubmitting] = useState(false);
@@ -95,7 +97,7 @@ export default function DashboardPage() {
       }
     }
     loadStats();
-  }, [user?.subscription_status]);
+  }, [user, user?.subscription_status]);
 
   useEffect(() => {
     if (!user) return;
@@ -117,6 +119,34 @@ export default function DashboardPage() {
       isMounted = false;
     };
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    let isMounted = true;
+
+    async function checkCes() {
+      try {
+        // Verificar se foi fechado recentemente (24h)
+        const dismissedAt = localStorage.getItem('ces_dismissed_at');
+        if (dismissedAt) {
+          const hoursince = (new Date().getTime() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60);
+          if (hoursince < 24) return; // Não mostra se fechou em menos de 24h
+        }
+
+        const response = await api.get('/ces/check');
+        if (isMounted && response.data?.eligible) {
+          setShowCesModal(true);
+        }
+      } catch (error) {
+        console.error('Erro ao consultar o CES:', error);
+      }
+    }
+
+    checkCes();
+    return () => {
+      isMounted = false;
+    };
+  }, [user, stats]); // stats mudam quando o onboarding avança
 
   const handleNpsSubmit = async () => {
     if (npsScore === null) {
@@ -506,6 +536,13 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {showCesModal && (
+        <CESModal 
+          onClose={() => setShowCesModal(false)} 
+          onSuccess={() => setShowCesModal(false)}
+        />
       )}
     </div>
   );

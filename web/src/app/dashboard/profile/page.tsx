@@ -9,7 +9,7 @@ import { User, Phone, MapPin, CreditCard, Save, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, syncUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [cep, setCep] = useState('');
@@ -136,6 +136,12 @@ export default function ProfilePage() {
         telefone: formData.telefone,
         endereco: formattedEndereco
       });
+      
+      // Sincroniza o usuário localmente para refletir as mudanças no dashboard imediatamente
+      if (syncUser) {
+        await syncUser();
+      }
+
       toast.success('Perfil atualizado com sucesso!');
       router.push('/dashboard');
     } catch (error: any) {
@@ -270,6 +276,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     placeholder="(00) 00000-0000"
+                    required
                     disabled={readOnly}
                     value={formData.telefone}
                     onChange={(e) => setFormData({ ...formData, telefone: formatPhoneNumber(e.target.value) })}
@@ -285,6 +292,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     placeholder="00000-000"
+                    required
                     value={cep}
                     onChange={(e) => setCep(maskCep(e.target.value))}
                     onBlur={handleCepBlur}
@@ -301,6 +309,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     placeholder="Logradouro"
+                    required
                     disabled={readOnly}
                     value={address.logradouro}
                     onChange={(e) => setAddress({ ...address, logradouro: e.target.value })}
@@ -326,6 +335,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     placeholder="Bairro"
+                    required
                     disabled={readOnly}
                     value={address.bairro}
                     onChange={(e) => setAddress({ ...address, bairro: e.target.value })}
@@ -338,6 +348,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     placeholder="Cidade"
+                    required
                     disabled={readOnly}
                     value={address.cidade}
                     onChange={(e) => setAddress({ ...address, cidade: e.target.value })}
@@ -351,6 +362,7 @@ export default function ProfilePage() {
                     type="text"
                     placeholder="UF"
                     maxLength={2}
+                    required
                     disabled={readOnly}
                     value={address.uf}
                     onChange={(e) => setAddress({ ...address, uf: e.target.value.toUpperCase() })}

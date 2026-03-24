@@ -59,7 +59,7 @@ export default function NewTenantPage() {
         observacoes: formData.observacoes || null
       });
       toast.success('Locatário cadastrado com sucesso!');
-      router.push('/dashboard/tenants');
+      router.push('/dashboard');
     } catch (error: any) {
       console.error('Erro completo:', error);
       

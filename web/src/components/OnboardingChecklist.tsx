@@ -32,7 +32,7 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
         description: 'Atualize os dados do seu perfil para que reflita corretamente em seu contrato de locação.',
         icon: User,
         link: '/dashboard/profile',
-        completed: Boolean(stats?.profileCompleted)
+        completed: Boolean(stats?.profileCompleted || (user?.cpf_cnpj?.trim() && user?.telefone?.trim() && user?.endereco?.trim()))
       },
       {
         id: 'property',

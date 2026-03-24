@@ -45,7 +45,7 @@ export default function NewPropertyPage() {
       };
       await api.post('/properties', payload);
       toast.success('Imóvel criado com sucesso!');
-      router.push('/dashboard/properties');
+      router.push('/dashboard');
     } catch (error) {
       const err = error as any;
       const message = err?.response?.data?.error ?? 'Erro ao criar imóvel';

@@ -39,6 +39,14 @@ console.log('GOOGLE_CLIENT_ID loaded:', !!process.env.GOOGLE_CLIENT_ID);
 console.log('GOOGLE_CLIENT_SECRET loaded:', !!process.env.GOOGLE_CLIENT_SECRET);
 
 app.set('trust proxy', 1);
+
+// Middleware de Log de Auditoria (Essencial para depuração de CORS em produção)
+app.use((req, res, next) => {
+  const origin = req.headers.origin || 'No Origin';
+  console.log(`[Request] ${req.method} ${req.url} | Origin: ${origin}`);
+  next();
+});
+
 app.use(cors({
   origin(origin, callback) {
     if (isOriginAllowed(origin)) {
@@ -46,7 +54,7 @@ app.use(cors({
       return;
     }
 
-    console.warn(`CORS: Origin ${origin} not allowed`);
+    console.warn(`[CORS] Rejected Origin in Middleware: ${origin}`);
     callback(new Error('Origin not allowed by CORS'));
   },
   credentials: true

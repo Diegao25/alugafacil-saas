@@ -26,9 +26,9 @@ export function getAllowedOrigins() {
     'http://127.0.0.1:3000'
   ];
 
-  // Suporte a múltiplas URLs separadas por vírgula em uma única variável
+  // Normalização agressiva: lowercase, trim, remove trailing slash
   const splitOrigins = configuredOrigins.flatMap(origin => 
-    origin.split(',').map(s => s.trim().replace(/\/+$/, ''))
+    origin.split(',').map(s => s.trim().toLowerCase().replace(/\/+$/, ''))
   );
 
   const allowedOrigins = Array.from(
@@ -39,14 +39,11 @@ export function getAllowedOrigins() {
     )
   );
 
-  console.log('[CORS] Allowed Origins List:', allowedOrigins);
-
   if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
-    throw new Error('FRONTEND_URL or WEB_BASE_URL must be configured in production.');
+    // Em produção, se nada estiver configurado, tentamos um padrão baseado no domínio comum do railway
+    allowedOrigins.push('https://alugafacil-saas-production.up.railway.app');
   }
 
-  // Em desenvolvimento, também permitimos qualquer origem que comece com 192.168 (IP local comum)
-  // ou 10.0 (outro comum), ou 172. (docker/local)
   return allowedOrigins;
 }
 
@@ -57,21 +54,27 @@ export function getAllowedOrigins() {
 export function isOriginAllowed(origin: string | undefined): boolean {
   if (!origin) return true;
 
+  const originLower = origin.toLowerCase().replace(/\/+$/, '');
   const allowed = getAllowedOrigins();
-  const isMatch = allowed.includes(origin);
   
-  if (!isMatch) {
-    console.warn(`[CORS] Rejected Origin: ${origin}`);
+  // 1. Check exato (normalizado)
+  if (allowed.includes(originLower)) return true;
+
+  // 2. Check de Regex para Railway (Segurança flexível para infra-estrutura dinâmica)
+  if (originLower.endsWith('.up.railway.app')) {
+    // Opcional: restringir para conter o nome do projeto se desejar mais rigor
+    if (originLower.includes('alugafacil')) {
+      return true;
+    }
   }
 
-  if (isMatch) return true;
-
-  // Em desenvolvimento, permitimos acessos via IP na rede local
+  // 3. Desenvolvimento: permitimos acessos via IP na rede local
   if (process.env.NODE_ENV !== 'production') {
-    const isLocalIp = /^http:\/\/(192\.168\.|127\.0\.|10\.|172\.|localhost)/.test(origin);
+    const isLocalIp = /^http:\/\/(192\.168\.|127\.0\.|10\.|172\.|localhost)/.test(originLower);
     if (isLocalIp) return true;
   }
 
+  console.warn(`[CORS] Rejected Origin: ${origin}`);
   return false;
 }
 

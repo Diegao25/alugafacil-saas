@@ -78,7 +78,7 @@ export default function TenantsPage() {
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">Nome</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">Contato</th>
-                <th className="px-6 py-4 text-sm font-semibold text-slate-600">CPF/Doc</th>
+                <th className="px-6 py-4 text-sm font-semibold text-slate-600">CPF/CNPJ</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600 text-right">Ações</th>
               </tr>
             </thead>
@@ -121,7 +121,7 @@ export default function TenantsPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center text-sm text-slate-600">
                         <IdCard className="h-4 w-4 mr-2 text-slate-400" />
-                        {tenant.cpf || '-'}
+                        {tenant.cpf ? maskCpfCnpj(tenant.cpf) : '-'}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">

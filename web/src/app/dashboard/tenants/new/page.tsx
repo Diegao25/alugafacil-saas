@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { api } from '@/lib/api';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { fetchAddressByCep, getPrimaryAddressSegment, isValidCpfCnpj, maskCep, maskCpfCnpj, maskPhone, unmask } from '@/lib/utils';
@@ -10,6 +10,7 @@ import { LogOut, Save } from 'lucide-react';
 
 export default function NewTenantPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [loading, setLoading] = useState(false);
   
@@ -59,7 +60,12 @@ export default function NewTenantPage() {
         observacoes: formData.observacoes || null
       });
       toast.success('Locatário cadastrado com sucesso!');
-      router.push('/dashboard');
+      
+      if (searchParams?.get('onboarding') === '1') {
+        router.push('/dashboard');
+      } else {
+        router.push('/dashboard/tenants');
+      }
     } catch (error: any) {
       console.error('Erro completo:', error);
       

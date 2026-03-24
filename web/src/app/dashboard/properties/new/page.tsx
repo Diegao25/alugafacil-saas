@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { api } from '@/lib/api';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { fetchAddressByCep, maskCep, getPrimaryAddressSegment, formatCurrencyInput, parseCurrencyBR } from '@/lib/utils';
@@ -10,6 +10,7 @@ import { LogOut, Save } from 'lucide-react';
 
 export default function NewPropertyPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -45,7 +46,12 @@ export default function NewPropertyPage() {
       };
       await api.post('/properties', payload);
       toast.success('Imóvel criado com sucesso!');
-      router.push('/dashboard');
+      
+      if (searchParams?.get('onboarding') === '1') {
+        router.push('/dashboard');
+      } else {
+        router.push('/dashboard/properties');
+      }
     } catch (error) {
       const err = error as any;
       const message = err?.response?.data?.error ?? 'Erro ao criar imóvel';

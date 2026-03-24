@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { addDays, parseISO, format } from 'date-fns';
@@ -11,6 +11,7 @@ import { formatCurrencyBR, formatCurrencyInput, parseCurrencyBR } from '@/lib/ut
 
 export default function NewReservationPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [properties, setProperties] = useState<any[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);

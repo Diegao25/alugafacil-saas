@@ -39,7 +39,7 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
         title: 'Cadastre seu primeiro imóvel',
         description: 'Adicione as informações básicas de uma de suas propriedades.',
         icon: Building,
-        link: '/dashboard/properties/new',
+        link: '/dashboard/properties/new?onboarding=1',
         completed: (stats?.totalProperties ?? 0) > 0
       },
       {
@@ -47,7 +47,7 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
         title: 'Cadastre seu primeiro cliente',
         description: 'Tenha todos os contatos dos seus locatários em um só lugar.',
         icon: FileText,
-        link: '/dashboard/tenants/new',
+        link: '/dashboard/tenants/new?onboarding=1',
         completed: (stats?.totalTenants ?? 0) > 0
       },
       {
@@ -55,7 +55,7 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
         title: 'Registre sua primeira reserva',
         description: 'Comece a organizar sua agenda de locações.',
         icon: Calendar,
-        link: '/dashboard/reservations/new',
+        link: '/dashboard/reservations/new?onboarding=1',
         completed: (stats?.totalReservations ?? 0) > 0 || (stats?.reservationsToday ?? 0) > 0 || (stats?.upcomingCheckins?.length ?? 0) > 0
       }
     ];

@@ -257,7 +257,7 @@ export default async function PropertyAgendaPage({
             </div>
 
             <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-2">
-              {monthStarts.slice(0, 4).map((monthStart) => {
+              {monthStarts.slice(0, 6).map((monthStart) => {
                 const monthEnd = endOfMonth(monthStart);
                 const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
                 const leadingBlanks = getDay(monthStart);
@@ -298,9 +298,13 @@ export default async function PropertyAgendaPage({
               })}
             </div>
             
-            <p className="mt-8 text-center text-sm text-slate-500 italic">
-              Calendário simplificado mostrando os próximos meses. Consulte para outras datas no botão abaixo.
+            <p className="mt-8 text-center text-[13px] text-slate-500 italic px-4">
+              Calendário simplificado mostrando os próximos {monthStarts.slice(0, 6).length} meses.<br/>
+              {whatsappLink 
+                ? 'Para consultar outras datas, entre em contato via WhatsApp através do painel da página.' 
+                : 'Para consultar outras datas, entre em contato diretamente com o anfitrião.'}
             </p>
+
           </div>
         </div>
 

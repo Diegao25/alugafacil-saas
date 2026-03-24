@@ -148,10 +148,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-10 animate-in fade-in duration-500 pb-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">Visão Geral</h1>
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Visão Geral</h1>
           <p className="text-slate-500 font-medium">Bem-vindo de volta! Aqui está um resumo do seu negócio.</p>
         </div>
 
@@ -167,56 +167,56 @@ export default function DashboardPage() {
       <OnboardingChecklist stats={stats} />
       
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-2xl bg-white p-6 shadow-sm border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <Building size={100} />
           </div>
-          <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Imóveis Ativos</p>
+          <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Imóveis Ativos</p>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-4xl font-black text-slate-900">{stats?.totalProperties}</span>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-2xl bg-white p-6 shadow-sm border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <Calendar size={100} />
           </div>
-          <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Check-ins Hoje</p>
+          <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Check-ins Hoje</p>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-4xl font-black text-slate-900">{stats?.reservationsToday}</span>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-2xl bg-white p-6 shadow-sm border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <LogOut size={100} />
           </div>
-          <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Check-outs Hoje</p>
+          <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Check-outs Hoje</p>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-4xl font-black text-slate-900">{stats?.checkoutsToday}</span>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-2xl bg-white p-6 shadow-sm border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <CheckCircle size={100} />
           </div>
-          <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Próximos Check-ins</p>
+          <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Próximos Check-ins</p>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-4xl font-black text-slate-900">{stats?.pendingCheckinsCount}</span>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-700 p-6 shadow-lg shadow-blue-200 flex flex-col text-white relative overflow-hidden group hover:scale-[1.02] transition-all lg:col-span-1">
+        <div className="rounded-2xl bg-gradient-to-br from-[#1e293b] to-[#334155] p-6 shadow-xl shadow-slate-300 flex flex-col text-white relative overflow-hidden group hover:scale-[1.02] transition-all lg:col-span-1 border-none">
           <div className="absolute right-[-10px] top-[-10px] opacity-10 group-hover:scale-110 transition-transform">
             <DollarSign size={100} />
           </div>
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-bold text-blue-100 uppercase tracking-wider">Faturamento (Mês)</p>
+            <p className="text-sm font-bold text-slate-300 uppercase tracking-wider">Faturamento (Mês)</p>
             <button
               type="button"
               onClick={() => setHideRevenue((current) => !current)}
-              className="relative z-10 rounded-full bg-white/10 p-2 text-blue-100 transition hover:bg-white/20 hover:text-white"
+              className="relative z-10 rounded-full bg-white/10 p-2 text-slate-300 transition hover:bg-white/20 hover:text-white"
               aria-label={hideRevenue ? 'Mostrar faturamento' : 'Ocultar faturamento'}
               title={hideRevenue ? 'Mostrar faturamento' : 'Ocultar faturamento'}
             >
@@ -224,7 +224,7 @@ export default function DashboardPage() {
             </button>
           </div>
           <div className="mt-4 flex items-baseline gap-1 min-w-0">
-            <span className="text-base font-bold text-blue-200 shrink-0">R$</span>
+            <span className="text-base font-bold text-slate-400 shrink-0">R$</span>
             <span className="text-xl font-black truncate">
               {hideRevenue ? '••••••' : formatCurrencyBR(stats?.monthlyRevenue ?? 0)}
             </span>
@@ -233,11 +233,11 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="rounded-3xl bg-blue-50/50 p-8 border border-blue-100 shadow-sm relative overflow-hidden">
-          <div className="absolute right-[-20px] top-[-20px] opacity-[0.05] rotate-12">
+        <div className="rounded-3xl bg-white p-8 shadow-sm border-none relative overflow-hidden group hover:shadow-md transition-all">
+          <div className="absolute right-[-20px] top-[-20px] opacity-[0.03] rotate-12 group-hover:scale-110 transition-transform">
             <Clock size={150} />
           </div>
-          <h3 className="text-xl font-bold text-blue-900 mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
             <Clock className="text-blue-600" size={24} />
             Chegando Hoje
           </h3>
@@ -272,11 +272,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl bg-orange-50/50 p-8 border border-orange-100 shadow-sm relative overflow-hidden">
-          <div className="absolute right-[-20px] top-[-20px] opacity-[0.05] -rotate-12">
+        <div className="rounded-3xl bg-white p-8 shadow-sm border-none relative overflow-hidden group hover:shadow-md transition-all">
+          <div className="absolute right-[-20px] top-[-20px] opacity-[0.03] -rotate-12 group-hover:scale-110 transition-transform">
             <LogOut size={150} />
           </div>
-          <h3 className="text-xl font-bold text-orange-900 mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
             <LogOut className="text-orange-600" size={24} />
             Saindo Hoje
           </h3>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-4">
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
+        <div className="rounded-3xl bg-white p-8 shadow-sm border-none hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <Clock className="text-blue-600" size={24} />
@@ -357,7 +357,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
+        <div className="rounded-3xl bg-white p-8 shadow-sm border-none hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <LogOut className="text-orange-600" size={24} />
@@ -397,7 +397,7 @@ export default function DashboardPage() {
           </div>
         </div>
         
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
+        <div className="rounded-3xl bg-white p-8 shadow-sm border-none hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <DollarSign className="text-emerald-600" size={24} />

@@ -143,7 +143,6 @@ export function AuthProvider({ children }) {
   }
 
   function signOut(redirectTo = '/dashboard') {
-    console.log('--- Auth - signOut called ---', { redirectTo });
     void api.post('/auth/logout').catch((e) => {
       console.warn('Auth - logout request failed (can be ignored):', e.message);
     });
@@ -164,18 +163,14 @@ export function AuthProvider({ children }) {
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
     } catch (error: any) {
-      console.warn('Auth - syncUser error:', error?.response?.status, error?.message);
       // SÃ³ deslogar se for explicitamente nÃ£o autorizado (401)
       if (error?.response?.status === 401) {
-        console.log('Auth - Logout triggered by 401 in syncUser');
         if (typeof window !== 'undefined') {
           window.localStorage.removeItem(AUTH_STORAGE_KEY);
           window.localStorage.removeItem('gestaolocacoes.user');
         }
         Cookies.remove('gestaolocacoes.user');
         setUser(null);
-      } else {
-        console.warn('SyncUser falhou, mas mantendo sessÃ£o local:', error?.message);
       }
     }
   }

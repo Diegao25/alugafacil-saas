@@ -67,11 +67,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-100">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -105,7 +105,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span className="hidden sm:inline">WhatsApp</span>
           </a>
         )}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between lg:justify-end px-4 lg:px-8 shadow-sm shrink-0">
+        <header className="h-16 bg-white border-b border-slate-200/60 flex items-center justify-between lg:justify-end px-4 lg:px-8 shadow-sm shrink-0">
           <button 
             className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg"
             onClick={() => setSidebarOpen(true)}

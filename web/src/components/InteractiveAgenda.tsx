@@ -219,6 +219,12 @@ export default function InteractiveAgenda({ property, bookings }: InteractiveAge
             </div>
           </div>
 
+          {!checkin && (
+            <div className="mb-6 p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 text-center">
+              <p className="text-sm text-indigo-800 font-medium">✨ Selecione os dias aqui no calendário para configurar seu pacote de locação.</p>
+            </div>
+          )}
+
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-2">
             {monthStarts.map((monthStart) => { // Renderiza os 12 meses
               const monthEnd = endOfMonth(monthStart);
@@ -256,29 +262,7 @@ export default function InteractiveAgenda({ property, bookings }: InteractiveAge
             })}
           </div>
 
-          <div className="mt-8 flex flex-col items-center gap-2">
-            <p className="text-center text-[13px] text-slate-500 italic px-4">
-              Selecione os dias no calendário (Check-in e Check-out) para gerar o orçamento exato pelo WhatsApp.
-            </p>
-            {checkin && !checkout && (
-              <p className="text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-lg">
-                Selecione a data de Check-out...
-              </p>
-            )}
-            {checkin && checkout && (
-              <p className="text-sm font-bold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-lg">
-                Período selecionado: {format(checkin, 'dd/MM/yy')} a {format(checkout, 'dd/MM/yy')}
-              </p>
-            )}
-            {checkin && (
-               <button 
-                 onClick={() => { setCheckin(null); setCheckout(null); }}
-                 className="text-xs text-slate-400 hover:text-slate-600 underline mt-1"
-               >
-                 Limpar seleção
-               </button>
-            )}
-          </div>
+
         </div>
       </div>
 
@@ -301,6 +285,37 @@ export default function InteractiveAgenda({ property, bookings }: InteractiveAge
                 <span className="text-slate-500">Anfitrião</span>
                 <span className="font-bold text-slate-800">{property.proprietario.nome}</span>
               </div>
+            </div>
+
+            {/* Painel de Datas Selecionadas na Sidebar */}
+            <div className="mb-6 bg-slate-50 border border-slate-100 rounded-2xl p-4">
+              {!checkin && !checkout && (
+                <p className="text-[12px] text-slate-500 italic text-center leading-tight">
+                   Faça sua simulação selecionando o <br/> Check-in e Check-out nas tabelas ao lado.
+                </p>
+              )}
+              {checkin && !checkout && (
+                <div className="text-center animate-pulse">
+                  <p className="text-[10px] uppercase font-bold text-slate-400">Próximo Passo</p>
+                  <p className="text-sm font-black text-indigo-600">
+                    Selecione a data de saída...
+                  </p>
+                </div>
+              )}
+              {checkin && checkout && (
+                <div className="text-center">
+                  <p className="text-[10px] uppercase font-bold text-emerald-600 mb-1">Período Selecionado</p>
+                  <p className="text-sm font-black text-slate-800 bg-white border border-slate-200 py-2 rounded-xl mb-2 shadow-sm">
+                    {format(checkin, 'dd/MM/yy')} <span className="text-slate-400 mx-1">até</span> {format(checkout, 'dd/MM/yy')}
+                  </p>
+                  <button 
+                    onClick={() => { setCheckin(null); setCheckout(null); }}
+                    className="text-[11px] font-bold text-slate-400 hover:text-red-500 transition-colors"
+                  >
+                    Desfazer seleção
+                  </button>
+                </div>
+              )}
             </div>
 
             {whatsappLink ? (

@@ -76,10 +76,14 @@ export default function TermsAcceptanceModal() {
 
     try {
       setLoading(true);
+      console.log('[Terms] Sending acceptance to backend...');
       await api.post('/auth/terms/accept');
+      console.log('[Terms] Acceptance sent. Syncing user data...');
       await syncUser();
+      console.log('[Terms] User synced. Modal should close.');
       toast.success('Termos aceitos com sucesso.');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('[Terms] Failed to accept terms:', error);
       toast.error('Não foi possível registrar o aceite dos termos.');
     } finally {
       setLoading(false);

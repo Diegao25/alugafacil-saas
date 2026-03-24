@@ -166,6 +166,9 @@ export function AuthProvider({ children }) {
       
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('gestaolocacoes.user', JSON.stringify(userData));
+      }
     } catch (error: any) {
       console.warn('Auth - syncUser failed:', error.message);
       

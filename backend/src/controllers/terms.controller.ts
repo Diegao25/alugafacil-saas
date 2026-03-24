@@ -48,29 +48,42 @@ export const acceptCurrentTerms = async (req: Request, res: Response): Promise<v
     }
 
     const activeTerms = await getOrCreateActiveTermsVersion();
+    console.log(`[Terms] User ${userId} is accepting terms version ${activeTerms.id}`);
     const forwardedFor = req.headers['x-forwarded-for'];
     const ipAddress = getRequestIpAddress(forwardedFor, req.ip);
     const userAgent = req.get('user-agent') || null;
 
-    const acceptance = await prisma.userTermsAcceptance.upsert({
+    // Usando findFirst + create/update em vez de upsert para melhor rastreabilidade de erros
+    let acceptance = await prisma.userTermsAcceptance.findFirst({
       where: {
-        usuario_id_terms_version_id: {
-          usuario_id: userId,
-          terms_version_id: activeTerms.id
-        }
-      },
-      update: {
-        accepted_at: new Date(),
-        ip_address: ipAddress,
-        user_agent: userAgent
-      },
-      create: {
         usuario_id: userId,
-        terms_version_id: activeTerms.id,
-        ip_address: ipAddress,
-        user_agent: userAgent
+        terms_version_id: activeTerms.id
       }
     });
+
+    if (acceptance) {
+      console.log(`[Terms] Updating existing acceptance for user ${userId}`);
+      acceptance = await prisma.userTermsAcceptance.update({
+        where: { id: acceptance.id },
+        data: {
+          accepted_at: new Date(),
+          ip_address: ipAddress,
+          user_agent: userAgent
+        }
+      });
+    } else {
+      console.log(`[Terms] Creating new acceptance for user ${userId}`);
+      acceptance = await prisma.userTermsAcceptance.create({
+        data: {
+          usuario_id: userId,
+          terms_version_id: activeTerms.id,
+          ip_address: ipAddress,
+          user_agent: userAgent
+        }
+      });
+    }
+
+    console.log(`[Terms] Acceptance recorded for user ${userId}. Status: SUCCESS`);
 
     res.status(200).json({
       message: 'Termos aceitos com sucesso.',
@@ -78,6 +91,7 @@ export const acceptCurrentTerms = async (req: Request, res: Response): Promise<v
       accepted_at: acceptance.accepted_at
     });
   } catch (error) {
+    console.error('[Terms] Error accepting terms:', error);
     res.status(500).json({ error: 'Erro ao registrar aceite dos termos.', details: error });
   }
 };

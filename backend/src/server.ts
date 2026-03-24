@@ -1,6 +1,20 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+
+// Redirecionar logs para arquivo para facilitar depuração remota
+const logFile = path.join(__dirname, '../debug.log');
+const logStream = fs.createWriteStream(logFile, { flags: 'a' });
+console.log = (...args) => {
+  logStream.write(`[LOG] ${args.join(' ')}\n`);
+  process.stdout.write(`${args.join(' ')}\n`);
+};
+console.error = (...args) => {
+  logStream.write(`[ERR] ${args.join(' ')}\n`);
+  process.stderr.write(`${args.join(' ')}\n`);
+};
 import authRoutes from './routes/auth.routes';
 import propertyRoutes from './routes/property.routes';
 import tenantRoutes from './routes/tenant.routes';

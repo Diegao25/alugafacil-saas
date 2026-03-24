@@ -39,6 +39,8 @@ export function getAllowedOrigins() {
     )
   );
 
+  console.log('[CORS] Allowed Origins List:', allowedOrigins);
+
   if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
     throw new Error('FRONTEND_URL or WEB_BASE_URL must be configured in production.');
   }
@@ -56,7 +58,13 @@ export function isOriginAllowed(origin: string | undefined): boolean {
   if (!origin) return true;
 
   const allowed = getAllowedOrigins();
-  if (allowed.includes(origin)) return true;
+  const isMatch = allowed.includes(origin);
+  
+  if (!isMatch) {
+    console.warn(`[CORS] Rejected Origin: ${origin}`);
+  }
+
+  if (isMatch) return true;
 
   // Em desenvolvimento, permitimos acessos via IP na rede local
   if (process.env.NODE_ENV !== 'production') {

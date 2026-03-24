@@ -108,8 +108,12 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
       },
       isNewUser
     });
-  } catch (error) {
-    console.error('Erro no Google Login:', error);
-    res.status(500).json({ error: 'Erro na autenticação com Google', details: error });
+  } catch (error: any) {
+    console.error('Erro detalhado no Google Login:', error);
+    res.status(500).json({ 
+      error: 'Erro na autenticação com Google', 
+      message: error.message,
+      details: process.env.NODE_ENV === 'development' ? error : undefined 
+    });
   }
 };

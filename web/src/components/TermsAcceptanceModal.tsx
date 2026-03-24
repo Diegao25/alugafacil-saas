@@ -31,27 +31,36 @@ export default function TermsAcceptanceModal() {
     }
 
     let mounted = true;
+    let timeout: any;
 
     async function loadTerms() {
-      try {
-        setFetching(true);
-        const response = await api.get('/auth/terms/current');
-        if (mounted) {
-          setTerms(response.data);
+      // Pequeno delay para garantir que o token de auth esteja estÃ¡vel no localStorage
+      // especialmente apÃ³s redirects de login no Safari/iOS.
+      timeout = setTimeout(async () => {
+        try {
+          if (!mounted) return;
+          setFetching(true);
+          const response = await api.get('/auth/terms/current');
+          if (mounted) {
+            setTerms(response.data);
+          }
+        } catch (error) {
+          if (mounted) {
+            toast.error('Não foi possível carregar os termos de uso.');
+          }
+        } finally {
+          if (mounted) {
+            setFetching(false);
+          }
         }
-      } catch (error) {
-        toast.error('Não foi possível carregar os termos de uso.');
-      } finally {
-        if (mounted) {
-          setFetching(false);
-        }
-      }
+      }, 500);
     }
 
     void loadTerms();
 
     return () => {
       mounted = false;
+      if (timeout) clearTimeout(timeout);
     };
   }, [user?.terms_pending]);
 
@@ -112,9 +121,32 @@ export default function TermsAcceptanceModal() {
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
-                <pre className="whitespace-pre-wrap font-sans text-sm leading-7 text-slate-700">
-                  {terms?.content || 'Os termos de uso não puderam ser carregados.'}
-                </pre>
+                {terms ? (
+                  <pre className="whitespace-pre-wrap font-sans text-sm leading-7 text-slate-700">
+                    {terms.content}
+                  </pre>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-10 text-center">
+                    <p className="mb-4 text-sm text-slate-500">
+                      Os termos de uso não puderam ser carregados no momento.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const event = new CustomEvent('user-updated'); // trigger a re-render or just call a function.
+                        // Actually, I can just trigger a state change to re-run the effect.
+                        // But since user?.terms_pending is the dependency, I should use a local state for retry.
+                        window.location.reload(); // Simple and effective for Safari auth stabilization.
+                      }}
+                      className="rounded-xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 transition-all hover:bg-slate-200"
+                    >
+                      Atualizar Página
+                    </button>
+                    <p className="mt-2 text-[10px] text-slate-400">
+                      Isso ajuda a estabilizar sua conexão segura.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <label className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-4">

@@ -12,11 +12,6 @@ export const getCurrentTerms = async (req: Request, res: Response): Promise<void
       return;
     }
 
-    if (!(await canManageUsers(userId))) {
-      res.status(403).json({ error: 'Somente o locador principal pode aceitar os termos.' });
-      return;
-    }
-
     const activeTerms = await getOrCreateActiveTermsVersion();
     const acceptance = await prisma.userTermsAcceptance.findFirst({
       where: {

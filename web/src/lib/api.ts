@@ -35,7 +35,7 @@ const getBaseUrl = () => {
 
     // Ambiente de Produção (Railway ou Domínios Customizados)
     // Se não for localhost, tentamos usar o backend de produção conhecido
-    return 'https://easygoing-backend-production.up.railway.app/api';
+    return 'https://alugafacil-saas-backend-production.up.railway.app/api';
   }
 
   // Fallback para SSR

@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig = {
-  output: 'standalone',
+
   // Redução agressiva de consumo de memória para build (Next.js 15+ / v16)
   experimental: {
     workerThreads: false,

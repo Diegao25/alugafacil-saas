@@ -259,22 +259,45 @@ function extractNeighborhood(address?: string): string {
 
 function extractCityUf(address?: string): string {
   if (!address) return '';
-  const matchDash = address.match(/([A-Za-zÀ-ÿ\s]+)[–-]\s*([A-Z]{2})/);
-  if (matchDash) {
-    return `${matchDash[1].trim()} – ${matchDash[2]}`;
+  
+  // Dividir por traços, barras ou vírgulas e procurar onde está a UF (exato 2 letras maiúsculas)
+  const parts = address.split(/[,\-/–]/).map(p => p.trim());
+  
+  // Procurar o primeiro segmento que seja exatamente um código de estado (UF)
+  const ufIndex = parts.findIndex(p => /^[A-Z]{2}$/.test(p));
+  
+  if (ufIndex > 0) {
+    // A cidade geralmente é o segmento imediatamente anterior à UF
+    return `${parts[ufIndex - 1]} – ${parts[ufIndex]}`;
   }
-  const matchSlash = address.match(/([A-Za-zÀ-ÿ\s]+)\/\s*([A-Z]{2})/);
-  if (matchSlash) {
-    return `${matchSlash[1].trim()} – ${matchSlash[2]}`;
+  
+  // Fallback regex se o split falhar (caso o endereço não tenha separadores padrão)
+  const match = address.match(/([^,\-/–]+)\s*[–\/-]\s*([A-Z]{2})(\s|$)/);
+  if (match) {
+    return `${match[1].trim()} – ${match[2]}`;
   }
+
   return '';
 }
 
 function extractCity(address?: string): string {
   const cityUf = extractCityUf(address);
-  if (!cityUf) return '';
-  const parts = cityUf.split(/[–-]/);
-  return parts[0]?.trim() || '';
+  if (cityUf) {
+    const parts = cityUf.split(/[–-]/);
+    return parts[0]?.trim() || '';
+  }
+
+  // Segundo fallback: Pegar o penúltimo segmento se houver muitas vírgulas
+  const parts = address?.split(',') || [];
+  if (parts.length >= 2) {
+    const lastPart = parts[parts.length - 1].trim();
+    // Se o último campo for UF ou CEP, o anterior provavelmente é a cidade
+    if (lastPart.length <= 3 || /\d{5}/.test(lastPart)) {
+      return parts[parts.length - 2].trim();
+    }
+  }
+
+  return '';
 }
 
 function extractCep(address?: string): string {

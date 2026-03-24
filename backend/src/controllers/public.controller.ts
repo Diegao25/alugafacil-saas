@@ -25,6 +25,12 @@ export const getPropertyAvailability = async (req: Request, res: Response): Prom
             };
           };
         };
+        user: {
+          select: {
+            nome: true;
+            telefone: true;
+          };
+        };
       };
     }>;
 
@@ -40,6 +46,12 @@ export const getPropertyAvailability = async (req: Request, res: Response): Prom
                 nome: true
               }
             }
+          }
+        },
+        user: {
+          select: {
+            nome: true,
+            telefone: true
           }
         }
       }
@@ -65,7 +77,14 @@ export const getPropertyAvailability = async (req: Request, res: Response): Prom
         endereco: property.endereco,
         descricao: property.descricao,
         valor_diaria: property.valor_diaria,
-        capacidade_maxima: property.capacidade_maxima
+        capacidade_maxima: property.capacidade_maxima,
+        foto_principal: property.foto_principal,
+        comodidades: property.comodidades,
+        redes_sociais_url: property.redes_sociais_url,
+        proprietario: {
+          nome: property.user.nome,
+          telefone: property.user.telefone
+        }
       },
       bookings
     });

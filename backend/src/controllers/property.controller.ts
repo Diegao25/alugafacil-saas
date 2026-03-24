@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 
 export const createProperty = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { nome, endereco, descricao, valor_diaria, capacidade_maxima, redes_sociais_url } = req.body;
+    const { nome, endereco, descricao, valor_diaria, capacidade_maxima, redes_sociais_url, foto_principal, comodidades } = req.body;
     const usuario_id = await resolveOwnerId(req.user?.id);
     if (!usuario_id) {
       res.status(401).json({ error: 'Não autorizado' });
@@ -26,6 +26,8 @@ export const createProperty = async (req: AuthRequest, res: Response): Promise<v
         valor_diaria: Number(valor_diaria),
         capacidade_maxima: Number(capacidade_maxima),
         redes_sociais_url,
+        foto_principal,
+        comodidades,
         usuario_id,
       },
     });

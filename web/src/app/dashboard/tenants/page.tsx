@@ -101,17 +101,6 @@ export default function TenantsPage() {
                           <Phone className="h-3.5 w-3.5 mr-2 text-slate-400" />
                           {tenant.telefone ? maskPhone(tenant.telefone) : '-'}
                         </div>
-                        {tenant.telefone && (
-                          <a
-                            href={`https://api.whatsapp.com/send?phone=55${unmask(tenant.telefone).replace(/^55/, '')}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
-                          >
-                            <MessageSquare className="h-3 w-3 mr-1" />
-                            WhatsApp
-                          </a>
-                        )}
                       </div>
                       <div className="flex items-center text-sm text-slate-600">
                         <Mail className="h-3.5 w-3.5 mr-2 text-slate-400" />

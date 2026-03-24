@@ -127,6 +127,8 @@ model Property {
   valor_diaria      Float
   capacidade_maxima Int
   redes_sociais_url String?
+  foto_principal    String?
+  comodidades       String? // Separados por vírgula ou JSON
   data_criacao      DateTime      @default(now())
   
   usuario_id        String

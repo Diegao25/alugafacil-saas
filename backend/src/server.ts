@@ -14,7 +14,7 @@ import subscriptionRoutes from './routes/subscription.routes';
 import { campaignRoutes } from './routes/campaign.routes';
 import npsRoutes from './routes/nps.routes';
 import cesRoutes from './routes/ces.routes';
-import { getAllowedOrigins, getJwtSecret } from './utils/security';
+import { getAllowedOrigins, getJwtSecret, isOriginAllowed } from './utils/security';
 
 const app = express();
 const allowedOrigins = getAllowedOrigins();
@@ -27,11 +27,12 @@ console.log('GOOGLE_CLIENT_SECRET loaded:', !!process.env.GOOGLE_CLIENT_SECRET);
 app.set('trust proxy', 1);
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isOriginAllowed(origin)) {
       callback(null, true);
       return;
     }
 
+    console.warn(`CORS: Origin ${origin} not allowed`);
     callback(new Error('Origin not allowed by CORS'));
   },
   credentials: true

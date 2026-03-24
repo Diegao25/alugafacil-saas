@@ -167,6 +167,9 @@ export function AuthProvider({ children }) {
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
     } catch (error: any) {
+      console.warn('Auth - syncUser failed:', error.message);
+      
+      // Apenas desloga se for um erro de autenticaÃ§Ã£o explÃ­cito (401)
       if (error?.response?.status === 401) {
         if (typeof window !== 'undefined') {
           window.localStorage.removeItem(AUTH_STORAGE_KEY);
@@ -175,6 +178,8 @@ export function AuthProvider({ children }) {
         Cookies.remove('gestaolocacoes.user');
         setUser(null);
       }
+      // Se for erro de rede (CORS ou offline), mantemos o estado atual do usuÃ¡rio
+      // para evitar que o usuÃ¡rio seja deslogado enquanto a conexÃ£o oscila.
     }
   }
 

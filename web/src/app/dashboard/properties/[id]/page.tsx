@@ -23,7 +23,9 @@ export default function EditPropertyPage() {
     descricao: '',
     valor_diaria: '',
     capacidade_maxima: '',
-    redes_sociais_url: ''
+    redes_sociais_url: '',
+    foto_principal: '',
+    comodidades: ''
   });
 
   const [cepError, setCepError] = useState<string | null>(null);
@@ -45,7 +47,9 @@ export default function EditPropertyPage() {
           descricao: descricao || '',
           valor_diaria: formatCurrencyBR(valor_diaria),
           capacidade_maxima: capacidade_maxima.toString(),
-          redes_sociais_url: redes_sociais_url || ''
+          redes_sociais_url: redes_sociais_url || '',
+          foto_principal: response.data.foto_principal || '',
+          comodidades: response.data.comodidades || ''
         });
 
         // Extrair componentes do endereço
@@ -98,7 +102,9 @@ export default function EditPropertyPage() {
         endereco: enderecoCompleto,
         valor_diaria: parseCurrencyBR(formData.valor_diaria),
         capacidade_maxima: parseInt(formData.capacidade_maxima, 10),
-        redes_sociais_url: formData.redes_sociais_url
+        redes_sociais_url: formData.redes_sociais_url,
+        foto_principal: formData.foto_principal,
+        comodidades: formData.comodidades
       };
       await api.put(`/properties/${id}`, payload);
       toast.success('Imóvel atualizado com sucesso!');
@@ -263,6 +269,28 @@ export default function EditPropertyPage() {
                 placeholder="https://www.instagram.com/seuimovel"
               />
               <p className="text-xs text-slate-500 italic">Opcional: Cole aqui o link direto da postagem ou do seu perfil.</p>
+            </div>
+
+            <div className="space-y-2 col-span-full">
+              <label className="text-sm font-medium text-slate-700">Link da Foto Principal (Capa)</label>
+              <input
+                type="url"
+                value={formData.foto_principal}
+                onChange={(e) => setFormData({ ...formData, foto_principal: e.target.value })}
+                className="w-full rounded-xl border border-slate-300 px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                placeholder="https://sua-imagem.com/foto.jpg"
+              />
+            </div>
+
+            <div className="space-y-2 col-span-full">
+              <label className="text-sm font-medium text-slate-700">Comodidades (Separadas por vírgula)</label>
+              <input
+                type="text"
+                value={formData.comodidades}
+                onChange={(e) => setFormData({ ...formData, comodidades: e.target.value })}
+                className="w-full rounded-xl border border-slate-300 px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                placeholder="Ex: WiFi, Ar Condicionado, Piscina, Churrasqueira"
+              />
             </div>
           </div>
 

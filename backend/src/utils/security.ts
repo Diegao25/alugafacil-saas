@@ -43,7 +43,28 @@ export function getAllowedOrigins() {
     throw new Error('FRONTEND_URL or WEB_BASE_URL must be configured in production.');
   }
 
+  // Em desenvolvimento, também permitimos qualquer origem que comece com 192.168 (IP local comum)
+  // ou 10.0 (outro comum), ou 172. (docker/local)
   return allowedOrigins;
+}
+
+/**
+ * Função utilitária para verificar se uma origem deve ser permitida via CORS.
+ * Útil para permitir IPs dinâmicos na rede local em desenvolvimento.
+ */
+export function isOriginAllowed(origin: string | undefined): boolean {
+  if (!origin) return true;
+
+  const allowed = getAllowedOrigins();
+  if (allowed.includes(origin)) return true;
+
+  // Em desenvolvimento, permitimos acessos via IP na rede local
+  if (process.env.NODE_ENV !== 'production') {
+    const isLocalIp = /^http:\/\/(192\.168\.|127\.0\.|10\.|172\.|localhost)/.test(origin);
+    if (isLocalIp) return true;
+  }
+
+  return false;
 }
 
 export function getAuthCookieOptions(): CookieOptions {

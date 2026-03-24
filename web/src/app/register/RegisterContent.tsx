@@ -9,7 +9,7 @@ import { Eye, EyeOff, KeyRound, Mail, User } from 'lucide-react';
 import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '@/lib/utils';
 import { toast } from 'react-toastify';
 
-export default function RegisterPage() {
+export default function RegisterContent() {
   const { signUp, signInWithGoogle, user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -131,108 +131,126 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <div className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center opacity-20 filter blur-sm"></div>
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 overflow-hidden">
+      {/* Dynamic Background with improved depth */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center brightness-[0.9] grayscale-[0.2]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-transparent to-blue-900/40 backdrop-blur-[2px]"></div>
+      </div>
       
-      <div className="glass relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl overflow-hidden mt-10 mb-10">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
-
+      <div className="glass relative z-10 w-full max-w-md rounded-2xl p-5 shadow-2xl overflow-hidden">
+        {/* Glow effect */}
+        <div className="absolute -top-20 -left-20 w-40 h-40 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+        <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+        
         <div className="relative z-20">
-          <div className="mb-6 flex flex-col items-center">
-            <div className="mb-4 cursor-pointer hover:scale-105 transition-transform" onClick={() => window.location.href='/landing?external=1'}>
-              <Logo href="/landing?external=1" size="large" withText={false} />
+          <div className="mb-4 flex flex-col items-center">
+            <div className="mb-2 transform hover:scale-105 transition-transform duration-300">
+              <Logo href="/landing?external=1" size="medium" withText={false} />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-800">Cadastro</h1>
-            <p className="text-sm text-slate-500 mt-1">Crie sua conta de proprietário</p>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-800 text-center">Criar Conta</h1>
+            <p className="text-[11px] font-bold text-slate-600 mt-1 bg-slate-100/80 px-2 py-0.5 rounded-full uppercase">Premium Já</p>
           </div>
 
-          <form onSubmit={handleRegister} className="space-y-5">
-          <div className="space-y-4">
-            <div id="google-register-button" className="w-full h-[44px] mb-4"></div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-slate-400 font-medium">ou</span>
-              </div>
+          <form onSubmit={handleRegister} className="space-y-3">
+            <div className="flex flex-col gap-1.5">
+              <div id="google-register-button" className="w-full h-[44px] flex justify-center"></div>
+              <p className="text-[9px] text-center text-slate-600 uppercase tracking-widest font-black">ou use e-mail</p>
             </div>
 
-            <div className="relative">
+            <div className="space-y-2">
+              <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <User className="h-5 w-5 text-slate-400" />
+                  <User className="h-4 w-4 text-slate-500 group-focus-within:text-blue-600 transition-colors" />
                 </div>
                 <input
                   type="text"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
-                  className="block w-full rounded-xl border border-slate-300 bg-white/50 pl-10 px-4 py-3 text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-                  placeholder="Seu nome completo"
+                  className="block w-full rounded-xl border border-slate-200 bg-white/70 pl-10 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-500 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
+                  placeholder="Nome completo"
                   required
                 />
               </div>
 
-              <div className="relative">
+              <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-4 w-4 text-slate-500 group-focus-within:text-blue-600 transition-colors" />
                 </div>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-xl border border-slate-300 bg-white/50 pl-10 px-4 py-3 text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-                  placeholder="Seu e-mail"
+                  className="block w-full rounded-xl border border-slate-200 bg-white/70 pl-10 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-500 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
+                  placeholder="Seu e-mail profissional"
                   required
                 />
               </div>
 
-              <div className="relative">
+              <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <KeyRound className="h-5 w-5 text-slate-400" />
+                  <KeyRound className="h-4 w-4 text-slate-500 group-focus-within:text-blue-600 transition-colors" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
-                  className="block w-full rounded-xl border border-slate-300 bg-white/50 pl-10 pr-11 px-4 py-3 text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-                  placeholder="Sua senha"
+                  className="block w-full rounded-xl border border-slate-200 bg-white/70 pl-10 pr-10 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-500 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
+                  placeholder="Sua senha secreta"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700 transition"
                   aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-              <p className="text-xs text-slate-500">{PASSWORD_POLICY_MESSAGE}</p>
+              <p className="text-[11px] text-slate-600 pl-1 font-bold">{PASSWORD_POLICY_MESSAGE}</p>
             </div>
 
-            <button
-              type="submit"
-              disabled={registerLoading}
-              className="group relative flex w-full justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-md hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {registerLoading ? 'Cadastrando...' : 'Criar Conta'}
-            </button>
+            <div className="pt-1">
+              <button
+                type="submit"
+                disabled={registerLoading}
+                className="group relative flex w-full justify-center rounded-xl bg-gradient-to-tr from-slate-900 via-indigo-900 to-blue-900 px-4 py-3 text-sm font-bold text-white shadow-xl hover:shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-700 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {registerLoading ? (
+                  <span className="relative z-10 flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processando...
+                  </span>
+                ) : <span className="relative z-10">Criar minha conta</span>}
+              </button>
+            </div>
+            
+            <div className="flex items-center justify-center gap-2">
+              <div className="h-px w-4 bg-slate-300"></div>
+              <span className="text-[9px] font-black uppercase tracking-tighter text-slate-500">Conexão Segura SSL</span>
+              <div className="h-px w-4 bg-slate-300"></div>
+            </div>
           </form>
 
-          <p className="mt-8 text-center text-sm text-slate-600">
-            Já tem uma conta?{' '}
-            <Link href="/login?external=1" className="font-semibold text-blue-600 hover:text-blue-500 hover:underline transition-all">
-              Fazer login
-            </Link>
-          </p>
-
-          <p className="mt-4 text-center text-xs text-slate-500">
-            <Link href="/landing?external=1" className="hover:text-slate-700 transition">
-              ← Voltar para página inicial
-            </Link>
-          </p>
+          <div className="mt-4 pt-3 border-t border-slate-200 flex flex-col items-center">
+            <div className="flex items-center gap-1.5 text-xs text-slate-700">
+              <span>Já tem uma conta?</span>
+              <Link href="/login?external=1" className="font-bold text-blue-700 hover:text-blue-800 transition-all underline decoration-blue-200 underline-offset-2">
+                Fazer Login
+              </Link>
+            </div>
+            
+            <div className="mt-3 flex items-center justify-center w-full px-2">
+              <Link href="/landing?external=1" className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-all flex items-center gap-1 group">
+                <span className="group-hover:-translate-x-1 transition-transform">←</span> Voltar para Home
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -35,6 +35,7 @@ interface AuthContextType {
   signOut: (redirectTo?: string) => void; // redirectTo defaults to /dashboard
   signUp: (data: any) => Promise<void>;
   syncUser: () => Promise<void>;
+  resetPassword: (email: string) => Promise<any>;
 }
 
 const AuthContext = createContext({} as AuthContextType);
@@ -142,7 +143,7 @@ export function AuthProvider({ children }) {
     }
   }
 
-  function signOut(redirectTo = '/dashboard') {
+  function signOut(redirectTo = '/login?external=1') {
     void api.post('/auth/logout').catch((e) => {
       console.warn('Auth - logout request failed (can be ignored):', e.message);
     });
@@ -163,7 +164,6 @@ export function AuthProvider({ children }) {
       setUser(userData);
       Cookies.set('gestaolocacoes.user', JSON.stringify(userData), { expires: 7 });
     } catch (error: any) {
-      // SÃ³ deslogar se for explicitamente nÃ£o autorizado (401)
       if (error?.response?.status === 401) {
         if (typeof window !== 'undefined') {
           window.localStorage.removeItem(AUTH_STORAGE_KEY);
@@ -175,8 +175,17 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function resetPassword(email: string) {
+    try {
+      const response = await api.post('/auth/forgot-password', { email });
+      return response.data.link || response.data.message;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Erro ao solicitar recuperação');
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signInWithGoogle, signOut, signUp, syncUser }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signInWithGoogle, signOut, signUp, syncUser, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

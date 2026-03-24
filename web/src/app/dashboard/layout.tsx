@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/');
+      router.push('/login?external=1');
     }
   }, [user, loading, router]);
 
@@ -136,7 +136,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-4 lg:p-8">
+        <main className="flex-1 overflow-y-auto pt-8 lg:pt-14 px-4 lg:px-8 pb-4 lg:pb-8">
           {children}
         </main>
       </div>

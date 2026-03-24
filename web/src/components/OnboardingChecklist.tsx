@@ -101,7 +101,7 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
   }
 
   return (
-    <div className="bg-white rounded-3xl p-8 border-none shadow-sm animate-in slide-in-from-top-4 duration-500">
+    <div className="bg-white rounded-3xl p-8 border-none shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] animate-in slide-in-from-top-4 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div>
           <h2 className="text-2xl font-black text-slate-900 flex items-center gap-2">
@@ -133,7 +133,7 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
               p-5 rounded-2xl transition-all flex flex-col gap-4 relative group
               ${item.completed 
                 ? 'bg-slate-50 opacity-60 grayscale-[0.5]' 
-                : 'bg-white shadow-sm hover:shadow-md hover:translate-y-[-2px] cursor-pointer border border-transparent'
+                : 'bg-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] hover:shadow-md hover:translate-y-[-2px] cursor-pointer border border-transparent'
               }
             `}
             onClick={(e) => item.completed && e.preventDefault()}

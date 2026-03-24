@@ -167,7 +167,7 @@ export default function DashboardPage() {
       <OnboardingChecklist stats={stats} />
       
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
-        <div className="rounded-2xl bg-white p-6 shadow-sm border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-2xl bg-white p-6 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <Building size={100} />
           </div>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-2xl bg-white p-6 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <Calendar size={100} />
           </div>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-2xl bg-white p-6 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <LogOut size={100} />
           </div>
@@ -197,7 +197,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-2xl bg-white p-6 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <CheckCircle size={100} />
           </div>
@@ -233,7 +233,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="rounded-3xl bg-white p-8 shadow-sm border-none relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-3xl bg-white p-8 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-20px] top-[-20px] opacity-[0.03] rotate-12 group-hover:scale-110 transition-transform">
             <Clock size={150} />
           </div>
@@ -272,7 +272,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl bg-white p-8 shadow-sm border-none relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="rounded-3xl bg-white p-8 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-20px] top-[-20px] opacity-[0.03] -rotate-12 group-hover:scale-110 transition-transform">
             <LogOut size={150} />
           </div>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-4">
-        <div className="rounded-3xl bg-white p-8 shadow-sm border-none hover:shadow-md transition-all">
+        <div className="rounded-3xl bg-white p-8 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <Clock className="text-blue-600" size={24} />
@@ -357,7 +357,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl bg-white p-8 shadow-sm border-none hover:shadow-md transition-all">
+        <div className="rounded-3xl bg-white p-8 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <LogOut className="text-orange-600" size={24} />
@@ -397,7 +397,7 @@ export default function DashboardPage() {
           </div>
         </div>
         
-        <div className="rounded-3xl bg-white p-8 shadow-sm border-none hover:shadow-md transition-all">
+        <div className="rounded-3xl bg-white p-8 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <DollarSign className="text-emerald-600" size={24} />

@@ -75,7 +75,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                     : 'text-slate-300 hover:bg-white/5 hover:text-white'
                 }`}
               >
-                <item.icon className={`h-5 w-5 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+                <item.icon className={`h-5 w-5 transition-colors ${isActive ? 'text-white' : 'text-slate-300 group-hover:text-white'}`} />
                 <span>{item.name}</span>
               </Link>
               {isProfileItem && (

@@ -18,8 +18,8 @@ import { Building2, Users, Receipt, CalendarDays, CheckCircle2, MessageCircle, S
 import CopyLinkButton from './CopyLinkButton';
 
 type Booking = {
-  start: number;
-  end: number;
+  startDateStr: string;
+  endDateStr: string;
 };
 
 type InteractiveAgendaProps = {
@@ -55,11 +55,15 @@ export default function InteractiveAgenda({ property, bookings }: InteractiveAge
     end: calendarEnd
   });
 
-  const isDayBooked = (day: Date) =>
-    bookings.some(
+  const formatDay = (d: Date) => format(d, 'yyyy-MM-dd');
+
+  const isDayBooked = (day: Date) => {
+    const dayStr = formatDay(day);
+    return bookings.some(
       (booking) =>
-        day.getTime() >= booking.start && day.getTime() <= booking.end
+        dayStr >= booking.startDateStr && dayStr <= booking.endDateStr
     );
+  };
 
   const availableDays = calendarDays.filter((day) => !isDayBooked(day)).length;
 

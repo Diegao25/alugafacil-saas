@@ -78,16 +78,15 @@ export default async function PropertyAgendaPage({
 
   const bookingsJson = availability.bookings
     .map((booking) => {
-      // Extrair componentes de data diretamente da string para evitar problemas de fuso horário
-      const [sy, sm, sd] = booking.checkin.split('T')[0].split('-').map(Number);
-      const [ey, em, ed] = booking.checkout.split('T')[0].split('-').map(Number);
+      const startStr = booking.checkin.split('T')[0];
+      const endStr = booking.checkout.split('T')[0];
       
       return {
-        start: new Date(sy, sm - 1, sd, 0, 0, 0, 0).getTime(),
-        end: new Date(ey, em - 1, ed, 0, 0, 0, 0).getTime()
+        startDateStr: startStr,
+        endDateStr: endStr
       };
     })
-    .filter((booking) => booking.start <= booking.end);
+    .filter((booking) => booking.startDateStr <= booking.endDateStr);
 
   const whatsappLink = availability.property.proprietario.telefone 
     ? `https://api.whatsapp.com/send?phone=55${availability.property.proprietario.telefone.replace(/\D/g, '')}&text=${encodeURIComponent(`Olá, vi seu imóvel "${availability.property.nome}" no Aluga Fácil e gostaria de mais informações!`)}`

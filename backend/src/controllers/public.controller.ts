@@ -66,6 +66,8 @@ export const getPropertyAvailability = async (req: Request, res: Response): Prom
       id: reservation.id,
       checkin: reservation.data_checkin.toISOString(),
       checkout: reservation.data_checkout.toISOString(),
+      hora_checkin: reservation.hora_checkin,
+      hora_checkout: reservation.hora_checkout,
       status: reservation.status,
       locatario: reservation.locatario?.nome || null
     }));

@@ -164,7 +164,7 @@ export default function ReservationsPage() {
           {reserva.locatario?.nome || (reserva.provider ? `Bloqueio ${reserva.provider}` : 'Bloqueio')}
         </div>
         <div className="text-[8px] font-bold text-white/80 mt-auto flex items-center justify-between">
-          <span>{reserva.hora_checkin}</span>
+          <span>In: {reserva.hora_checkin || '18:00'} &bull; Out: {reserva.hora_checkout || '18:00'}</span>
           <span>R$ {formatCurrencyBR(reserva.valor_total)}</span>
         </div>
       </div>

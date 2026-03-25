@@ -309,9 +309,17 @@ export default function InteractiveAgenda({ property, bookings }: InteractiveAge
               {checkin && checkout && (
                 <div className="text-center">
                   <p className="text-[10px] uppercase font-bold text-emerald-600 mb-1">Período Selecionado</p>
-                  <p className="text-sm font-black text-slate-800 bg-white border border-slate-200 py-2 rounded-xl mb-2 shadow-sm">
-                    {format(checkin, 'dd/MM/yy')} <span className="text-slate-400 mx-1">até</span> {format(checkout, 'dd/MM/yy')}
-                  </p>
+                  <div className="bg-white border border-slate-200 p-3 rounded-xl mb-3 shadow-sm text-left space-y-2">
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Check-in a partir das 18:00</p>
+                      <p className="text-sm font-black text-slate-800">{format(checkin, 'dd/MM/yy')}</p>
+                    </div>
+                    <div className="h-px w-full bg-slate-100"></div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Check-out até as 18:00</p>
+                      <p className="text-sm font-black text-slate-800">{format(checkout, 'dd/MM/yy')}</p>
+                    </div>
+                  </div>
                   <button 
                     onClick={() => { setCheckin(null); setCheckout(null); }}
                     className="text-[11px] font-bold text-slate-400 hover:text-red-500 transition-colors"

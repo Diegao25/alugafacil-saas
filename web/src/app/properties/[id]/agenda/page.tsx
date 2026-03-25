@@ -9,6 +9,8 @@ type BookingResponse = {
   id: string;
   checkin: string;
   checkout: string;
+  hora_checkin: string | null;
+  hora_checkout: string | null;
   status: string;
   locatario: string | null;
 };
@@ -83,7 +85,9 @@ export default async function PropertyAgendaPage({
       
       return {
         startDateStr: startStr,
-        endDateStr: endStr
+        endDateStr: endStr,
+        hora_checkin: booking.hora_checkin || '18:00',
+        hora_checkout: booking.hora_checkout || '18:00'
       };
     })
     .filter((booking) => booking.startDateStr <= booking.endDateStr);

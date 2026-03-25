@@ -32,7 +32,7 @@ export const exportPropertyCalendar = async (req: Request, res: Response) => {
         summary: 'Aluga Fácil Link Validator',
         description: 'Evento passado para validação de estrutura do iCal das plataformas',
         allDay: true,
-        uid: `dummy-validator-${property.id}`
+        id: `dummy-validator-${property.id}`
       });
     }
 

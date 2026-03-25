@@ -277,7 +277,7 @@ export default function DashboardPage() {
                 <div key={res.id} className="flex items-center justify-between p-4 rounded-xl bg-white border border-blue-100 shadow-sm hover:border-blue-300 transition-colors">
                   <div>
                     <p className="font-bold text-slate-900">{res.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{res.locatario.nome}</p>
+                    <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
                     {res.hora_checkin && (
                       <p className="text-[10px] font-bold text-blue-600 mt-1 flex items-center gap-1">
                         <Clock size={10} />
@@ -316,7 +316,7 @@ export default function DashboardPage() {
                 <div key={res.id} className="flex items-center justify-between p-4 rounded-xl bg-white border border-orange-100 shadow-sm hover:border-orange-300 transition-colors">
                   <div>
                     <p className="font-bold text-slate-900">{res.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{res.locatario.nome}</p>
+                    <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
                     {res.hora_checkout && (
                       <p className="text-[10px] font-bold text-orange-600 mt-1 flex items-center gap-1">
                         <Clock size={10} />
@@ -356,7 +356,7 @@ export default function DashboardPage() {
                 <div key={res.id} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
                   <div>
                     <p className="font-bold text-slate-900">{res.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{res.locatario.nome}</p>
+                    <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
                     {res.hora_checkin && (
                       <p className="text-[10px] font-bold text-blue-600 mt-1 flex items-center gap-1">
                         <Clock size={10} />
@@ -400,7 +400,7 @@ export default function DashboardPage() {
                 <div key={res.id} className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/50 border border-orange-100 hover:bg-orange-50 transition-colors">
                   <div>
                     <p className="font-bold text-slate-900">{res.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{res.locatario.nome}</p>
+                    <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
                     {res.hora_checkout && (
                       <p className="text-[10px] font-bold text-orange-600 mt-1 flex items-center gap-1">
                         <Clock size={10} />
@@ -440,7 +440,7 @@ export default function DashboardPage() {
                 <div key={pay.id} className="flex items-center justify-between p-4 rounded-2xl bg-amber-50 border border-amber-100">
                   <div>
                     <p className="font-bold text-slate-900">{pay.reserva.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{pay.reserva.locatario.nome}</p>
+                    <p className="text-sm text-slate-500">{pay.reserva.locatario?.nome || (pay.reserva.provider ? `Bloqueio ${pay.reserva.provider}` : 'Bloqueio')}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-amber-700">R$ {formatCurrencyBR(pay.valor)}</p>

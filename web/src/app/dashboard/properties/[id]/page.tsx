@@ -6,7 +6,8 @@ import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { maskCep, fetchAddressByCep, parseAddressComponents, getPrimaryAddressSegment, formatCurrencyBR, formatCurrencyInput, parseCurrencyBR } from '@/lib/utils';
-import { LogOut, Save } from 'lucide-react';
+import { LogOut, Save, RefreshCw } from 'lucide-react';
+import CalendarSyncSettings from '@/components/CalendarSyncSettings';
 
 export default function EditPropertyPage() {
   const router = useRouter();
@@ -133,7 +134,7 @@ export default function EditPropertyPage() {
       </div>
 
       <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form id="edit-property-form" onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2 col-span-full">
               <label className="text-sm font-medium text-slate-700">Nome do Imóvel</label>
@@ -292,26 +293,38 @@ export default function EditPropertyPage() {
                 placeholder="Ex: WiFi, Ar Condicionado, Piscina, Churrasqueira"
               />
             </div>
-          </div>
+            </div>
 
-          <div className="pt-4 flex justify-end gap-2 border-t border-slate-100">
-            <Link
-              href="/dashboard/properties"
-              className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-3 rounded-xl font-bold shadow-sm flex items-center gap-2 transition-all active:scale-95"
-            >
-              <LogOut className="h-5 w-5" />
-              Sair
-            </Link>
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70"
-            >
-              <Save className="h-5 w-5" />
-              {loading ? 'Salvando...' : 'Salvar e Sair'}
-            </button>
-          </div>
         </form>
+
+        {/* Seção de Sincronização Airbnb/Externos */}
+        <div className="mt-8 pt-8 border-t border-slate-100">
+          <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <RefreshCw className="w-6 h-6 text-indigo-600" />
+            Sincronização de Calendário
+          </h2>
+          <CalendarSyncSettings propertyId={id} />
+        </div>
+
+        {/* Botões Sair / Salvar e Sair */}
+        <div className="pt-6 mt-8 flex justify-end gap-2 border-t border-slate-100">
+          <Link
+            href="/dashboard/properties"
+            className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-3 rounded-xl font-bold shadow-sm flex items-center gap-2 transition-all active:scale-95"
+          >
+            <LogOut className="h-5 w-5" />
+            Sair
+          </Link>
+          <button
+            type="submit"
+            form="edit-property-form"
+            disabled={loading}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-70"
+          >
+            <Save className="h-5 w-5" />
+            {loading ? 'Salvando...' : 'Salvar e Sair'}
+          </button>
+        </div>
       </div>
     </div>
   );

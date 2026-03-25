@@ -28,7 +28,14 @@ const localizer = dateFnsLocalizer({
 });
 
 // Função para gerar cores consistentes baseadas em uma string
-const getEventColor = (str: string) => {
+const getEventColor = (str: string, provider?: string) => {
+  if (provider) {
+    const p = provider.toLowerCase();
+    if (p.includes('airbnb')) return '#ff385c'; // Airbnb Red
+    if (p.includes('booking')) return '#003580'; // Booking Blue
+    return '#64748b'; // Outros
+  }
+
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -98,7 +105,7 @@ export default function ReservationsPage() {
               <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-slate-600">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-slate-400" />
-                  <span className="font-medium text-slate-700">{reserva.locatario.nome}</span>
+                  <span className="font-medium text-slate-700">{reserva.locatario?.nome || (reserva.provider ? `Bloqueio ${reserva.provider}` : 'Bloqueio')}</span>
                 </div>
                 
                 <div className="flex items-center gap-4">
@@ -154,7 +161,7 @@ export default function ReservationsPage() {
           {isTotalPago && <CheckCircle2 className="h-2.5 w-2.5 text-white/90 shrink-0" />}
         </div>
         <div className="text-[10px] font-medium truncate text-white leading-none mb-1">
-          {reserva.locatario.nome}
+          {reserva.locatario?.nome || (reserva.provider ? `Bloqueio ${reserva.provider}` : 'Bloqueio')}
         </div>
         <div className="text-[8px] font-bold text-white/80 mt-auto flex items-center justify-between">
           <span>{reserva.hora_checkin}</span>
@@ -177,11 +184,11 @@ export default function ReservationsPage() {
         
         return {
           id: reserva.id,
-          title: `${reserva.imovel.nome} - ${reserva.locatario.nome}`,
+          title: `${reserva.imovel.nome} - ${reserva.locatario?.nome || (reserva.provider ? `Bloqueio ${reserva.provider}` : 'Bloqueio')}`,
           start,
           end,
           resource: reserva,
-          color: getEventColor(reserva.imovel_id)
+          color: getEventColor(reserva.imovel_id, reserva.provider)
         };
       });
       setEvents(formattedEvents);

@@ -38,7 +38,7 @@ interface CampaignHistory {
   data_envio: string;
   mensagem: string;
   imovel: { nome: string };
-  locatario: { nome: string };
+  locatario: { nome: string } | null;
 }
 
 export default function CampaignsPage() {
@@ -464,9 +464,9 @@ export default function CampaignsPage() {
                       <td className="py-4">
                         <div className="flex items-center gap-2">
                            <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">
-                              {item.locatario.nome.charAt(0)}
+                              {item.locatario?.nome?.charAt(0) || 'E'}
                            </div>
-                           <span className="font-bold text-slate-800">{item.locatario.nome}</span>
+                           <span className="font-bold text-slate-800">{item.locatario?.nome || 'Reserva Externa'}</span>
                         </div>
                       </td>
                       <td className="py-4">

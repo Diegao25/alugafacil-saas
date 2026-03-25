@@ -1,0 +1,105 @@
+import { Request, Response } from 'express';
+import { prisma } from '../prisma';
+import ical, { ICalCalendarMethod } from 'ical-generator';
+import { syncExternalCalendars } from '../services/calendar.service';
+
+export const exportPropertyCalendar = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+
+  try {
+    const property = await (prisma as any).property.findUnique({
+      where: { id },
+      include: {
+        reservas: {
+          where: {
+            status: { not: 'Cancelada' }
+          }
+        }
+      }
+    });
+
+    if (!property) {
+      return res.status(404).json({ error: 'Imóvel não encontrado' });
+    }
+
+    const calendar = ical({ name: `Aluga Fácil - ${property.nome}` });
+    calendar.method(ICalCalendarMethod.PUBLISH);
+
+    property.reservas.forEach((reserva: any) => {
+      // Definindo o título do evento
+      let summary = 'Reserva Aluga Fácil';
+      if (reserva.provider === 'airbnb') summary = 'Reserva Airbnb (Sinc)';
+      if (reserva.provider === 'booking') summary = 'Reserva Booking (Sinc)';
+
+      calendar.createEvent({
+        start: reserva.data_checkin,
+        end: reserva.data_checkout,
+        summary: summary,
+        description: `Reserva gerenciada pelo Aluga Fácil. Código: ${reserva.id}`,
+        allDay: true
+      });
+    });
+
+    res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="agenda-${property.id}.ics"`);
+
+    return res.send(calendar.toString());
+  } catch (error) {
+    console.error('Erro ao exportar calendário:', error);
+    return res.status(500).json({ error: 'Erro interno ao gerar calendário' });
+  }
+};
+
+export const getPropertySyncConfigs = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  try {
+    const configs = await (prisma as any).calendarSync.findMany({
+      where: { imovel_id: id }
+    });
+    return res.json(configs);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao buscar configurações' });
+  }
+};
+
+export const addPropertySyncConfig = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const { provider, url } = req.body;
+
+  if (!provider || !url) {
+    return res.status(400).json({ error: 'Provider e URL são obrigatórios' });
+  }
+
+  try {
+    const config = await (prisma as any).calendarSync.create({
+      data: {
+        imovel_id: id,
+        provider,
+        external_url: url
+      }
+    });
+    return res.json(config);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao salvar configuração' });
+  }
+};
+
+export const deleteSyncConfig = async (req: Request, res: Response) => {
+  const syncId = req.params.syncId as string;
+  try {
+    await (prisma as any).calendarSync.delete({ where: { id: syncId } });
+    return res.json({ success: true });
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao excluir configuração' });
+  }
+};
+
+export const triggerSync = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  try {
+    const result = await syncExternalCalendars(id);
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao sincronizar' });
+  }
+};

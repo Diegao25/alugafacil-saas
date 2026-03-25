@@ -22,7 +22,7 @@ type Payment = {
     id: string;
     data_checkin: string;
     imovel: { nome: string };
-    locatario: { nome: string };
+    locatario: { nome: string } | null;
   };
 };
 
@@ -229,7 +229,7 @@ export default function PaymentsPage() {
       const matchesTipo =
         appliedFilters.tipo === 'Todos' ||
         payment.tipo.toLowerCase().includes(appliedFilters.tipo.toLowerCase());
-      const matchesSearch = [payment.reserva.imovel.nome, payment.reserva.locatario.nome].some((field) =>
+      const matchesSearch = [payment.reserva.imovel.nome, payment.reserva.locatario?.nome || ''].some((field) =>
         field.toLowerCase().includes(appliedFilters.search.toLowerCase())
       );
       return matchesStatus && matchesTipo && matchesSearch;
@@ -368,7 +368,7 @@ export default function PaymentsPage() {
                   <tr key={payment.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-medium text-slate-800">{payment.reserva.imovel.nome}</div>
-                      <div className="text-xs text-slate-500">{payment.reserva.locatario.nome}</div>
+                      <div className="text-xs text-slate-500">{payment.reserva.locatario?.nome || 'Reserva Externa'}</div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
@@ -455,7 +455,7 @@ export default function PaymentsPage() {
               <div key={payment.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm">
                 <div className="font-semibold text-slate-800">{payment.reserva.imovel.nome}</div>
                 <div className="text-xs text-slate-500">
-                  {payment.reserva.locatario.nome} • {payment.tipo}
+                  {payment.reserva.locatario?.nome || 'Reserva Externa'} • {payment.tipo}
                 </div>
                 <div className="mt-1 flex items-center justify-between text-xs">
                   <span>Vencimento: {payment.vencimento ? format(new Date(payment.vencimento), 'dd/MM/yyyy') : '—'}</span>
@@ -478,7 +478,7 @@ export default function PaymentsPage() {
               <div key={payment.id} className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm">
                 <div className="font-semibold text-slate-900">{payment.reserva.imovel.nome}</div>
                 <div className="text-xs text-slate-600">
-                  {payment.reserva.locatario.nome} • {payment.tipo}
+                  {payment.reserva.locatario?.nome || 'Reserva Externa'} • {payment.tipo}
                 </div>
                 <div className="mt-1 flex items-center justify-between text-xs">
                   <span>
@@ -505,7 +505,7 @@ export default function PaymentsPage() {
                   {selectedPayment.reserva.imovel.nome}
                 </p>
                 <p className="text-xs text-slate-500">
-                  {selectedPayment.reserva.locatario.nome} • {selectedPayment.tipo}
+                  {selectedPayment.reserva.locatario?.nome || 'Reserva Externa'} • {selectedPayment.tipo}
                 </p>
               </div>
               <button

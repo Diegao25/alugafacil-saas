@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "library"
 }
 
@@ -9,59 +9,50 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  nome         String
-  email        String     @unique
-  senha        String
-  cpf_cnpj     String?    @unique
-  telefone     String?
-  endereco     String?
-  is_admin     Boolean    @default(false)
-  reset_token  String?
-  reset_token_expires DateTime?
-  data_criacao DateTime   @default(now())
-  login_count  Int        @default(0)
-
-  // SaaS Trial & Subscription Fields
-  plan_type           String     @default("trial") // trial, free, premium
-  trial_start_date    DateTime?  @default(now())
-  trial_end_date      DateTime?
-  subscription_status String     @default("trial_active") // trial_active, trial_expiring, trial_expired, active_subscription, cancelled
-  
-  stripe_customer_id     String?    @unique
-  stripe_subscription_id String?    @unique
-
-  // Enhanced Subscription Details
-  plan_name           String?    // e.g., "Profissional"
-  subscription_date   DateTime?
-  subscription_amount Float?
-  payment_method      String?
-
-  // Cancellation Fields
-  cancellation_date   DateTime?
-  access_until        DateTime?
-  owner_user_id       String?
-
-  owner               User?      @relation("UserAccountMembers", fields: [owner_user_id], references: [id], onDelete: SetNull)
-  team_members        User[]     @relation("UserAccountMembers")
-
-  imoveis              Property[]
-  locatarios           Tenant[]
-  subscription_history SubscriptionHistory[]
+  id                     String                 @id @default(uuid())
+  nome                   String
+  email                  String                 @unique
+  senha                  String
+  cpf_cnpj               String?                @unique
+  telefone               String?
+  endereco               String?
+  is_admin               Boolean                @default(false)
+  reset_token            String?
+  reset_token_expires    DateTime?
+  data_criacao           DateTime               @default(now())
+  login_count            Int                    @default(0)
+  plan_type              String                 @default("trial")
+  trial_start_date       DateTime?              @default(now())
+  trial_end_date         DateTime?
+  subscription_status    String                 @default("trial_active")
+  stripe_customer_id     String?                @unique
+  stripe_subscription_id String?                @unique
+  plan_name              String?
+  subscription_date      DateTime?
+  subscription_amount    Float?
+  payment_method         String?
+  cancellation_date      DateTime?
+  access_until           DateTime?
+  owner_user_id          String?
   cancellation_feedbacks CancellationFeedback[]
-  nps_responses        NpsResponse[]
-  terms_acceptances    UserTermsAcceptance[]
-  ces_responses        CesResponse[]
+  ces_responses          CesResponse[]
+  nps_responses          NpsResponse[]
+  imoveis                Property[]
+  subscription_history   SubscriptionHistory[]
+  locatarios             Tenant[]
+  owner                  User?                  @relation("UserAccountMembers", fields: [owner_user_id], references: [id])
+  team_members           User[]                 @relation("UserAccountMembers")
+  terms_acceptances      UserTermsAcceptance[]
 }
 
 model CesResponse {
-  id          String   @id @default(uuid())
-  score       Int      // 1 a 7 (Likert Scale)
-  task_type   String   @default("onboarding") 
-  comment     String?
-  createdAt   DateTime @default(now())
-  usuario_id  String
-  user        User     @relation(fields: [usuario_id], references: [id])
+  id         String   @id @default(uuid())
+  score      Int
+  task_type  String   @default("onboarding")
+  comment    String?
+  createdAt  DateTime @default(now())
+  usuario_id String
+  user       User     @relation(fields: [usuario_id], references: [id])
 }
 
 model TermsVersion {
@@ -82,45 +73,43 @@ model UserTermsAcceptance {
   user_agent       String?
   usuario_id       String
   terms_version_id String
-  user             User         @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
   termsVersion     TermsVersion @relation(fields: [terms_version_id], references: [id], onDelete: Cascade)
+  user             User         @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
 
   @@unique([usuario_id, terms_version_id])
 }
 
 model NpsResponse {
-  id          String   @id @default(uuid())
-  score       Int
-  comment     String?
-  createdAt   DateTime @default(now())
-  usuario_id  String
-  user        User     @relation(fields: [usuario_id], references: [id])
+  id         String   @id @default(uuid())
+  score      Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  usuario_id String
+  user       User     @relation(fields: [usuario_id], references: [id])
 }
 
 model SubscriptionHistory {
-  id                String   @id @default(uuid())
-  plan_name         String
-  amount            Float
-  date              DateTime @default(now())
-  
-  usuario_id        String
-  user              User     @relation(fields: [usuario_id], references: [id])
+  id         String   @id @default(uuid())
+  plan_name  String
+  amount     Float
+  date       DateTime @default(now())
+  usuario_id String
+  user       User     @relation(fields: [usuario_id], references: [id])
 }
 
 model CancellationFeedback {
   id                 String   @id @default(uuid())
-  motivo             String   // opção escolhida
-  detalhe            String?  // campo aberto "Outro"
+  motivo             String
+  detalhe            String?
   accepted_discount  Boolean  @default(false)
   accepted_downgrade Boolean  @default(false)
   created_at         DateTime @default(now())
-
   usuario_id         String
   user               User     @relation(fields: [usuario_id], references: [id])
 }
 
 model Property {
-  id                String        @id @default(uuid())
+  id                String         @id @default(uuid())
   nome              String
   endereco          String
   descricao         String?
@@ -128,59 +117,57 @@ model Property {
   capacidade_maxima Int
   redes_sociais_url String?
   foto_principal    String?
-  comodidades       String? // Separados por vírgula ou JSON
-  data_criacao      DateTime      @default(now())
-  
+  comodidades       String?
+  data_criacao      DateTime       @default(now())
   usuario_id        String
-  user              User          @relation(fields: [usuario_id], references: [id])
-  reservas          Reservation[]
+  calendar_syncs    CalendarSync[]
   campanhas         Campaign[]
+  user              User           @relation(fields: [usuario_id], references: [id])
+  reservas          Reservation[]
 }
 
 model Tenant {
-  id           String        @id @default(uuid())
-  nome         String
-  cpf          String?       @unique
-  telefone     String?
-  email        String?       @unique
-  endereco     String?
-  observacoes  String?
-  usuario_id   String?
-  user         User?         @relation(fields: [usuario_id], references: [id])
-  reservas     Reservation[]
-  campanhas    Campaign[]
+  id          String        @id @default(uuid())
+  nome        String
+  cpf         String?       @unique
+  telefone    String?
+  email       String?       @unique
+  endereco    String?
+  observacoes String?
+  usuario_id  String?
+  campanhas   Campaign[]
+  reservas    Reservation[]
+  user        User?         @relation(fields: [usuario_id], references: [id])
 }
 
 model Reservation {
-  id            String    @id @default(uuid())
+  id            String         @id @default(uuid())
   data_checkin  DateTime
   hora_checkin  String?
   data_checkout DateTime
   hora_checkout String?
   valor_total   Float
-  status        String    @default("Pendente") // Confirmada, Pendente, Cancelada
-  
+  status        String         @default("Pendente")
   imovel_id     String
-  imovel        Property  @relation(fields: [imovel_id], references: [id])
-  
-  locatario_id  String
-  locatario     Tenant    @relation(fields: [locatario_id], references: [id])
-  
-  pagamentos    Payment[]
+  locatario_id  String?
+  external_id   String?        @unique
+  provider      String?
   contrato      ContractDraft?
+  pagamentos    Payment[]
+  imovel        Property       @relation(fields: [imovel_id], references: [id])
+  locatario     Tenant?        @relation(fields: [locatario_id], references: [id])
 }
 
 model Payment {
-  id             String      @id @default(uuid())
-  valor          Float
-  tipo           String      // Sinal, Restante
-  status         String      @default("Pendente") // Pago, Pendente
+  id              String      @id @default(uuid())
+  valor           Float
+  tipo            String
+  status          String      @default("Pendente")
   data_vencimento DateTime?
-  data_pagamento DateTime?
-  meio_pagamento String?
-  
-  reserva_id     String
-  reserva        Reservation @relation(fields: [reserva_id], references: [id], onDelete: Cascade)
+  data_pagamento  DateTime?
+  meio_pagamento  String?
+  reserva_id      String
+  reserva         Reservation @relation(fields: [reserva_id], references: [id], onDelete: Cascade)
 }
 
 model ContractDraft {
@@ -196,10 +183,18 @@ model Campaign {
   id           String   @id @default(uuid())
   data_envio   DateTime @default(now())
   mensagem     String
-  
   imovel_id    String
-  imovel       Property @relation(fields: [imovel_id], references: [id])
-  
   locatario_id String
+  imovel       Property @relation(fields: [imovel_id], references: [id])
   locatario    Tenant   @relation(fields: [locatario_id], references: [id])
+}
+
+model CalendarSync {
+  id           String    @id @default(uuid())
+  provider     String
+  external_url String
+  last_sync    DateTime?
+  created_at   DateTime  @default(now())
+  imovel_id    String
+  imovel       Property  @relation(fields: [imovel_id], references: [id])
 }

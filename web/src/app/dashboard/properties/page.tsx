@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import { Plus, MapPin, Users, DollarSign, Trash2, Edit, MessageCircle, Instagram, Facebook, ExternalLink } from 'lucide-react';
+import { Plus, MapPin, Users, DollarSign, Trash2, Edit, MessageCircle, Instagram, Facebook, ExternalLink, RefreshCcw } from 'lucide-react';
 import { toast } from 'react-toastify';
 import CopyLinkButton from '@/components/CopyLinkButton';
 import { formatCurrencyBR, unmask } from '@/lib/utils';
@@ -26,6 +26,7 @@ export default function PropertiesPage() {
   const [selectedTenant, setSelectedTenant] = useState('');
   const [loadingTenants, setLoadingTenants] = useState(false);
   const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProperties();
@@ -74,6 +75,28 @@ export default function PropertiesPage() {
       }
       
       toast.error(message);
+    }
+  }
+
+  async function handleSyncNow(propertyId: string) {
+    setSyncingId(propertyId);
+    try {
+      const res = await api.post(`/properties/${propertyId}/sync-now`);
+      const { imported = 0, removed = 0, updated = 0 } = res.data;
+      if (imported === 0 && removed === 0 && updated === 0) {
+        toast.info('Agenda já está atualizada. Nenhuma alteração encontrada.');
+      } else {
+        const parts = [];
+        if (imported > 0) parts.push(`${imported} nova(s) importada(s)`);
+        if (removed > 0) parts.push(`${removed} cancelada(s) removida(s)`);
+        if (updated > 0) parts.push(`${updated} período(s) atualizado(s)`);
+        
+        toast.success(`Sincronizado! ${parts.join(', ')}.`);
+      }
+    } catch (error) {
+      toast.error('Erro ao sincronizar. Verifique se o link iCal está configurado.');
+    } finally {
+      setSyncingId(null);
     }
   }
 
@@ -219,7 +242,16 @@ function normalizeExternalUrl(url?: string | null) {
                     <MessageCircle className="h-3.5 w-3.5" />
                     Compartilhar
                   </button>
-                  <Link
+                   <button
+                    type="button"
+                    onClick={() => handleSyncNow(property.id)}
+                    disabled={syncingId === property.id}
+                    className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-violet-700 transition hover:bg-violet-100 hover:border-violet-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <RefreshCcw className={`h-3.5 w-3.5 ${syncingId === property.id ? 'animate-spin' : ''}`} />
+                    {syncingId === property.id ? 'Sincronizando...' : 'Sincronizar'}
+                  </button>
+                   <Link
                     target="_blank"
                     rel="noreferrer"
                     href={agendaPath}

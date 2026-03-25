@@ -53,9 +53,9 @@ export default function ContractsPage() {
   }
 
   async function handleSendWhatsApp(reserva: any) {
-    const phone = reserva.locatario.telefone;
+    const phone = reserva.locatario?.telefone;
     if (!phone) {
-      toast.warning('Telefone do locatário não disponível');
+      toast.warning('Telefone do locatário não disponível (Reserva Externa)');
       return;
     }
     try {
@@ -69,7 +69,7 @@ export default function ContractsPage() {
         toast.warning('Telefone do locatário inválido');
         return;
       }
-      const message = `Olá ${reserva.locatario.nome}, segue o contrato do imóvel para sua revisão: ${link}`;
+      const message = `Olá ${reserva.locatario?.nome || 'Cliente'}, segue o contrato do imóvel para sua revisão: ${link}`;
       const waLink = `https://wa.me/55${digits.replace(/^55/, '')}?text=${encodeURIComponent(message)}`;
       openWhatsAppLink(waLink);
       toast.success('Abrindo conversa no WhatsApp...');
@@ -123,7 +123,7 @@ export default function ContractsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-slate-800">{reserva.imovel.nome}</div>
-                      <div className="text-xs text-slate-500">{reserva.locatario.nome}</div>
+                      <div className="text-xs text-slate-500">{reserva.locatario?.nome || 'Reserva Externa'}</div>
                     </td>
                     <td className="px-6 py-4 text-right flex justify-end gap-2">
                     <button
@@ -143,7 +143,7 @@ export default function ContractsPage() {
                     </button>
 
                     <button 
-                      onClick={() => handleDownloadContract(reserva.id, reserva.locatario.nome)}
+                      onClick={() => handleDownloadContract(reserva.id, reserva.locatario?.nome || 'Externa')}
                       className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-rose-600 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
                       title="Baixar PDF"
                     >

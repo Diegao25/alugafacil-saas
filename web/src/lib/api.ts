@@ -5,7 +5,7 @@ const AUTH_STORAGE_KEY = 'gestaolocacoes.auth_token';
 // Tenta obter a URL da API de forma estática para o build do Next.js
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const getBaseUrl = () => {
+export const getApiBaseUrl = () => {
   // Debug para saber se a variável está chegando ao cliente
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
      console.log('--- API Config ---');
@@ -44,7 +44,7 @@ const getBaseUrl = () => {
 };
 
 export const api = axios.create({
-  baseURL: getBaseUrl(),
+  baseURL: getApiBaseUrl(),
   withCredentials: true,
 });
 

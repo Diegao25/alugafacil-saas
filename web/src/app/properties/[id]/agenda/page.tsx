@@ -87,7 +87,7 @@ export default async function PropertyAgendaPage({
         end: new Date(ey, em - 1, ed, 0, 0, 0, 0).getTime()
       };
     })
-    .filter((booking) => booking.start < booking.end);
+    .filter((booking) => booking.start <= booking.end);
 
   const whatsappLink = availability.property.proprietario.telefone 
     ? `https://api.whatsapp.com/send?phone=55${availability.property.proprietario.telefone.replace(/\D/g, '')}&text=${encodeURIComponent(`Olá, vi seu imóvel "${availability.property.nome}" no Aluga Fácil e gostaria de mais informações!`)}`
@@ -100,9 +100,10 @@ export default async function PropertyAgendaPage({
         {availability.property.foto_principal ? (
           <div 
             className="w-full h-full bg-cover bg-center transition-opacity duration-700" 
+            suppressHydrationWarning
             style={{ 
               backgroundImage: `url(${availability.property.foto_principal})`,
-              backgroundColor: '#1e293b' // Fallback slate-800
+              backgroundColor: '#1e293b'
             }}
           >
             {/* Overlay para legibilidade quando a imagem carrega */}

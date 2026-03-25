@@ -22,7 +22,9 @@ import {
   LayoutDashboard,
   Smartphone,
   Check,
-  ChevronDown
+  ChevronDown,
+  Globe,
+  RefreshCcw
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -77,9 +79,9 @@ export default function LandingPage() {
       description: 'Acompanhe a taxa de ocupação, faturamento mensal e anual através de gráficos intuitivos.'
     },
     {
-      icon: Smartphone,
-      title: 'Acesso de Qualquer Lugar',
-      description: 'Gerencie seus imóveis pelo computador, tablet ou celular, sempre que precisar.'
+      icon: RefreshCcw,
+      title: 'Sincronização Airbnb/iCal',
+      description: 'Conecte sua agenda com Airbnb, Booking e muito mais. Mantenha sua disponibilidade sempre atualizada e zero overbooking.'
     }
   ];
 
@@ -153,6 +155,10 @@ export default function LandingPage() {
     {
       question: "Preciso cadastrar cartão de crédito para testar?",
       answer: "Não! Você pode criar sua conta e usar todas as funcionalidades por 15 dias sem informar nenhum dado de pagamento. Só pediremos o cartão se você decidir assinar um plano profissional após o teste."
+    },
+    {
+      question: "Como funciona a sincronização com o Airbnb?",
+      answer: "É simples! Basta colar o link de exportação do seu Airbnb (ou qualquer plataforma que use iCal) no Aluga Fácil. O sistema passará a importar seus bloqueios automaticamente, garantindo que você nunca alugue a mesma data em duas plataformas diferentes."
     },
     {
       question: "O sistema gera contrato de locação automaticamente?",
@@ -297,9 +303,9 @@ export default function LandingPage() {
 
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1 text-center lg:text-left z-10">
-            <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-blue-50 border border-blue-100 text-blue-700 rounded-full text-sm font-bold shadow-sm">
+            <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-blue-50 border border-blue-100 text-blue-700 rounded-full text-sm font-bold shadow-sm animate-pulse lg:animate-none">
               <span className="flex h-2 w-2 rounded-full bg-blue-600"></span>
-              O sistema nº 1 para anfitriões
+              NOVO: Sincronização Airbnb & Booking Inclusa
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 mb-8 leading-[1.1] tracking-tight">
@@ -472,26 +478,83 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-              <div className="relative">
-                <div className="absolute inset-0 bg-blue-600 transform translate-x-4 translate-y-4 rounded-3xl -z-10 opacity-10"></div>
-                <div className="bg-white rounded-3xl shadow-2xl p-4 border border-slate-100 overflow-hidden">
-                  <img 
-                    src="/images/dashboard-mockup.png" 
-                    alt="Visão Geral do Dashboard Aluga Fácil" 
-                    className="rounded-2xl object-cover w-full h-auto shadow-sm"
-                  />
-                  <div className="mt-6 flex justify-center">
-                    <Link
-                      href="/register?external=1"
-                      className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
-                    >
-                      Quero profissionalizar minha gestão!
-                    </Link>
-                  </div>
+            <div className="relative">
+              <div className="absolute inset-0 bg-blue-600 transform translate-x-4 translate-y-4 rounded-3xl -z-10 opacity-10"></div>
+              <div className="bg-white rounded-3xl shadow-2xl p-4 border border-slate-100 overflow-hidden">
+                <img 
+                  src="/images/dashboard-mockup.png" 
+                  alt="Visão Geral do Dashboard Aluga Fácil" 
+                  className="rounded-2xl object-cover w-full h-auto shadow-sm"
+                />
+                <div className="mt-6 flex justify-center">
+                  <Link
+                    href="/register?external=1"
+                    className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
+                  >
+                    Quero profissionalizar minha gestão!
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Sincronização / iCal Section (Marketing) */}
+      <section className="py-24 bg-gradient-to-b from-white to-blue-50/30 px-4 sm:px-6 lg:px-8 border-y border-slate-100 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+          <div className="flex-1 order-2 lg:order-1">
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl relative z-10 flex flex-col gap-8">
+                 <div className="flex items-center justify-center gap-8 md:gap-12 animate-float">
+                    <div className="text-2xl md:text-3xl font-black text-[#FF5A5F] tracking-tighter opacity-50 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all">airbnb</div>
+                    <RefreshCcw size={32} className="text-blue-200 animate-spin-slow" />
+                    <div className="text-xl md:text-2xl font-black text-[#003580] tracking-tighter opacity-50 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all">Booking.com</div>
+                 </div>
+                 
+                 <div className="p-6 bg-slate-900 rounded-2xl text-white">
+                    <div className="flex items-center gap-3 mb-4">
+                       <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-black text-xs">AF</div>
+                       <div className="text-sm font-bold text-slate-400">Status da Agenda Universal</div>
+                    </div>
+                    <div className="space-y-3">
+                       <div className="flex items-center justify-between p-3 bg-slate-800 rounded-xl border border-slate-700">
+                          <span className="text-sm font-medium">Reservado (Airbnb)</span>
+                          <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full font-bold">Bloqueado no AF</span>
+                       </div>
+                       <div className="flex items-center justify-between p-3 bg-slate-800 rounded-xl border border-slate-700">
+                          <span className="text-sm font-medium">Reservado (Booking)</span>
+                          <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full font-bold">Bloqueado no AF</span>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 order-1 lg:order-2">
+            <span className="text-blue-600 font-bold tracking-wider uppercase text-sm mb-4 block">Fim do Overbooking</span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">Anuncie onde quiser. Gerencie em um só lugar.</h2>
+            <p className="text-xl text-slate-600 mb-10 leading-relaxed">
+              Integração via **iCal** que conecta seu calendário do Aluga Fácil com as maiores plataformas do mundo. Se alguém reservar no Airbnb, nós bloqueamos automaticamente no seu site.
+            </p>
+            <ul className="space-y-4 mb-10">
+               {[
+                 'Importação automática de datas ocupadas',
+                 'Exportação da agenda do Aluga Fácil para o mundo',
+                 'Sincronização em tempo real via iCal',
+                 'Zero taxas extras por plataforma conectada'
+               ].map((item, idx) => (
+                 <li key={idx} className="flex items-center gap-3 text-slate-700 font-medium">
+                    <CheckCircle2 size={20} className="text-blue-600" /> {item}
+                 </li>
+               ))}
+            </ul>
+            <Link href="/register?external=1" className="text-blue-600 font-bold flex items-center gap-2 hover:gap-3 transition-all">
+               Descubra o poder da automação <ArrowRight size={20} />
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Features Grid */}
@@ -835,6 +898,23 @@ export default function LandingPage() {
           </div>
         </div>
       )}
+
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        .animate-spin-slow {
+          animation: spin 6s linear infinite;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }

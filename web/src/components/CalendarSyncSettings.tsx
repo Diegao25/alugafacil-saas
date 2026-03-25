@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { api, getApiBaseUrl } from '@/lib/api';
 import { toast } from 'react-toastify';
 import { Share2, RefreshCw, Trash2, Calendar, Link as LinkIcon, Info, Check, Copy } from 'lucide-react';
+import ConfirmModal from '@/components/ConfirmModal';
 
 interface SyncConfig {
   id: string;
@@ -22,6 +23,9 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
   const [syncing, setSyncing] = useState(false);
   const [adding, setAdding] = useState(false);
   const [copied, setCopied] = useState(false);
+  
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [syncIdToDelete, setSyncIdToDelete] = useState<string | null>(null);
 
   const [newUrl, setNewUrl] = useState('');
   const [newProvider, setNewProvider] = useState('airbnb');
@@ -70,15 +74,23 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
     }
   };
 
-  const handleDelete = async (syncId: string) => {
-    if (!confirm('Deseja remover esta sincronização?')) return;
+  const handleDeleteClick = (syncId: string) => {
+    setSyncIdToDelete(syncId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!syncIdToDelete) return;
 
     try {
-      await api.delete(`/properties/${propertyId}/sync/${syncId}`);
+      await api.delete(`/properties/${propertyId}/sync/${syncIdToDelete}`);
       toast.success('Sincronização removida');
       fetchConfigs();
     } catch (error) {
       toast.error('Erro ao remover');
+    } finally {
+      setDeleteConfirmOpen(false);
+      setSyncIdToDelete(null);
     }
   };
 
@@ -207,11 +219,11 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
                     <p className="text-[11px] text-slate-500">Última sync: {config.last_sync ? new Date(config.last_sync).toLocaleString() : 'Nunca sincronizado'}</p>
                   </div>
                 </div>
-                <button 
-                  onClick={() => handleDelete(config.id)}
-                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                >
-                  <Trash2 className="w-4 h-4" />
+                <button
+                  onClick={() => handleDeleteClick(config.id)}
+                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Remover"
+                >  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -221,8 +233,18 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
             <LinkIcon className="w-8 h-8 text-slate-300 mx-auto mb-2" />
             <p className="text-sm text-slate-500">Nenhum calendário externo conectado.</p>
           </div>
-        )}
-      </div>
+      )}
+
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Remover Sincronização"
+        description="Tem certeza que deseja remover este calendário? A sincronização automática será interrompida."
+        confirmText="Remover"
+        cancelText="Cancelar"
+        isDestructive={true}
+      />
     </div>
   );
 }

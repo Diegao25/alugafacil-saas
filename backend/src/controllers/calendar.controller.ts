@@ -42,19 +42,29 @@ export const exportPropertyCalendar = async (req: Request, res: Response) => {
       if (reserva.provider === 'airbnb') summary = 'Reserva Airbnb (Sinc)';
       if (reserva.provider === 'booking') summary = 'Reserva Booking (Sinc)';
 
+      const start = new Date(reserva.data_checkin);
+      const end = new Date(reserva.data_checkout);
+
+      // Padrão iCal exige que o End date de eventos all-day seja no mínimo 1 dia após o start (End é exclusivo)
+      if (start.getTime() >= end.getTime()) {
+        end.setDate(end.getDate() + 1);
+      }
+
       calendar.createEvent({
-        start: reserva.data_checkin,
-        end: reserva.data_checkout,
+        start: start,
+        end: end,
         summary: summary,
         description: `Reserva gerenciada pelo Aluga Fácil. Código: ${reserva.id}`,
         allDay: true
       });
     });
 
+    const icalString = calendar.toString();
+
     res.setHeader('Content-Type', 'text/calendar');
     res.setHeader('Content-Disposition', `attachment; filename="agenda-${property.id}.ics"`);
 
-    return res.send(calendar.toString());
+    return res.send(icalString);
   } catch (error) {
     console.error('Erro ao exportar calendário:', error);
     return res.status(500).json({ error: 'Erro interno ao gerar calendário' });

@@ -233,17 +233,18 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
             <LinkIcon className="w-8 h-8 text-slate-300 mx-auto mb-2" />
             <p className="text-sm text-slate-500">Nenhum calendário externo conectado.</p>
           </div>
-      )}
+        )}
+      </div>
 
       <ConfirmModal
         isOpen={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
         title="Remover Sincronização"
-        description="Tem certeza que deseja remover este calendário? A sincronização automática será interrompida."
+        message="Tem certeza que deseja remover este calendário? A sincronização automática será interrompida."
         confirmText="Remover"
         cancelText="Cancelar"
-        isDestructive={true}
+        isDanger={true}
       />
     </div>
   );

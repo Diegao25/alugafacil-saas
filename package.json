@@ -1,6 +1,9 @@
 {
     "name": "gestao_locacoes",
     "private": true,
+    "engines": {
+        "node": ">=20.0.0"
+    },
     "scripts": {
         "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix web\""
     },

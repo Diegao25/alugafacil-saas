@@ -2,6 +2,9 @@
   "name": "web",
   "version": "0.1.1",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=1536\" NEXT_PRIVATE_WORKER_OPTS=\"--max-old-space-size=1536\" next build",

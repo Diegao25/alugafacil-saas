@@ -25,6 +25,17 @@ export const exportPropertyCalendar = async (req: Request, res: Response) => {
     const calendar = ical({ name: `Aluga Fácil - ${property.nome}` });
     calendar.method(ICalCalendarMethod.PUBLISH);
 
+    if (property.reservas.length === 0) {
+      calendar.createEvent({
+        start: new Date('2020-01-01T00:00:00Z'),
+        end: new Date('2020-01-02T00:00:00Z'),
+        summary: 'Aluga Fácil Link Validator',
+        description: 'Evento passado para validação de estrutura do iCal das plataformas',
+        allDay: true,
+        uid: `dummy-validator-${property.id}`
+      });
+    }
+
     property.reservas.forEach((reserva: any) => {
       // Definindo o título do evento
       let summary = 'Reserva Aluga Fácil';
@@ -40,7 +51,7 @@ export const exportPropertyCalendar = async (req: Request, res: Response) => {
       });
     });
 
-    res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+    res.setHeader('Content-Type', 'text/calendar');
     res.setHeader('Content-Disposition', `attachment; filename="agenda-${property.id}.ics"`);
 
     return res.send(calendar.toString());

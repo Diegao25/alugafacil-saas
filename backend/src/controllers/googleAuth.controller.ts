@@ -61,6 +61,10 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
           trial_start_date: trialStartDate,
           trial_end_date: trialEndDate,
           subscription_status: 'trial_active',
+          cpf_cnpj: '',
+          telefone: '',
+          endereco: '',
+          login_count: 1
         },
       });
       console.log('[Step 4] User created successfully.');
@@ -99,6 +103,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
 
     console.log('[Step 7] Success! Sending user data.');
     res.status(200).json({
+      token,
       user: {
         id: user.id,
         nome: user.nome,

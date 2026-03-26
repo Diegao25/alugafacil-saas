@@ -88,7 +88,7 @@ export const updateProperty = async (req: AuthRequest, res: Response): Promise<v
     const usuario_id = await resolveOwnerId(req.user?.id);
     const data = req.body;
     if (!usuario_id) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 

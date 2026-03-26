@@ -13,13 +13,13 @@ export const createReservation = async (req: AuthRequest, res: Response): Promis
       return;
     }
     if (!forma_pagamento) {
-      res.status(400).json({ error: 'Forma de pagamento obrigatÃ³ria' });
+      res.status(400).json({ error: 'Forma de pagamento obrigatória' });
       return;
     }
 
     const ownerId = await resolveOwnerId(req.user?.id);
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -28,7 +28,7 @@ export const createReservation = async (req: AuthRequest, res: Response): Promis
     });
 
     if (!property) {
-      res.status(404).json({ error: 'ImÃ³vel nÃ£o encontrado' });
+      res.status(404).json({ error: 'Imóvel não encontrado' });
       return;
     }
 
@@ -180,7 +180,7 @@ export const getReservations = async (req: AuthRequest, res: Response): Promise<
     const usuario_id = req.user?.id;
     const ownerId = await resolveOwnerId(usuario_id);
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -210,7 +210,7 @@ export const getReservationById = async (req: AuthRequest, res: Response): Promi
     const usuario_id = req.user?.id;
     const ownerId = await resolveOwnerId(usuario_id);
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -252,7 +252,7 @@ export const updateReservation = async (req: AuthRequest, res: Response): Promis
     const usuario_id = req.user?.id;
     const ownerId = await resolveOwnerId(usuario_id);
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -318,7 +318,7 @@ export const updateReservation = async (req: AuthRequest, res: Response): Promis
 
     const hasPaid = resWithRelations.pagamentos.some((p: any) => p.status === 'Pago');
     if (!hasPaid && !forma_pagamento) {
-      res.status(400).json({ error: 'Forma de pagamento obrigatÃ³ria' });
+      res.status(400).json({ error: 'Forma de pagamento obrigatória' });
       return;
     }
 
@@ -444,7 +444,7 @@ export const deleteReservation = async (req: AuthRequest, res: Response): Promis
     const id = req.params.id as string;
     const ownerId = await resolveOwnerId(req.user?.id);
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -454,12 +454,12 @@ export const deleteReservation = async (req: AuthRequest, res: Response): Promis
     });
 
     if (!reservation) {
-      res.status(404).json({ error: 'Reserva nÃ£o encontrada' });
+      res.status(404).json({ error: 'Reserva não encontrada' });
       return;
     }
 
     if (reservation.imovel.usuario_id !== ownerId) {
-      res.status(403).json({ error: 'Sem permissÃ£o' });
+      res.status(403).json({ error: 'Sem permissão' });
       return;
     }
 

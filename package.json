@@ -5,7 +5,8 @@
         "node": ">=20.0.0"
     },
     "scripts": {
-        "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix web\""
+        "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix web\"",
+        "test": "npm test --prefix backend"
     },
     "devDependencies": {
         "concurrently": "^8.2.2"

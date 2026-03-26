@@ -45,7 +45,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
           gte: todayStart,
           lte: todayEnd
         },
-        status: { not: 'Cancelada' }
+        status: { not: 'Cancelada' },
+        locatario_id: { not: null }
       }
     });
 
@@ -57,7 +58,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
           gte: todayStart,
           lte: todayEnd
         },
-        status: { not: 'Cancelada' }
+        status: { not: 'Cancelada' },
+        locatario_id: { not: null }
       }
     });
 
@@ -66,7 +68,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkin: { gt: todayEnd },
-        status: { not: 'Cancelada' }
+        status: { not: 'Cancelada' },
+        locatario_id: { not: null }
       }
     });
 
@@ -90,7 +93,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkin: { gt: todayEnd },
-        status: { not: 'Cancelada' }
+        status: { not: 'Cancelada' },
+        locatario_id: { not: null }
       },
       take: 5,
       orderBy: { data_checkin: 'asc' },
@@ -105,7 +109,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkout: { gt: todayEnd },
-        status: { not: 'Cancelada' }
+        status: { not: 'Cancelada' },
+        locatario_id: { not: null }
       },
       take: 5,
       orderBy: { data_checkout: 'asc' },
@@ -120,7 +125,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkin: { gte: todayStart, lte: todayEnd },
-        status: { not: 'Cancelada' }
+        status: { not: 'Cancelada' },
+        locatario_id: { not: null }
       },
       include: {
         imovel: { select: { nome: true } },
@@ -132,7 +138,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkout: { gte: todayStart, lte: todayEnd },
-        status: { not: 'Cancelada' }
+        status: { not: 'Cancelada' },
+        locatario_id: { not: null }
       },
       include: {
         imovel: { select: { nome: true } },

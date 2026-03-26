@@ -12,6 +12,8 @@ type ReservationWithRelations = {
   id: string;
   data_checkin: Date;
   data_checkout: Date;
+  external_id?: string | null;
+  provider?: string | null;
   hora_checkin?: string | null;
   hora_checkout?: string | null;
   valor_total?: number | null;
@@ -54,7 +56,7 @@ export const generateContractPDF = async (req: AuthRequest, res: Response): Prom
     const ownerId = await resolveOwnerId(usuario_id);
 
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -62,6 +64,11 @@ export const generateContractPDF = async (req: AuthRequest, res: Response): Prom
 
     if (!reservation) {
       res.status(404).json({ error: 'Reserva não encontrada' });
+      return;
+    }
+
+    if (reservation.provider || !reservation.locatario) {
+      res.status(400).json({ error: 'Não é possível gerar contrato para reservas externas (Airbnb/Booking)' });
       return;
     }
 
@@ -95,6 +102,11 @@ export const getContractDraft = async (req: AuthRequest, res: Response): Promise
       return;
     }
 
+    if (reservation.provider || !reservation.locatario) {
+      res.status(400).json({ error: 'Contratos não estão disponíveis para reservas externas' });
+      return;
+    }
+
     if (reservation.imovel.usuario_id !== (ownerId || usuario_id)) {
       res.status(403).json({ error: 'Você não tem permissão para acessar este contrato' });
       return;
@@ -119,7 +131,7 @@ export const saveContractDraft = async (req: AuthRequest, res: Response): Promis
     const ownerId = await resolveOwnerId(usuario_id);
 
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -131,6 +143,11 @@ export const saveContractDraft = async (req: AuthRequest, res: Response): Promis
     const reservation = await fetchReservation(reserva_id);
     if (!reservation) {
       res.status(404).json({ error: 'Reserva não encontrada' });
+      return;
+    }
+
+    if (reservation.provider || !reservation.locatario) {
+      res.status(400).json({ error: 'Não é permitido editar contratos de reservas externas' });
       return;
     }
 
@@ -158,7 +175,7 @@ export const shareContractLink = async (req: AuthRequest, res: Response): Promis
     const ownerId = await resolveOwnerId(usuario_id);
 
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -166,6 +183,11 @@ export const shareContractLink = async (req: AuthRequest, res: Response): Promis
 
     if (!reservation) {
       res.status(404).json({ error: 'Reserva não encontrada' });
+      return;
+    }
+
+    if (reservation.provider || !reservation.locatario) {
+      res.status(400).json({ error: 'Não é possível compartilhar contratos de reservas externas' });
       return;
     }
 
@@ -364,6 +386,12 @@ function streamContract(reservation: ReservationWithRelations, res: Response) {
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', `attachment; filename=contrato_locacao_${reservation.id}.pdf`);
   const doc = new PDFDocument({ margin: 50 });
+  
+  // Evitar Erro: write after end se o cliente fechar a conexão antes do fim do processamento
+  res.on('close', () => {
+    doc.end();
+  });
+
   doc.pipe(res);
   renderContractDocument(doc, reservation);
   doc.end();

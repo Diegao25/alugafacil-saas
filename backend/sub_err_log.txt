@@ -1,0 +1,8 @@
+CHECKOUT ERROR: Cannot read properties of undefined (reading 'id')
+TypeError: Cannot read properties of undefined (reading 'id')
+    at createCheckoutSession (C:\Users\Davi e Sarah\.gemini\antigravity\scratch\gestao_locacoes\backend\src\controllers\subscription.controller.ts:103:43)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+VERIFY ERROR: Cannot read properties of undefined (reading 'payment_status')
+TypeError: Cannot read properties of undefined (reading 'payment_status')
+    at verifySession (C:\Users\Davi e Sarah\.gemini\antigravity\scratch\gestao_locacoes\backend\src\controllers\subscription.controller.ts:218:17)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)

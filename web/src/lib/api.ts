@@ -30,7 +30,7 @@ export const getApiBaseUrl = () => {
                     hostname.startsWith('172.');
 
     if (isLocal) {
-      return `http://${hostname}:3333/api`;
+      return `http://127.0.0.1:3333/api`;
     }
 
     // Ambiente de Produção (Railway ou Domínios Customizados)
@@ -40,7 +40,7 @@ export const getApiBaseUrl = () => {
   }
 
   // Fallback para SSR
-  return 'http://localhost:3333/api';
+  return 'http://127.0.0.1:3333/api';
 };
 
 export const api = axios.create({

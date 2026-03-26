@@ -105,60 +105,75 @@ export default function ContractsPage() {
                   </td>
                 </tr>
               ) : (
-                reservations.map((reserva) => (
-                  <tr key={reserva.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
-                          <FileText className="h-5 w-5" />
+                reservations.map((reserva) => {
+                  const isExternal = !!reserva.provider || !reserva.locatario;
+                  return (
+                    <tr key={reserva.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-3">
+                          <div className={`p-2 rounded-lg ${isExternal ? 'bg-slate-100 text-slate-400' : 'p-2 bg-rose-50 text-rose-600'}`}>
+                            <FileText className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className={`font-medium ${isExternal ? 'text-slate-400' : 'text-slate-800'}`}>
+                              Contrato PDF
+                            </div>
+                            <div className="text-xs text-slate-500">
+                              {isExternal ? `Sincronizado (${reserva.provider})` : 'Auto-gerado'}
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-medium text-slate-800">Contrato PDF</div>
-                          <div className="text-xs text-slate-500">Auto-gerado</div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">
+                        {format(new Date(reserva.data_checkin), 'dd/MM/yyyy')} a {format(new Date(reserva.data_checkout), 'dd/MM/yyyy')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className={`text-sm font-medium ${isExternal ? 'text-slate-400' : 'text-slate-800'}`}>
+                          {reserva.imovel.nome}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-600">
-                      {format(new Date(reserva.data_checkin), 'dd/MM/yyyy')} a {format(new Date(reserva.data_checkout), 'dd/MM/yyyy')}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-slate-800">{reserva.imovel.nome}</div>
-                      <div className="text-xs text-slate-500">{reserva.locatario?.nome || 'Reserva Externa'}</div>
-                    </td>
-                    <td className="px-6 py-4 text-right flex justify-end gap-2">
-                    <button
-                      onClick={() => handlePreviewContract(reserva.id)}
-                      className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-blue-600 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
-                      title="Pré-visualizar PDF"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
+                        <div className="text-xs text-slate-500">
+                          {reserva.locatario?.nome || (reserva.provider ? `Reserva ${reserva.provider}` : 'Reserva Externa')}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right flex justify-end gap-2">
+                        <button
+                          disabled={isExternal}
+                          onClick={() => handlePreviewContract(reserva.id)}
+                          className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-blue-600 disabled:opacity-30 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
+                          title={isExternal ? 'Indisponível para reserva externa' : 'Pré-visualizar PDF'}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
 
-                    <button
-                      onClick={() => handleSendWhatsApp(reserva)}
-                      className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-green-600 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
-                      title="Enviar pelo WhatsApp"
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                    </button>
+                        <button
+                          disabled={isExternal}
+                          onClick={() => handleSendWhatsApp(reserva)}
+                          className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-green-600 disabled:opacity-30 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
+                          title={isExternal ? 'Indisponível para reserva externa' : 'Enviar pelo WhatsApp'}
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                        </button>
 
-                    <button 
-                      onClick={() => handleDownloadContract(reserva.id, reserva.locatario?.nome || 'Externa')}
-                      className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-rose-600 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
-                      title="Baixar PDF"
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleEditContract(reserva.id)}
-                      className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-amber-500 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
-                      title="Editar contrato"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))
+                        <button 
+                          disabled={isExternal}
+                          onClick={() => handleDownloadContract(reserva.id, reserva.locatario?.nome || 'Externa')}
+                          className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-rose-600 disabled:opacity-30 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
+                          title={isExternal ? 'Indisponível para reserva externa' : 'Baixar PDF'}
+                        >
+                          <Download className="h-4 w-4" />
+                        </button>
+                        <button
+                          disabled={isExternal}
+                          onClick={() => handleEditContract(reserva.id)}
+                          className="inline-flex items-center justify-center p-2 text-slate-600 hover:text-white bg-slate-100 hover:bg-amber-500 disabled:opacity-30 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 rounded-lg transition-colors border border-transparent shadow-sm hover:shadow-md"
+                          title={isExternal ? 'Indisponível para reserva externa' : 'Editar contrato'}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

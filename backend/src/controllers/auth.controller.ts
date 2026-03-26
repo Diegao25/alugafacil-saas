@@ -36,7 +36,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const passwordHash = await bcrypt.hash(senha, PASSWORD_HASH_ROUNDS);
     
-    // ConfiguraÃ§Ã£o do Trial (14 dias)
+    // Configuração do Trial (14 dias)
     const trialStartDate = new Date();
     const trialEndDate = new Date();
     trialEndDate.setDate(trialStartDate.getDate() + 14);

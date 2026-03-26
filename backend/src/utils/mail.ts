@@ -1,6 +1,8 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY 
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 function getFromAddress() {
   return process.env.EMAIL_FROM || 'Aluga Fácil <onboarding@resend.dev>';
@@ -8,6 +10,10 @@ function getFromAddress() {
 
 export async function sendPasswordResetEmail(email: string, nome: string, resetLink: string) {
   try {
+    if (!resend) {
+      console.warn('Resend não configurado. Link de recuperação:', resetLink);
+      return;
+    }
     const { data, error } = await resend.emails.send({
       from: getFromAddress(),
       to: [email],
@@ -55,6 +61,10 @@ export async function sendWelcomeEmail(
     : null;
 
   try {
+    if (!resend) {
+      console.warn('Resend não configurado. E-mail de boas-vindas não enviado para:', email);
+      return;
+    }
     const { data, error } = await resend.emails.send({
       from: getFromAddress(),
       to: [email],
@@ -99,6 +109,10 @@ export async function sendInvitedUserWelcomeEmail(
   setupPasswordLink: string
 ) {
   try {
+    if (!resend) {
+      console.warn('Resend não configurado. E-mail de convite não enviado para:', email);
+      return;
+    }
     const { data, error } = await resend.emails.send({
       from: getFromAddress(),
       to: [email],
@@ -147,6 +161,10 @@ export async function sendSubscriptionConfirmationEmail(
   const formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
   try {
+    if (!resend) {
+      console.warn('Resend não configurado. E-mail de confirmação de assinatura não enviado para:', email);
+      return;
+    }
     const { data, error } = await resend.emails.send({
       from: getFromAddress(),
       to: [email],
@@ -202,6 +220,10 @@ export async function sendSubscriptionCancellationEmail(
   const formattedAccessUntil = accessUntil.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
   try {
+    if (!resend) {
+      console.warn('Resend não configurado. E-mail de cancelamento não enviado para:', email);
+      return;
+    }
     const { data, error } = await resend.emails.send({
       from: getFromAddress(),
       to: [email],

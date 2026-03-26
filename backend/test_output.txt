@@ -1,0 +1,285 @@
+  console.log
+    [dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+  console.log
+    [Request] GET /api/contracts/d29dd5be-b2d1-45b4-aad4-96e456dbbf01/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /d29dd5be-b2d1-45b4-aad4-96e456dbbf01/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] GET /api/contracts/e93505b5-660c-4741-9201-d1a39353471e/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /e93505b5-660c-4741-9201-d1a39353471e/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] GET /api/contracts/315da375-728e-4365-b0e1-7ce2fde1d239/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User other-user-456 authenticated for /315da375-728e-4365-b0e1-7ce2fde1d239/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] PUT /api/contracts/ce509c1c-c1b6-4683-8634-efaf88ec9303/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /ce509c1c-c1b6-4683-8634-efaf88ec9303/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] PUT /api/contracts/some-id/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /some-id/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] GET /api/contracts/d51c080c-3e3b-4468-98d9-ce47ce66bb54 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /d51c080c-3e3b-4468-98d9-ce47ce66bb54
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] GET /api/contracts/non-existent | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /non-existent
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] POST /api/contracts/e377f4a4-0069-4441-99b7-83918a81b563/share | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /e377f4a4-0069-4441-99b7-83918a81b563/share
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] POST /api/contracts/67053430-ea74-487d-94ea-e5c1e69c2979/share | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /67053430-ea74-487d-94ea-e5c1e69c2979/share
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] GET /api/public/contracts/share | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Request] GET /api/public/contracts/share?token=invalid | Origin: No Origin
+
+      at src/app.ts:29:11
+
+FAIL src/__tests__/contract.test.ts (147.394 s)
+  Contract Controller & Utilities
+    GET /api/contracts/:id/draft
+      ├ù deve retornar 404 se o rascunho n├úo existir (15011 ms)
+      ├ù deve retornar o rascunho se ele existir (15020 ms)
+      ├ù deve rejeitar acesso de outro usu├írio (15014 ms)
+    PUT /api/contracts/:id/draft
+      ├ù deve salvar um novo rascunho (upsert) (15014 ms)
+      ├ù deve validar conte├║do obrigat├│rio (15013 ms)
+    GET /api/contracts/:id
+      ├ù deve gerar PDF com sucesso (15004 ms)
+      ├ù deve retornar 404 se a reserva n├úo existir (15005 ms)
+    POST /api/contracts/:id/share
+      ├ù deve gerar um link de compartilhamento JWT (15011 ms)
+    GET /api/public/contracts/share
+      ├ù deve validar token e servir PDF publicamente (15007 ms)
+      ÔêÜ deve rejeitar token ausente (23 ms)
+      ÔêÜ deve rejeitar token inv├ílido (12 ms)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ GET /api/contracts/:id/draft ÔÇ║ deve retornar 404 se o rascunho n├úo existir
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      61 |   };
+      62 |
+    > 63 |   describe('Utility Functions (Address Parsing)', () => {
+         |     ^
+      64 |     // We can't easily export non-exported functions, but we can test via the public API or mock them if they were exported.
+      65 |     // In this case, since they are local to contract.controller.ts, we'll focus on testing the PDF generation 
+      66 |     // or we could refactor them to a utility file later. For now, we'll test the controller flows.
+
+      at src/__tests__/contract.test.ts:63:5
+      at src/__tests__/contract.test.ts:62:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ GET /api/contracts/:id/draft ÔÇ║ deve retornar o rascunho se ele existir
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      73 |
+      74 |       const res = await request(app)
+    > 75 |         .get(`/api/contracts/${reservation.id}/draft`)
+         |     ^
+      76 |         .set(AUTH_HEADER(USER_ID));
+      77 |
+      78 |       if (res.status !== 404) {
+
+      at src/__tests__/contract.test.ts:75:5
+      at src/__tests__/contract.test.ts:62:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ GET /api/contracts/:id/draft ÔÇ║ deve rejeitar acesso de outro usu├írio
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      86 |     it('deve retornar o rascunho se ele existir', async () => {
+      87 |       const draft = makeContractDraft();
+    > 88 |       const reservation = { ...mockReservation(), contrato: draft };
+         |     ^
+      89 |       (prisma.reservation.findUnique as jest.Mock).mockResolvedValue(reservation);
+      90 |
+      91 |       const res = await request(app)
+
+      at src/__tests__/contract.test.ts:88:5
+      at src/__tests__/contract.test.ts:62:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ PUT /api/contracts/:id/draft ÔÇ║ deve salvar um novo rascunho (upsert)
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+       99 |     it('deve rejeitar acesso de outro usu├írio', async () => {
+      100 |       const reservation = mockReservation(USER_ID);
+    > 101 |       (prisma.reservation.findUnique as jest.Mock).mockResolvedValue(reservation);
+          |     ^
+      102 |
+      103 |       const res = await request(app)
+      104 |         .get(`/api/contracts/${reservation.id}/draft`)
+
+      at src/__tests__/contract.test.ts:101:5
+      at src/__tests__/contract.test.ts:100:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ PUT /api/contracts/:id/draft ÔÇ║ deve validar conte├║do obrigat├│rio
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      119 |
+      120 |       const res = await request(app)
+    > 121 |         .put(`/api/contracts/${reservation.id}/draft`)
+          |     ^
+      122 |         .set(AUTH_HEADER(USER_ID))
+      123 |         .send({ content: 'Novo conte├║do' });
+      124 |
+
+      at src/__tests__/contract.test.ts:121:5
+      at src/__tests__/contract.test.ts:100:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ GET /api/contracts/:id ÔÇ║ deve gerar PDF com sucesso
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      130 |     });
+      131 |
+    > 132 |     it('deve validar conte├║do obrigat├│rio', async () => {
+          |     ^
+      133 |       const res = await request(app)
+      134 |         .put('/api/contracts/some-id/draft')
+      135 |         .set(AUTH_HEADER(USER_ID))
+
+      at src/__tests__/contract.test.ts:132:5
+      at src/__tests__/contract.test.ts:131:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ GET /api/contracts/:id ÔÇ║ deve retornar 404 se a reserva n├úo existir
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      142 |   describe('GET /api/contracts/:id', () => {
+      143 |     it('deve gerar PDF com sucesso', async () => {
+    > 144 |       const reservation = mockReservation();
+          |     ^
+      145 |       (prisma.reservation.findUnique as jest.Mock).mockResolvedValue(reservation);
+      146 |
+      147 |       const res = await request(app)
+
+      at src/__tests__/contract.test.ts:144:5
+      at src/__tests__/contract.test.ts:131:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ POST /api/contracts/:id/share ÔÇ║ deve gerar um link de compartilhamento JWT
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      154 |
+      155 |     it('deve retornar 404 se a reserva n├úo existir', async () => {
+    > 156 |       (prisma.reservation.findUnique as jest.Mock).mockResolvedValue(null);
+          |     ^
+      157 |
+      158 |       const res = await request(app)
+      159 |         .get('/api/contracts/non-existent')
+
+      at src/__tests__/contract.test.ts:156:5
+      at src/__tests__/contract.test.ts:155:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+  ÔùÅ Contract Controller & Utilities ÔÇ║ GET /api/public/contracts/share ÔÇ║ deve validar token e servir PDF publicamente
+
+    thrown: "Exceeded timeout of 15000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      169 |       (prisma.reservation.findUnique as jest.Mock).mockResolvedValue(reservation);
+      170 |
+    > 171 |       const res = await request(app)
+          |     ^
+      172 |         .post(`/api/contracts/${reservation.id}/share`)
+      173 |         .set(AUTH_HEADER(USER_ID));
+      174 |
+
+      at src/__tests__/contract.test.ts:171:5
+      at src/__tests__/contract.test.ts:170:3
+      at Object.<anonymous> (src/__tests__/contract.test.ts:33:1)
+
+Test Suites: 1 failed, 1 total
+Tests:       9 failed, 2 passed, 11 total
+Snapshots:   0 total
+Time:        147.506 s
+Ran all test suites matching /src\\__tests__\\contract.test.ts/i.
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.

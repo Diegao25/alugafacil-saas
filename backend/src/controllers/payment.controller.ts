@@ -92,7 +92,7 @@ export const updatePaymentStatus = async (req: AuthRequest, res: Response): Prom
     const ownerId = await resolveOwnerId(req.user?.id);
 
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -107,7 +107,7 @@ export const updatePaymentStatus = async (req: AuthRequest, res: Response): Prom
     }
 
     if (payment.reserva.imovel.usuario_id !== ownerId) {
-      res.status(403).json({ error: 'Sem permissÃ£o' });
+      res.status(403).json({ error: 'Sem permissão' });
       return;
     }
 
@@ -132,7 +132,7 @@ export const deletePayment = async (req: AuthRequest, res: Response): Promise<vo
     const ownerId = await resolveOwnerId(req.user?.id);
 
     if (!ownerId) {
-      res.status(401).json({ error: 'NÃ£o autorizado' });
+      res.status(401).json({ error: 'Não autorizado' });
       return;
     }
 
@@ -142,12 +142,12 @@ export const deletePayment = async (req: AuthRequest, res: Response): Promise<vo
     });
 
     if (!payment) {
-      res.status(404).json({ error: 'Pagamento nÃ£o encontrado' });
+      res.status(404).json({ error: 'Pagamento não encontrado' });
       return;
     }
 
     if (payment.reserva.imovel.usuario_id !== ownerId) {
-      res.status(403).json({ error: 'Sem permissÃ£o' });
+      res.status(403).json({ error: 'Sem permissão' });
       return;
     }
 

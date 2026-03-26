@@ -1,0 +1,217 @@
+  console.log
+    [Request] POST /api/subscriptions/checkout | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-123 authenticated for /checkout
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [DEBUG] createCheckoutSession start { userId: 'user-123', planName: 'Plano Completo' }
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:27:13)
+
+  console.log
+    --- In├¡cio de Checkout ---
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:29:13)
+
+  console.log
+    User ID: user-123
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:30:13)
+
+  console.log
+    Plan Name: Plano Completo
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:31:13)
+
+  console.log
+    Stripe Customer ID Atual: cus_123
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:46:13)
+
+  console.log
+    Criando sess├úo de checkout no Stripe...
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:69:13)
+
+  console.log
+    Criando sess├úo de checkout no Stripe com Line Item: {"quantity":1,"price":"price_essential"}
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:89:13)
+
+  console.error
+    === Stripe Checkout Error ===
+
+    [0m [90m 104 |[39m     res[33m.[39mjson({ url[33m:[39m session[33m.[39murl })[33m;[39m
+     [90m 105 |[39m   } [36mcatch[39m (error[33m:[39m any) {
+    [31m[1m>[22m[39m[90m 106 |[39m     console[33m.[39merror([32m'=== Stripe Checkout Error ==='[39m)[33m;[39m
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 107 |[39m     console[33m.[39merror([32m'Message:'[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m 108 |[39m     console[33m.[39merror([32m'Type:'[39m[33m,[39m error[33m.[39mtype)[33m;[39m
+     [90m 109 |[39m     console[33m.[39merror([32m'Code:'[39m[33m,[39m error[33m.[39mcode)[33m;[39m[0m
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:106:13)
+
+  console.error
+    Message: Cannot read properties of undefined (reading 'id')
+
+    [0m [90m 105 |[39m   } [36mcatch[39m (error[33m:[39m any) {
+     [90m 106 |[39m     console[33m.[39merror([32m'=== Stripe Checkout Error ==='[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 107 |[39m     console[33m.[39merror([32m'Message:'[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 108 |[39m     console[33m.[39merror([32m'Type:'[39m[33m,[39m error[33m.[39mtype)[33m;[39m
+     [90m 109 |[39m     console[33m.[39merror([32m'Code:'[39m[33m,[39m error[33m.[39mcode)[33m;[39m
+     [90m 110 |[39m     console[33m.[39merror([32m'Param:'[39m[33m,[39m error[33m.[39mparam)[33m;[39m[0m
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:107:13)
+
+  console.error
+    Type: undefined
+
+    [0m [90m 106 |[39m     console[33m.[39merror([32m'=== Stripe Checkout Error ==='[39m)[33m;[39m
+     [90m 107 |[39m     console[33m.[39merror([32m'Message:'[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+    [31m[1m>[22m[39m[90m 108 |[39m     console[33m.[39merror([32m'Type:'[39m[33m,[39m error[33m.[39mtype)[33m;[39m
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 109 |[39m     console[33m.[39merror([32m'Code:'[39m[33m,[39m error[33m.[39mcode)[33m;[39m
+     [90m 110 |[39m     console[33m.[39merror([32m'Param:'[39m[33m,[39m error[33m.[39mparam)[33m;[39m
+     [90m 111 |[39m     [36mif[39m (error[33m.[39mraw) console[33m.[39merror([32m'Raw:'[39m[33m,[39m [33mJSON[39m[33m.[39mstringify(error[33m.[39mraw[33m,[39m [36mnull[39m[33m,[39m [35m2[39m))[33m;[39m[0m
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:108:13)
+
+  console.error
+    Code: undefined
+
+    [0m [90m 107 |[39m     console[33m.[39merror([32m'Message:'[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m 108 |[39m     console[33m.[39merror([32m'Type:'[39m[33m,[39m error[33m.[39mtype)[33m;[39m
+    [31m[1m>[22m[39m[90m 109 |[39m     console[33m.[39merror([32m'Code:'[39m[33m,[39m error[33m.[39mcode)[33m;[39m
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 110 |[39m     console[33m.[39merror([32m'Param:'[39m[33m,[39m error[33m.[39mparam)[33m;[39m
+     [90m 111 |[39m     [36mif[39m (error[33m.[39mraw) console[33m.[39merror([32m'Raw:'[39m[33m,[39m [33mJSON[39m[33m.[39mstringify(error[33m.[39mraw[33m,[39m [36mnull[39m[33m,[39m [35m2[39m))[33m;[39m
+     [90m 112 |[39m     res[33m.[39mstatus([35m500[39m)[33m.[39mjson({ error[33m:[39m [32m'Erro ao criar sess├úo de checkout'[39m[33m,[39m message[33m:[39m error[33m.[39mmessage })[33m;[39m[0m
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:109:13)
+
+  console.error
+    Param: undefined
+
+    [0m [90m 108 |[39m     console[33m.[39merror([32m'Type:'[39m[33m,[39m error[33m.[39mtype)[33m;[39m
+     [90m 109 |[39m     console[33m.[39merror([32m'Code:'[39m[33m,[39m error[33m.[39mcode)[33m;[39m
+    [31m[1m>[22m[39m[90m 110 |[39m     console[33m.[39merror([32m'Param:'[39m[33m,[39m error[33m.[39mparam)[33m;[39m
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 111 |[39m     [36mif[39m (error[33m.[39mraw) console[33m.[39merror([32m'Raw:'[39m[33m,[39m [33mJSON[39m[33m.[39mstringify(error[33m.[39mraw[33m,[39m [36mnull[39m[33m,[39m [35m2[39m))[33m;[39m
+     [90m 112 |[39m     res[33m.[39mstatus([35m500[39m)[33m.[39mjson({ error[33m:[39m [32m'Erro ao criar sess├úo de checkout'[39m[33m,[39m message[33m:[39m error[33m.[39mmessage })[33m;[39m
+     [90m 113 |[39m   }[0m
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:110:13)
+
+  console.log
+    DEBUG CHECKOUT: 500 {
+      error: 'Erro ao criar sess├úo de checkout',
+      message: "Cannot read properties of undefined (reading 'id')"
+    }
+
+      at Object.<anonymous> (src/__tests__/subscription.test.ts:73:37)
+
+  console.log
+    [Request] POST /api/subscriptions/cancel | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-123 authenticated for /cancel
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] GET /api/subscriptions/verify/sess_123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-123 authenticated for /verify/sess_123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    Verificando Sess├úo: sess_123
+
+      at verifySession (src/controllers/subscription.controller.ts:211:13)
+
+  console.error
+    Verify Session Error: {
+      message: "Cannot read properties of undefined (reading 'payment_status')",
+      stack: "TypeError: Cannot read properties of undefined (reading 'payment_status')\n" +
+        '    at verifySession (C:\\Users\\Davi e Sarah\\.gemini\\antigravity\\scratch\\gestao_locacoes\\backend\\src\\controllers\\subscription.controller.ts:216:17)\n' +
+        '    at processTicksAndRejections (node:internal/process/task_queues:104:5)',
+      prisma: undefined,
+      code: undefined
+    }
+
+    [0m [90m 265 |[39m     }
+     [90m 266 |[39m   } [36mcatch[39m (error[33m:[39m any) {
+    [31m[1m>[22m[39m[90m 267 |[39m     console[33m.[39merror([32m'Verify Session Error:'[39m[33m,[39m {
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 268 |[39m       message[33m:[39m error[33m.[39mmessage[33m,[39m
+     [90m 269 |[39m       stack[33m:[39m error[33m.[39mstack[33m,[39m
+     [90m 270 |[39m       prisma[33m:[39m error[33m.[39mmeta[33m,[39m[0m
+
+      at verifySession (src/controllers/subscription.controller.ts:267:13)
+
+  console.log
+    DEBUG VERIFY: 500 {
+      error: 'Erro ao verificar sess├úo',
+      message: "Cannot read properties of undefined (reading 'payment_status')"
+    }
+
+      at Object.<anonymous> (src/__tests__/subscription.test.ts:93:37)
+
+FAIL src/__tests__/subscription.test.ts (10.755 s)
+  Subscription Controller Pure
+    ├ù deve criar uma sess├úo de checkout (250 ms)
+    ÔêÜ deve cancelar a assinatura (23 ms)
+    ├ù deve verificar sess├úo (38 ms)
+
+  ÔùÅ Subscription Controller Pure ÔÇ║ deve criar uma sess├úo de checkout
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+      72 |
+      73 |     if (res.status !== 200) console.log('DEBUG CHECKOUT:', res.status, res.body);
+    > 74 |     expect(res.status).toBe(200);
+         |                        ^
+      75 |     expect(res.body).toHaveProperty('url');
+      76 |   });
+      77 |
+
+      at Object.<anonymous> (src/__tests__/subscription.test.ts:74:24)
+
+  ÔùÅ Subscription Controller Pure ÔÇ║ deve verificar sess├úo
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+      92 |
+      93 |     if (res.status !== 200) console.log('DEBUG VERIFY:', res.status, res.body);
+    > 94 |     expect(res.status).toBe(200);
+         |                        ^
+      95 |     expect(res.body.success).toBe(true);
+      96 |   });
+      97 | });
+
+      at Object.<anonymous> (src/__tests__/subscription.test.ts:94:24)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 1 passed, 3 total
+Snapshots:   0 total
+Time:        10.905 s
+Ran all test suites matching /src\\__tests__\\subscription.test.ts/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

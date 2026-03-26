@@ -16,6 +16,7 @@ const PLAN_PRICE_MAPPING: Record<string, string | undefined> = {
 
 export const createCheckoutSession = async (req: AuthRequest, res: Response): Promise<void> => {
   if (!stripe) {
+    console.log('[DEBUG] Stripe is null');
     res.status(503).json({ error: 'Funcionalidade de pagamentos não configurada neste servidor.' });
     return;
   }
@@ -23,6 +24,7 @@ export const createCheckoutSession = async (req: AuthRequest, res: Response): Pr
   try {
     const { planName } = req.body;
     const userId = req.user?.id;
+    console.log('[DEBUG] createCheckoutSession start', { userId, planName });
 
     console.log('--- Início de Checkout ---');
     console.log('User ID:', userId);
@@ -278,16 +280,21 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
     res.status(503).json({ error: 'Webhook não configurado' });
     return;
   }
+
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error('[Webhook] STRIPE_WEBHOOK_SECRET não configurado. Requisição rejeitada.');
+    res.status(503).json({ error: 'Webhook secret não configurado no servidor.' });
+    return;
+  }
+
   const sig = req.headers['stripe-signature'] as string;
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET || ''
-    );
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
   } catch (err: any) {
+    console.error('[Webhook] Assinatura inválida:', err.message);
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
@@ -363,20 +370,21 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
 
     case 'customer.subscription.deleted': {
       const subscription = event.data.object as any;
+
+      // Busca o usuário ANTES de atualizar para poder enviar o e-mail
+      const userToNotify = await prisma.user.findFirst({
+        where: { stripe_subscription_id: subscription.id } as any
+      });
+
       await prisma.user.updateMany({
         where: { stripe_subscription_id: subscription.id } as any,
-        data: { 
+        data: {
           subscription_status: 'cancelled',
           plan_type: 'free'
         } as any
       });
 
-      // Se conseguirmos encontrar o usuário pelo subscriptionId, enviamos o e-mail
-      const userToNotify = await prisma.user.findFirst({
-        where: { stripe_subscription_id: subscription.id } as any
-      });
-
-      if (userToNotify && userToNotify.subscription_status !== 'cancelled') {
+      if (userToNotify) {
         try {
           await sendSubscriptionCancellationEmail(
             userToNotify.email,

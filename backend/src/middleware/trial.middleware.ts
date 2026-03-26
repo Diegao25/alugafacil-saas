@@ -11,7 +11,7 @@ export const checkTrial = async (req: AuthRequest, res: Response, next: NextFunc
     const userId = req.user?.id;
 
     if (!userId) {
-      res.status(401).json({ error: 'NÃ£o autenticado' });
+      res.status(401).json({ error: 'Não autenticado' });
       return;
     }
 
@@ -45,7 +45,7 @@ export const checkTrial = async (req: AuthRequest, res: Response, next: NextFunc
     const trialEndDate = user.trial_end_date;
     
     if (trialEndDate && new Date() > trialEndDate) {
-      // Opcional: Atualizar status no banco se ainda nÃ£o estiver como expired
+      // Opcional: Atualizar status no banco se ainda não estiver como expired
       if (user.subscription_status !== 'trial_expired') {
         await prisma.user.update({
           where: { id: userId },
@@ -62,7 +62,7 @@ export const checkTrial = async (req: AuthRequest, res: Response, next: NextFunc
       res.status(403).json({ 
         error: 'Trial expirado', 
         code: 'TRIAL_EXPIRED',
-        message: 'Seu perÃodo de teste terminou. Escolha um plano para continuar.'
+        message: 'Seu período de teste terminou. Escolha um plano para continuar.'
       });
       return;
     }

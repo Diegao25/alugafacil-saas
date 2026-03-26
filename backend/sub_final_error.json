@@ -1,0 +1,195 @@
+  console.log
+    [Request] POST /api/subscriptions/checkout | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-123 authenticated for /checkout
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [DEBUG] createCheckoutSession start { userId: 'user-123', planName: 'Plano Completo' }
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:27:13)
+
+  console.log
+    --- In├¡cio de Checkout ---
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:29:13)
+
+  console.log
+    User ID: user-123
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:30:13)
+
+  console.log
+    Plan Name: Plano Completo
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:31:13)
+
+  console.log
+    Stripe Customer ID Atual: cus_123
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:46:13)
+
+  console.log
+    Criando sess├úo de checkout no Stripe...
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:69:13)
+
+  console.log
+    Criando sess├úo de checkout no Stripe com Line Item: {"quantity":1,"price":"price_essential"}
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:89:13)
+
+  console.error
+    === Stripe Checkout Error ===
+
+      104 |     res.json({ url: session.url });
+      105 |   } catch (error: any) {
+    > 106 |     console.error('=== Stripe Checkout Error ===');
+          |             ^
+      107 |     console.error('Message:', error.message);
+      108 |     console.error('Type:', error.type);
+      109 |     console.error('Code:', error.code);
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:106:13)
+
+  console.error
+    Message: Cannot read properties of undefined (reading 'id')
+
+      105 |   } catch (error: any) {
+      106 |     console.error('=== Stripe Checkout Error ===');
+    > 107 |     console.error('Message:', error.message);
+          |             ^
+      108 |     console.error('Type:', error.type);
+      109 |     console.error('Code:', error.code);
+      110 |     console.error('Param:', error.param);
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:107:13)
+
+  console.error
+    Type: undefined
+
+      106 |     console.error('=== Stripe Checkout Error ===');
+      107 |     console.error('Message:', error.message);
+    > 108 |     console.error('Type:', error.type);
+          |             ^
+      109 |     console.error('Code:', error.code);
+      110 |     console.error('Param:', error.param);
+      111 |     if (error.raw) console.error('Raw:', JSON.stringify(error.raw, null, 2));
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:108:13)
+
+  console.error
+    Code: undefined
+
+      107 |     console.error('Message:', error.message);
+      108 |     console.error('Type:', error.type);
+    > 109 |     console.error('Code:', error.code);
+          |             ^
+      110 |     console.error('Param:', error.param);
+      111 |     if (error.raw) console.error('Raw:', JSON.stringify(error.raw, null, 2));
+      112 |     res.status(500).json({ error: 'Erro ao criar sess├úo de checkout', message: error.message });
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:109:13)
+
+  console.error
+    Param: undefined
+
+      108 |     console.error('Type:', error.type);
+      109 |     console.error('Code:', error.code);
+    > 110 |     console.error('Param:', error.param);
+          |             ^
+      111 |     if (error.raw) console.error('Raw:', JSON.stringify(error.raw, null, 2));
+      112 |     res.status(500).json({ error: 'Erro ao criar sess├úo de checkout', message: error.message });
+      113 |   }
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:110:13)
+
+  console.log
+    [Request] POST /api/subscriptions/cancel | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-123 authenticated for /cancel
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] GET /api/subscriptions/verify/sess_123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-123 authenticated for /verify/sess_123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    Verificando Sess├úo: sess_123
+
+      at verifySession (src/controllers/subscription.controller.ts:211:13)
+
+  console.error
+    Verify Session Error: {
+      message: "Cannot read properties of undefined (reading 'payment_status')",
+      stack: "TypeError: Cannot read properties of undefined (reading 'payment_status')\n" +
+        '    at verifySession (C:\\Users\\Davi e Sarah\\.gemini\\antigravity\\scratch\\gestao_locacoes\\backend\\src\\controllers\\subscription.controller.ts:216:17)\n' +
+        '    at processTicksAndRejections (node:internal/process/task_queues:104:5)',
+      prisma: undefined,
+      code: undefined
+    }
+
+      265 |     }
+      266 |   } catch (error: any) {
+    > 267 |     console.error('Verify Session Error:', {
+          |             ^
+      268 |       message: error.message,
+      269 |       stack: error.stack,
+      270 |       prisma: error.meta,
+
+      at verifySession (src/controllers/subscription.controller.ts:267:13)
+
+FAIL src/__tests__/subscription.test.ts (10.438 s)
+  Subscription Controller Pure
+    ├ù deve criar uma sess├úo de checkout (273 ms)
+    ÔêÜ deve cancelar a assinatura (25 ms)
+    ├ù deve verificar sess├úo (110 ms)
+
+  ÔùÅ Subscription Controller Pure ÔÇ║ deve criar uma sess├úo de checkout
+
+    Status: 500, Body: {"error":"Erro ao criar sess├úo de checkout","message":"Cannot read properties of undefined (reading 'id')"}
+
+      72 |
+      73 |     if (res.status !== 200) {
+    > 74 |       throw new Error(`Status: ${res.status}, Body: ${JSON.stringify(res.body)}`);
+         |             ^
+      75 |     }
+      76 |     expect(res.status).toBe(200);
+      77 |     expect(res.body).toHaveProperty('url');
+
+      at Object.<anonymous> (src/__tests__/subscription.test.ts:74:13)
+
+  ÔùÅ Subscription Controller Pure ÔÇ║ deve verificar sess├úo
+
+    Status: 500, Body: {"error":"Erro ao verificar sess├úo","message":"Cannot read properties of undefined (reading 'payment_status')"}
+
+       97 |
+       98 |     if (res.status !== 200) {
+    >  99 |       throw new Error(`Status: ${res.status}, Body: ${JSON.stringify(res.body)}`);
+          |             ^
+      100 |     }
+      101 |     expect(res.status).toBe(200);
+      102 |     expect(res.body.success).toBe(true);
+
+      at Object.<anonymous> (src/__tests__/subscription.test.ts:99:13)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 1 passed, 3 total
+Snapshots:   0 total
+Time:        10.61 s
+Ran all test suites matching /src\\__tests__\\subscription.test.ts/i.
+{"numFailedTestSuites":1,"numFailedTests":2,"numPassedTestSuites":0,"numPassedTests":1,"numPendingTestSuites":0,"numPendingTests":0,"numRuntimeErrorTestSuites":0,"numTodoTests":0,"numTotalTestSuites":1,"numTotalTests":3,"openHandles":[],"snapshot":{"added":0,"didUpdate":false,"failure":false,"filesAdded":0,"filesRemoved":0,"filesRemovedList":[],"filesUnmatched":0,"filesUpdated":0,"matched":0,"total":0,"unchecked":0,"uncheckedKeysByFile":[],"unmatched":0,"updated":0},"startTime":1774532038003,"success":false,"testResults":[{"assertionResults":[{"ancestorTitles":["Subscription Controller Pure"],"duration":273,"failureDetails":[{}],"failureMessages":["Error: Status: 500, Body: {\"error\":\"Erro ao criar sess├úo de checkout\",\"message\":\"Cannot read properties of undefined (reading 'id')\"}\n    at Object.<anonymous> (C:\\Users\\Davi e Sarah\\.gemini\\antigravity\\scratch\\gestao_locacoes\\backend\\src\\__tests__\\subscription.test.ts:74:13)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"],"fullName":"Subscription Controller Pure deve criar uma sess├úo de checkout","invocations":1,"location":null,"numPassingAsserts":0,"retryReasons":[],"status":"failed","title":"deve criar uma sess├úo de checkout"},{"ancestorTitles":["Subscription Controller Pure"],"duration":25,"failureDetails":[],"failureMessages":[],"fullName":"Subscription Controller Pure deve cancelar a assinatura","invocations":1,"location":null,"numPassingAsserts":1,"retryReasons":[],"status":"passed","title":"deve cancelar a assinatura"},{"ancestorTitles":["Subscription Controller Pure"],"duration":110,"failureDetails":[{}],"failureMessages":["Error: Status: 500, Body: {\"error\":\"Erro ao verificar sess├úo\",\"message\":\"Cannot read properties of undefined (reading 'payment_status')\"}\n    at Object.<anonymous> (C:\\Users\\Davi e Sarah\\.gemini\\antigravity\\scratch\\gestao_locacoes\\backend\\src\\__tests__\\subscription.test.ts:99:13)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"],"fullName":"Subscription Controller Pure deve verificar sess├úo","invocations":1,"location":null,"numPassingAsserts":0,"retryReasons":[],"status":"failed","title":"deve verificar sess├úo"}],"endTime":1774532048602,"message":"  ÔùÅ Subscription Controller Pure ÔÇ║ deve criar uma sess├úo de checkout\n\n    Status: 500, Body: {\"error\":\"Erro ao criar sess├úo de checkout\",\"message\":\"Cannot read properties of undefined (reading 'id')\"}\n\n    \u001b[0m \u001b[90m 72 |\u001b[39m\n     \u001b[90m 73 |\u001b[39m     \u001b[36mif\u001b[39m (res\u001b[33m.\u001b[39mstatus \u001b[33m!==\u001b[39m \u001b[35m200\u001b[39m) {\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 74 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`Status: ${res.status}, Body: ${JSON.stringify(res.body)}`\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 75 |\u001b[39m     }\n     \u001b[90m 76 |\u001b[39m     expect(res\u001b[33m.\u001b[39mstatus)\u001b[33m.\u001b[39mtoBe(\u001b[35m200\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m 77 |\u001b[39m     expect(res\u001b[33m.\u001b[39mbody)\u001b[33m.\u001b[39mtoHaveProperty(\u001b[32m'url'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\n      at Object.<anonymous> (src/__tests__/subscription.test.ts:74:13)\n\n  ÔùÅ Subscription Controller Pure ÔÇ║ deve verificar sess├úo\n\n    Status: 500, Body: {\"error\":\"Erro ao verificar sess├úo\",\"message\":\"Cannot read properties of undefined (reading 'payment_status')\"}\n\n    \u001b[0m \u001b[90m  97 |\u001b[39m\n     \u001b[90m  98 |\u001b[39m     \u001b[36mif\u001b[39m (res\u001b[33m.\u001b[39mstatus \u001b[33m!==\u001b[39m \u001b[35m200\u001b[39m) {\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  99 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`Status: ${res.status}, Body: ${JSON.stringify(res.body)}`\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 100 |\u001b[39m     }\n     \u001b[90m 101 |\u001b[39m     expect(res\u001b[33m.\u001b[39mstatus)\u001b[33m.\u001b[39mtoBe(\u001b[35m200\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m 102 |\u001b[39m     expect(res\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39msuccess)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\n      at Object.<anonymous> (src/__tests__/subscription.test.ts:99:13)\n","name":"C:\\Users\\Davi e Sarah\\.gemini\\antigravity\\scratch\\gestao_locacoes\\backend\\src\\__tests__\\subscription.test.ts","startTime":1774532038164,"status":"failed","summary":""}],"wasInterrupted":false}

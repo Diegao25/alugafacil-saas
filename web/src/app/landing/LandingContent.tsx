@@ -80,7 +80,7 @@ export default function LandingPage() {
     },
     {
       icon: RefreshCcw,
-      title: 'Sincronização Airbnb/iCal',
+      title: 'Sincronização Airbnb/Booking',
       description: 'Conecte sua agenda com Airbnb, Booking e muito mais. Mantenha sua disponibilidade sempre atualizada e zero overbooking.'
     }
   ];
@@ -313,7 +313,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              Diga adeus à bagunça do WhatsApp e às planilhas que não batem. Automatize seus contratos, organize seu calendário e nunca mais perca um recebimento. **Comece em 2 minutos.**
+              Diga adeus à bagunça do WhatsApp e às planilhas que não batem. Automatize seus contratos, organize seu calendário e nunca mais perca um recebimento. <b className="text-slate-900">Comece em 2 minutos.</b>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -536,7 +536,7 @@ export default function LandingPage() {
             <span className="text-blue-600 font-bold tracking-wider uppercase text-sm mb-4 block">Fim do Overbooking</span>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">Anuncie onde quiser. Gerencie em um só lugar.</h2>
             <p className="text-xl text-slate-600 mb-10 leading-relaxed">
-              Integração via **iCal** que conecta seu calendário do Aluga Fácil com as maiores plataformas do mundo. Se alguém reservar no Airbnb, nós bloqueamos automaticamente no seu site.
+              Integração via <b className="text-slate-900">iCal</b> que conecta seu calendário do Aluga Fácil com as maiores plataformas do mundo. Se alguém reservar no Airbnb, nós bloqueamos automaticamente no seu site.
             </p>
             <ul className="space-y-4 mb-10">
                {[

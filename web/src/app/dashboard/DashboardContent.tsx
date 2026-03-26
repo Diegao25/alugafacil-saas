@@ -203,25 +203,19 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <div className="flex flex-col items-center gap-1">
-            <button
-              onClick={handleSyncAll}
-              disabled={isSyncing}
-              className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm transition-all active:scale-95 border-2 ${
-                isSyncing 
-                ? 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed' 
-                : 'bg-white text-blue-600 border-blue-50 hover:border-blue-100 hover:bg-blue-50/50 shadow-sm'
-              }`}
-            >
-              <RefreshCcw size={18} className={isSyncing ? 'animate-spin' : ''} />
-              {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR TUDO'}
-            </button>
-            {stats?.lastSync && (
-              <p className="w-full text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Última sincronização: {formatDistanceToNow(new Date(stats.lastSync), { addSuffix: true, locale: ptBR })}
-              </p>
-            )}
-          </div>
+          <button
+            onClick={handleSyncAll}
+            disabled={isSyncing}
+            title={stats?.lastSync ? `Última sincronização: ${formatDistanceToNow(new Date(stats.lastSync), { addSuffix: true, locale: ptBR })}` : 'Sincronizar todos os imóveis'}
+            className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm transition-all active:scale-95 border-2 ${
+              isSyncing 
+              ? 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed' 
+              : 'bg-white text-blue-600 border-blue-50 hover:border-blue-100 hover:bg-blue-50/50 shadow-sm'
+            }`}
+          >
+            <RefreshCcw size={18} className={isSyncing ? 'animate-spin' : ''} />
+            {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR TUDO'}
+          </button>
 
           <Link 
             href="/dashboard/reservations/new"

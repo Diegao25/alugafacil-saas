@@ -342,25 +342,19 @@ export default function ReservationsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Calendário de Reservas</h1>
         <div className="flex items-center gap-3">
-          <div className="flex flex-col items-center gap-1">
-            <button
-              onClick={handleSyncAll}
-              disabled={isSyncing}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 border ${
-                isSyncing 
-                ? 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed' 
-                : 'bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-50 shadow-sm'
-              }`}
-            >
-              <RefreshCcw size={16} className={isSyncing ? 'animate-spin' : ''} />
-              {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR'}
-            </button>
-            {lastSync && (
-              <p className="w-full text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Sincronizado {formatDistanceToNow(new Date(lastSync), { addSuffix: true, locale: ptBR })}
-              </p>
-            )}
-          </div>
+          <button
+            onClick={handleSyncAll}
+            disabled={isSyncing}
+            title={lastSync ? `Sincronizado ${formatDistanceToNow(new Date(lastSync), { addSuffix: true, locale: ptBR })}` : 'Sincronizar reservas externas'}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 border ${
+              isSyncing 
+              ? 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed' 
+              : 'bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-50 shadow-sm'
+            }`}
+          >
+            <RefreshCcw size={16} className={isSyncing ? 'animate-spin' : ''} />
+            {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR'}
+          </button>
 
           <Link 
             href="/dashboard/reservations/new" 

@@ -135,7 +135,7 @@ export const syncUserProperties = async (userId: string) => {
   console.log(`[CalendarSync] Iniciando sincronização para o usuário: ${userId}`);
   
   const properties = await (prisma as any).property.findMany({
-    where: { user_id: userId },
+    where: { usuario_id: userId },
     select: { id: true }
   });
 
@@ -146,7 +146,7 @@ export const syncUserProperties = async (userId: string) => {
       try {
         return await syncExternalCalendars(p.id);
       } catch (error) {
-        console.error(`[CalendarSync] Erve ao sincronizar imóvel ${p.id}:`, error);
+        console.error(`[CalendarSync] Erro ao sincronizar imóvel ${p.id}:`, error);
         return { success: false, error };
       }
     })

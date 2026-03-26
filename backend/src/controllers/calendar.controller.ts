@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { resolveOwnerId } from '../utils/owner';
 import { prisma } from '../prisma';
 import ical, { ICalCalendarMethod } from 'ical-generator';
 import { syncExternalCalendars, syncUserProperties } from '../services/calendar.service';
@@ -133,7 +134,12 @@ export const triggerSyncAll = async (req: Request, res: Response) => {
   }
 
   try {
-    const results = await syncUserProperties(userId);
+    const ownerId = await resolveOwnerId(userId);
+    if (!ownerId) {
+      return res.status(401).json({ error: 'Usuário não autenticado ou não encontrado' });
+    }
+
+    const results = await syncUserProperties(ownerId);
     return res.json({ success: true, results });
   } catch (error) {
     console.error('Erro na sincronização global:', error);

@@ -342,7 +342,7 @@ export default function ReservationsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Calendário de Reservas</h1>
         <div className="flex items-center gap-3">
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-center gap-1">
             <button
               onClick={handleSyncAll}
               disabled={isSyncing}

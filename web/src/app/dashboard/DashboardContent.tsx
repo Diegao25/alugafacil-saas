@@ -203,7 +203,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-center gap-1">
             <button
               onClick={handleSyncAll}
               disabled={isSyncing}

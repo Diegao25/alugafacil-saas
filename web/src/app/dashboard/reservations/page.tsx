@@ -356,7 +356,7 @@ export default function ReservationsPage() {
               {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR'}
             </button>
             {lastSync && (
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <p className="w-full text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 Sincronizado {formatDistanceToNow(new Date(lastSync), { addSuffix: true, locale: ptBR })}
               </p>
             )}

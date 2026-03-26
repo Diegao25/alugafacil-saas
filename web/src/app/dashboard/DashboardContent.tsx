@@ -217,7 +217,7 @@ export default function DashboardPage() {
               {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR TUDO'}
             </button>
             {stats?.lastSync && (
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <p className="w-full text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 Última sincronização: {formatDistanceToNow(new Date(stats.lastSync), { addSuffix: true, locale: ptBR })}
               </p>
             )}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { Building, Calendar, CheckCircle, DollarSign, Clock, LogOut, Rocket, Info, ChevronRight, X, Eye, EyeOff } from 'lucide-react';
+import { Building, Calendar, CheckCircle, DollarSign, Clock, LogOut, Rocket, Info, ChevronRight, X, Eye, EyeOff, RefreshCcw } from 'lucide-react';
 import { format, differenceInCalendarDays, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrencyBR } from '@/lib/utils';
@@ -64,6 +64,7 @@ export default function DashboardPage() {
   const [npsComment, setNpsComment] = useState('');
   const [npsSubmitting, setNpsSubmitting] = useState(false);
   const [hideRevenue, setHideRevenue] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const daysRemaining = (() => {
     if (user?.plan_type !== 'trial' || !user?.trial_end_date) return 0;
@@ -169,6 +170,22 @@ export default function DashboardPage() {
     }
   };
 
+  const handleSyncAll = async () => {
+    setIsSyncing(true);
+    try {
+      await api.post('/properties/sync/all');
+      toast.success('Todos os imóveis foram sincronizados com sucesso!');
+      // Recarregar estatísticas para refletir possíveis mudanças
+      const response = await api.get('/dashboard/stats');
+      setStats(response.data);
+    } catch (error) {
+      console.error('Erro ao sincronizar tudo:', error);
+      toast.error('Não foi possível sincronizar todos os imóveis no momento.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -185,13 +202,28 @@ export default function DashboardPage() {
           <p className="text-slate-500 font-medium">Bem-vindo de volta! Aqui está um resumo do seu negócio.</p>
         </div>
 
-        <Link 
-          href="/dashboard/reservations/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg shadow-blue-200 flex items-center gap-2 transition-all active:scale-95 shrink-0"
-        >
-          <Plus size={18} />
-          NOVA RESERVA
-        </Link>
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={handleSyncAll}
+            disabled={isSyncing}
+            className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm transition-all active:scale-95 border-2 ${
+              isSyncing 
+              ? 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed' 
+              : 'bg-white text-blue-600 border-blue-50 hover:border-blue-100 hover:bg-blue-50/50 shadow-sm'
+            }`}
+          >
+            <RefreshCcw size={18} className={isSyncing ? 'animate-spin' : ''} />
+            {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR TUDO'}
+          </button>
+
+          <Link 
+            href="/dashboard/reservations/new"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg shadow-blue-200 flex items-center gap-2 transition-all active:scale-95 shrink-0"
+          >
+            <Plus size={18} />
+            NOVA RESERVA
+          </Link>
+        </div>
       </div>
 
       <OnboardingChecklist stats={stats} />

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createProperty, getProperties, getPropertyById, updateProperty, deleteProperty } from '../controllers/property.controller';
-import { getPropertySyncConfigs, addPropertySyncConfig, deleteSyncConfig, triggerSync } from '../controllers/calendar.controller';
+import { getPropertySyncConfigs, addPropertySyncConfig, deleteSyncConfig, triggerSync, triggerSyncAll } from '../controllers/calendar.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { checkTrial } from '../middleware/trial.middleware';
 
@@ -21,5 +21,6 @@ router.get('/:id/sync', getPropertySyncConfigs);
 router.post('/:id/sync', addPropertySyncConfig);
 router.delete('/:id/sync/:syncId', deleteSyncConfig);
 router.post('/:id/sync-now', triggerSync);
+router.post('/sync/all', triggerSyncAll);
 
 export default router;

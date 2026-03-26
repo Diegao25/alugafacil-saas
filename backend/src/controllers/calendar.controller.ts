@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import ical, { ICalCalendarMethod } from 'ical-generator';
-import { syncExternalCalendars } from '../services/calendar.service';
+import { syncExternalCalendars, syncUserProperties } from '../services/calendar.service';
 
 export const exportPropertyCalendar = async (req: Request, res: Response) => {
   const id = req.params.id as string;
@@ -122,5 +122,21 @@ export const triggerSync = async (req: Request, res: Response) => {
     return res.json(result);
   } catch (error) {
     return res.status(500).json({ error: 'Erro ao sincronizar' });
+  }
+};
+
+export const triggerSyncAll = async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Usuário não autenticado' });
+  }
+
+  try {
+    const results = await syncUserProperties(userId);
+    return res.json({ success: true, results });
+  } catch (error) {
+    console.error('Erro na sincronização global:', error);
+    return res.status(500).json({ error: 'Erro ao sincronizar todos os imóveis' });
   }
 };

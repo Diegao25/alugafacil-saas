@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
-import { Plus, User, Clock, CreditCard, ChevronRight, Home, DollarSign, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Plus, User, Clock, CreditCard, ChevronRight, Home, DollarSign, CheckCircle2, AlertCircle, RefreshCcw } from 'lucide-react';
 import { formatCurrencyBR } from '@/lib/utils';
 
 const locales = {
@@ -122,6 +122,7 @@ export default function ReservationsPage() {
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<any>(Views.MONTH);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     fetchReservations();
@@ -266,6 +267,20 @@ export default function ReservationsPage() {
     }
   }
 
+  const handleSyncAll = async () => {
+    setIsSyncing(true);
+    try {
+      await api.post('/properties/sync/all');
+      toast.success('Calendário sincronizado com sucesso!');
+      await fetchReservations();
+    } catch (error) {
+      console.error('Erro ao sincronizar:', error);
+      toast.error('Não foi possível sincronizar no momento.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleNavigate = (newDate: Date) => {
     setCurrentDate(newDate);
   };
@@ -315,13 +330,28 @@ export default function ReservationsPage() {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Calendário de Reservas</h1>
-        <Link 
-          href="/dashboard/reservations/new" 
-          className="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Nova Reserva</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSyncAll}
+            disabled={isSyncing}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 border ${
+              isSyncing 
+              ? 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed' 
+              : 'bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-50 shadow-sm'
+            }`}
+          >
+            <RefreshCcw size={16} className={isSyncing ? 'animate-spin' : ''} />
+            {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR'}
+          </button>
+
+          <Link 
+            href="/dashboard/reservations/new" 
+            className="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Nova Reserva</span>
+          </Link>
+        </div>
       </div>
 
       <div className="flex-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 min-h-[800px]">

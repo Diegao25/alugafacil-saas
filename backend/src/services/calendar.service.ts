@@ -131,6 +131,30 @@ export const syncExternalCalendars = async (propertyId: string) => {
   return { success: true, imported: totalImported, removed: totalRemoved, updated: totalUpdated };
 };
 
+export const syncUserProperties = async (userId: string) => {
+  console.log(`[CalendarSync] Iniciando sincronização para o usuário: ${userId}`);
+  
+  const properties = await (prisma as any).property.findMany({
+    where: { user_id: userId },
+    select: { id: true }
+  });
+
+  console.log(`[CalendarSync] Encontrados ${properties.length} imóveis para sincronizar.`);
+
+  const results = await Promise.all(
+    properties.map(async (p: any) => {
+      try {
+        return await syncExternalCalendars(p.id);
+      } catch (error) {
+        console.error(`[CalendarSync] Erve ao sincronizar imóvel ${p.id}:`, error);
+        return { success: false, error };
+      }
+    })
+  );
+
+  return results;
+};
+
 export const syncAllProperties = async () => {
   console.log('[CalendarSync] Iniciando sincronização global...');
   const syncConfigs = await (prisma as any).calendarSync.findMany({

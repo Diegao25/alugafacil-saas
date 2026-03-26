@@ -185,7 +185,7 @@ function normalizeExternalUrl(url?: string | null) {
               
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-xl font-bold text-slate-800">{property.nome}</h3>
-                <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex space-x-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <Link href={`/dashboard/properties/${property.id}`} className="p-1.5 text-slate-400 hover:text-blue-600 bg-slate-50 rounded-lg hover:bg-blue-50 transition-colors">
                     <Edit className="h-4 w-4" />
                   </Link>

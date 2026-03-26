@@ -55,7 +55,7 @@ export default function ContractsPage() {
   async function handleSendWhatsApp(reserva: any) {
     const phone = reserva.locatario?.telefone;
     if (!phone) {
-      toast.warning('Telefone do locatário não disponível (Reserva Externa)');
+      toast.warning('O locatário não possui telefone cadastrado. Por favor, complete o cadastro do locatário com um número de WhatsApp.');
       return;
     }
     try {

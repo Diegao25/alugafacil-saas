@@ -1,15 +1,14 @@
 import request from 'supertest';
-import app from '../app';
-import { AUTH_HEADER } from './helpers/jwt.helper';
 
 // Configuração de ambiente ANTES dos mocks
 process.env.STRIPE_PRICE_ESSENTIAL = 'price_essential';
 process.env.STRIPE_PRICE_PROFESSIONAL = 'price_professional';
 process.env.FRONTEND_URL = 'http://localhost:3000';
+process.env.STRIPE_SECRET_KEY = 'sk_test_mock'; // Importante para o config/stripe não ser null
 
-jest.mock('../prisma');
-jest.mock('../config/stripe', () => ({
-  stripe: {
+// Mocks
+jest.mock('stripe', () => {
+  return jest.fn().mockImplementation(() => ({
     customers: {
       create: jest.fn().mockResolvedValue({ id: 'cus_123' }),
     },
@@ -20,12 +19,30 @@ jest.mock('../config/stripe', () => ({
           id: 'sess_123',
           payment_status: 'paid',
           metadata: { planName: 'Plano Completo' },
-          subscription: 'sub_123',
+          subscription: { id: 'sub_123' },
           created: Math.floor(Date.now() / 1000),
           amount_total: 4990
         }),
       }
     }
+  }));
+});
+
+jest.mock('../prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      updateMany: jest.fn(),
+    },
+    subscriptionHistory: {
+      findFirst: jest.fn(),
+      create: jest.fn(),
+    },
+    cancellationFeedback: {
+      create: jest.fn(),
+    },
+    $transaction: jest.fn(),
   }
 }));
 
@@ -33,6 +50,9 @@ jest.mock('../utils/mail', () => ({
   sendSubscriptionConfirmationEmail: jest.fn().mockResolvedValue(true),
   sendSubscriptionCancellationEmail: jest.fn().mockResolvedValue(true)
 }));
+
+import app from '../app';
+import { AUTH_HEADER } from './helpers/jwt.helper';
 
 const { prisma } = require('../prisma');
 const USER_ID = 'user-123';

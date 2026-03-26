@@ -43,7 +43,7 @@ export const getPropertyAvailability = async (req: Request, res: Response): Prom
       return;
     }
 
-    const bookings = property.reservas.map((reservation) => ({
+    const bookings = property.reservas.map((reservation: any) => ({
       id: reservation.id,
       checkin: reservation.data_checkin.toISOString(),
       checkout: reservation.data_checkout.toISOString(),

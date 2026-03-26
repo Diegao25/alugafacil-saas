@@ -46,8 +46,75 @@ const getEventColor = (str: string, provider?: string) => {
   ];
   return colors[Math.abs(hash) % colors.length];
 };
+const YearView: any = ({ date, events }: any) => {
+  const year = date.getFullYear();
+  const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
 
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 overflow-y-auto max-h-[800px] bg-slate-50/50 rounded-2xl">
+      {months.map((monthDate) => {
+        const monthStart = monthDate;
+        const monthEnd = new Date(year, monthDate.getMonth() + 1, 0);
+        const startDay = monthStart.getDay();
+        const daysInMonth = monthEnd.getDate();
+        
+        const days = [];
+        for (let i = 0; i < startDay; i++) days.push(null);
+        for (let i = 1; i <= daysInMonth; i++) days.push(new Date(year, monthDate.getMonth(), i));
 
+        return (
+          <div key={monthDate.getMonth()} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all hover:border-emerald-200 group">
+            <h3 className="text-sm font-black text-slate-800 mb-4 uppercase tracking-widest border-b border-slate-50 pb-3 text-center group-hover:text-emerald-600 transition-colors">
+              {format(monthDate, 'MMMM', { locale: ptBR })}
+            </h3>
+            <div className="grid grid-cols-7 gap-1.5">
+              {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, i) => (
+                <div key={`${d}-${i}`} className="text-[10px] text-center font-bold text-slate-300 py-1">{d}</div>
+              ))}
+              {days.map((dayDate, idx) => {
+                if (!dayDate) return <div key={`empty-${monthDate.getMonth()}-${idx}`} />;
+                
+                const hasEvent = events.some((event: any) => {
+                  const eventStart = new Date(event.start);
+                  eventStart.setHours(0,0,0,0);
+                  const eventEnd = new Date(event.end);
+                  eventEnd.setHours(23,59,59,999);
+                  return dayDate >= eventStart && dayDate <= eventEnd;
+                });
+
+                return (
+                  <div 
+                    key={dayDate.toISOString()}
+                    className={`aspect-square flex items-center justify-center text-[10px] rounded-xl transition-all
+                      ${hasEvent ? 'bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/20 scale-110 z-10' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'}
+                    `}
+                  >
+                    {dayDate.getDate()}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+YearView.range = (date: Date) => {
+  return [new Date(date.getFullYear(), 0, 1), new Date(date.getFullYear(), 11, 31)];
+};
+
+YearView.navigate = (date: Date, action: string) => {
+  switch (action) {
+    case 'PREV': return new Date(date.getFullYear() - 1, 0, 1);
+    case 'NEXT': return new Date(date.getFullYear() + 1, 0, 1);
+    case 'TODAY': return new Date();
+    default: return date;
+  }
+};
+
+YearView.title = (date: Date) => format(date, 'yyyy');
 
 export default function ReservationsPage() {
   const router = useRouter();
@@ -320,6 +387,13 @@ export default function ReservationsPage() {
           endAccessor="end"
           culture="pt-BR"
           eventPropGetter={eventPropGetter}
+          views={{
+            month: true,
+            week: true,
+            day: true,
+            agenda: true,
+            year: YearView
+          }}
           components={{
             event: EventComponent
           }}
@@ -331,13 +405,14 @@ export default function ReservationsPage() {
             week: "Semana",
             day: "Dia",
             agenda: "Agenda",
+            year: "Ano",
             date: "Data",
             time: "Hora",
             event: "Evento",
             allDay: "Dia Inteiro",
             noEventsInRange: "Nenhuma reserva neste período."
           }}
-          style={{ height: '800px' }}
+          style={{ height: currentView === 'year' ? 'auto' : '840px', minHeight: '600px' }}
         />
       </div>
     </div>

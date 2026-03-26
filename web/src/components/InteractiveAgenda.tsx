@@ -135,10 +135,10 @@ export default function InteractiveAgenda({ property, bookings }: InteractiveAge
     if (checkin && checkout) {
       const startFmt = format(checkin, 'dd/MM/yyyy');
       const endFmt = format(checkout, 'dd/MM/yyyy');
-      baseMsg = `Olá, vi seu imóvel "${property.nome}" no Aluga Fácil e gostaria de consultar a disponibilidade para o período de *${startFmt}* até *${endFmt}*!`;
+      baseMsg = `Olá, vi seu imóvel "${property.nome}" no Aluga Fácil e gostaria de consultar a disponibilidade para o período de *${startFmt}* (18:00) até *${endFmt}* (18:00)!`;
     } else if (checkin) {
       const startFmt = format(checkin, 'dd/MM/yyyy');
-      baseMsg = `Olá, vi seu imóvel "${property.nome}" no Aluga Fácil e tenho interesse a partir de *${startFmt}*!`;
+      baseMsg = `Olá, vi seu imóvel "${property.nome}" no Aluga Fácil e tenho interesse a partir de *${startFmt}* (18:00)!`;
     }
 
     return encodeURIComponent(baseMsg);

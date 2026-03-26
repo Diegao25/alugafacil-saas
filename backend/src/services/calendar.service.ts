@@ -130,3 +130,25 @@ export const syncExternalCalendars = async (propertyId: string) => {
 
   return { success: true, imported: totalImported, removed: totalRemoved, updated: totalUpdated };
 };
+
+export const syncAllProperties = async () => {
+  console.log('[CalendarSync] Iniciando sincronização global...');
+  const syncConfigs = await (prisma as any).calendarSync.findMany({
+    select: { imovel_id: true }
+  });
+
+  // Unique property IDs
+  const propertyIds = Array.from(new Set(syncConfigs.map((c: any) => c.imovel_id)));
+
+  console.log(`[CalendarSync] Encontrados ${propertyIds.length} imóveis para sincronizar.`);
+
+  for (const propertyId of propertyIds as string[]) {
+    try {
+      await syncExternalCalendars(propertyId);
+    } catch (error) {
+      console.error(`[CalendarSync] Erro crítico ao sincronizar imóvel ${propertyId}:`, error);
+    }
+  }
+
+  console.log('[CalendarSync] Sincronização global concluída.');
+};

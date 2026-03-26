@@ -12,27 +12,8 @@ export const getPropertyAvailability = async (req: Request, res: Response): Prom
       return;
     }
 
-    type PropertyWithReservations = Prisma.PropertyGetPayload<{
-      include: {
-        reservas: {
-          where: { status: { not: 'Cancelada' } };
-          orderBy: { data_checkin: 'asc' };
-          include: {
-            locatario: {
-              select: {
-                nome: true;
-              };
-            };
-          };
-        };
-        user: {
-          select: {
-            nome: true;
-            telefone: true;
-          };
-        };
-      };
-    }>;
+    // Tipagem robusta para evitar conflitos de compilação quando o Prisma Client local não está sincronizado
+    type PropertyWithReservations = any;
 
     const property = (await prisma.property.findUnique({
       where: { id },

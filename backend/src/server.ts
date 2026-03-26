@@ -75,8 +75,21 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/nps', npsRoutes);
 app.use('/api/ces', cesRoutes);
 
+import { syncAllProperties } from './services/calendar.service';
+
 const PORT = process.env.PORT || 3333;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
+  
+  // Configura a sincronização automática (Cron Job) a cada 1 hora
+  const ONE_HOUR = 60 * 60 * 1000;
+  setInterval(() => {
+    syncAllProperties().catch(err => console.error('[Cron] Erro na sincronização automática:', err));
+  }, ONE_HOUR);
+
+  // Executa uma sincronização inicial após 1 minuto de startup para garantir dados frescos
+  setTimeout(() => {
+    syncAllProperties().catch(err => console.error('[Cron] Erro na sincronização inicial:', err));
+  }, 60 * 1000);
 });

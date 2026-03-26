@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { format, parse, startOfWeek, getDay, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
 import { Plus, User, Clock, CreditCard, ChevronRight, Home, DollarSign, CheckCircle2, AlertCircle, RefreshCcw } from 'lucide-react';
 import { formatCurrencyBR } from '@/lib/utils';
@@ -123,10 +123,21 @@ export default function ReservationsPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<any>(Views.MONTH);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<string | null>(null);
 
   useEffect(() => {
     fetchReservations();
-  }, []);
+    fetchLastSync();
+  }, [currentDate]);
+
+  async function fetchLastSync() {
+    try {
+      const response = await api.get('/dashboard/stats');
+      setLastSync(response.data.lastSync);
+    } catch (error) {
+      console.error('Erro ao buscar última sincronização:', error);
+    }
+  }
 
   const EventComponent = ({ event }: any) => {
     const reserva = event.resource;
@@ -331,18 +342,25 @@ export default function ReservationsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Calendário de Reservas</h1>
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleSyncAll}
-            disabled={isSyncing}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 border ${
-              isSyncing 
-              ? 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed' 
-              : 'bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-50 shadow-sm'
-            }`}
-          >
-            <RefreshCcw size={16} className={isSyncing ? 'animate-spin' : ''} />
-            {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR'}
-          </button>
+          <div className="flex flex-col items-end gap-1">
+            <button
+              onClick={handleSyncAll}
+              disabled={isSyncing}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 border ${
+                isSyncing 
+                ? 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed' 
+                : 'bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-50 shadow-sm'
+              }`}
+            >
+              <RefreshCcw size={16} className={isSyncing ? 'animate-spin' : ''} />
+              {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR'}
+            </button>
+            {lastSync && (
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Sincronizado {formatDistanceToNow(new Date(lastSync), { addSuffix: true, locale: ptBR })}
+              </p>
+            )}
+          </div>
 
           <Link 
             href="/dashboard/reservations/new" 

@@ -163,7 +163,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
         }
       }
     });
-
+    
     let profileCompleted = false;
     if (userId) {
       const profileInfo = await prisma.user.findUnique({
@@ -178,6 +178,14 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       );
     }
 
+    // 7. Última Sincronização
+    const lastSyncRecord = await (prisma as any).calendarSync.findFirst({
+      where: { imovel: { usuario_id: userId } },
+      orderBy: { last_sync: 'desc' },
+      select: { last_sync: true }
+    });
+    const lastSync = lastSyncRecord?.last_sync || null;
+
     res.status(200).json({
       totalProperties,
       totalTenants,
@@ -190,7 +198,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       checkinsTodayList,
       checkoutsTodayList,
       pendingPayments,
-      profileCompleted
+      profileCompleted,
+      lastSync
     });
   } catch (error) {
     console.error(error);

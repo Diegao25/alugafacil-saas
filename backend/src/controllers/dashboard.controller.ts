@@ -45,8 +45,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
           gte: todayStart,
           lte: todayEnd
         },
-        status: { not: 'Cancelada' },
-        locatario_id: { not: null }
+        status: { not: 'Cancelada' }
       }
     });
 
@@ -58,8 +57,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
           gte: todayStart,
           lte: todayEnd
         },
-        status: { not: 'Cancelada' },
-        locatario_id: { not: null }
+        status: { not: 'Cancelada' }
       }
     });
 
@@ -68,13 +66,12 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkin: { gt: todayEnd },
-        status: { not: 'Cancelada' },
-        locatario_id: { not: null }
+        status: { not: 'Cancelada' }
       }
     });
 
-    // 4. Faturamento do Mês (Soma de pagamentos pagos no mês atual)
-    const monthlyPayments = await prisma.payment.aggregate({
+    // 4. Faturamento do Mês (Agrupado por Origem)
+    const monthlyPaymentsData = await prisma.payment.findMany({
       where: {
         reserva: { imovel: { usuario_id: userId } },
         status: 'Pago',
@@ -83,18 +80,30 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
           lte: monthEnd
         }
       },
-      _sum: {
-        valor: true
+      select: {
+        valor: true,
+        reserva: {
+          select: {
+            provider: true
+          }
+        }
       }
     });
+
+    const monthlyRevenue = monthlyPaymentsData.reduce((acc, p) => acc + p.valor, 0);
+    
+    const revenueBySource = monthlyPaymentsData.reduce((acc: any, p: any) => {
+      const source = p.reserva?.provider?.toLowerCase() || 'direto';
+      acc[source] = (acc[source] || 0) + p.valor;
+      return acc;
+    }, {} as Record<string, number>);
 
     // 5. Próximos Check-ins (Top 5, excluindo hoje)
     const upcomingCheckins = await prisma.reservation.findMany({
       where: {
         imovel: { usuario_id: userId },
         data_checkin: { gt: todayEnd },
-        status: { not: 'Cancelada' },
-        locatario_id: { not: null }
+        status: { not: 'Cancelada' }
       },
       take: 5,
       orderBy: { data_checkin: 'asc' },
@@ -109,8 +118,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkout: { gt: todayEnd },
-        status: { not: 'Cancelada' },
-        locatario_id: { not: null }
+        status: { not: 'Cancelada' }
       },
       take: 5,
       orderBy: { data_checkout: 'asc' },
@@ -125,8 +133,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkin: { gte: todayStart, lte: todayEnd },
-        status: { not: 'Cancelada' },
-        locatario_id: { not: null }
+        status: { not: 'Cancelada' }
       },
       include: {
         imovel: { select: { nome: true } },
@@ -138,8 +145,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       where: {
         imovel: { usuario_id: userId },
         data_checkout: { gte: todayStart, lte: todayEnd },
-        status: { not: 'Cancelada' },
-        locatario_id: { not: null }
+        status: { not: 'Cancelada' }
       },
       include: {
         imovel: { select: { nome: true } },
@@ -192,7 +198,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       reservationsToday,
       checkoutsToday,
       pendingCheckinsCount,
-      monthlyRevenue: (monthlyPayments._sum.valor || 0),
+      monthlyRevenue,
+      revenueBySource,
       upcomingCheckins,
       upcomingCheckouts,
       checkinsTodayList,

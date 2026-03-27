@@ -296,6 +296,64 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {(stats?.revenueBySource && Object.keys(stats.revenueBySource).length > 0) && (
+        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-100 animate-in slide-in-from-bottom-4 duration-700">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <Rocket className="text-blue-600" size={24} />
+              Desempenho por Canal
+            </h3>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full">Mensal</span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {['direto', 'airbnb', 'booking'].map((source) => {
+              const amount = stats?.revenueBySource?.[source] || 0;
+              const total = stats?.monthlyRevenue || 0;
+              const percentage = total > 0 ? (amount / total) * 100 : 0;
+              
+              if (amount === 0 && source !== 'direto') return null;
+
+              return (
+                <div key={source} className="group cursor-default">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-xl transition-colors ${
+                        source === 'airbnb' ? 'bg-[#FF5A5F]/10 text-[#FF5A5F]' : 
+                        source === 'booking' ? 'bg-[#003580]/10 text-[#003580]' : 
+                        'bg-slate-100 text-slate-400'
+                      }`}>
+                        <ReservationSourceIcon provider={source} size={20} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-tighter">{source}</p>
+                        <p className="font-black text-slate-900 tracking-tight">
+                          {hideRevenue ? 'R$ ••••••' : formatCurrencyBR(amount)}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-black text-slate-400 group-hover:text-slate-900 transition-colors">
+                      {percentage.toFixed(0)}%
+                    </span>
+                  </div>
+                  
+                  <div className="h-3 bg-slate-50 rounded-full overflow-hidden border border-slate-100 p-0.5">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-[1500ms] ease-out shadow-sm ${
+                        source === 'airbnb' ? 'bg-gradient-to-r from-[#FF5A5F] to-[#FF7E82]' : 
+                        source === 'booking' ? 'bg-gradient-to-r from-[#003580] to-[#0055CC]' : 
+                        'bg-gradient-to-r from-slate-400 to-slate-500'
+                      }`}
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <div className="rounded-3xl bg-white p-8 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-20px] top-[-20px] opacity-[0.03] rotate-12 group-hover:scale-110 transition-transform">

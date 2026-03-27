@@ -50,10 +50,21 @@ export const syncExternalCalendars = async (propertyId: string) => {
               where: { external_id: externalId }
             });
 
+            // Buscar valor da diária do imóvel para estimar o total
+            const property = await prisma.property.findUnique({
+              where: { id: propertyId },
+              select: { valor_diaria: true }
+            });
+
             // iCal usa DTEND exclusivo para eventos de dia inteiro.
             const checkoutDate = new Date(ev.end);
             checkoutDate.setDate(checkoutDate.getDate() - 1);
             const checkinDate = new Date(ev.start);
+
+            // Calcular noites e valor estimado
+            const diffTime = Math.abs(checkoutDate.getTime() - checkinDate.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+            const estimatedValue = (property?.valor_diaria || 0) * diffDays;
 
             if (!existing) {
               await (prisma as any).reservation.create({
@@ -61,7 +72,7 @@ export const syncExternalCalendars = async (propertyId: string) => {
                   imovel_id: propertyId,
                   data_checkin: checkinDate,
                   data_checkout: checkoutDate,
-                  valor_total: 0,
+                  valor_total: estimatedValue,
                   status: `Bloqueado (${config.provider})`,
                   external_id: externalId,
                   provider: config.provider
@@ -76,12 +87,13 @@ export const syncExternalCalendars = async (propertyId: string) => {
               const newCheckin = checkinDate.toISOString().split('T')[0];
               const newCheckout = checkoutDate.toISOString().split('T')[0];
 
-              if (existingCheckin !== newCheckin || existingCheckout !== newCheckout) {
+              if (existingCheckin !== newCheckin || existingCheckout !== newCheckout || (existing.valor_total === 0)) {
                 await (prisma as any).reservation.update({
                   where: { id: existing.id },
                   data: {
                     data_checkin: checkinDate,
-                    data_checkout: checkoutDate
+                    data_checkout: checkoutDate,
+                    valor_total: existing.valor_total === 0 ? estimatedValue : existing.valor_total
                   }
                 });
                 totalUpdated++;

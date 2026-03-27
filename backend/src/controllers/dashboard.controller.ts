@@ -70,7 +70,29 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       }
     });
 
-    // 4. Faturamento do Mês (Agrupado por Origem)
+    // 4. Volume de Reservas do Mês (Por Origem)
+    const monthlyReservationsData = await prisma.reservation.findMany({
+      where: {
+        imovel: { usuario_id: userId },
+        status: { not: 'Cancelada' },
+        data_checkin: {
+          gte: monthStart,
+          lte: monthEnd
+        }
+      },
+      select: {
+        valor_total: true,
+        provider: true
+      }
+    });
+
+    const revenueBySource = monthlyReservationsData.reduce((acc: any, res: any) => {
+      const source = res.provider?.toLowerCase() || 'direto';
+      acc[source] = (acc[source] || 0) + res.valor_total;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Para o faturamento TOTAL (no card principal), mantemos apenas o que foi REALMENTE PAGO
     const monthlyPaymentsData = await prisma.payment.findMany({
       where: {
         reserva: { imovel: { usuario_id: userId } },
@@ -81,22 +103,11 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
         }
       },
       select: {
-        valor: true,
-        reserva: {
-          select: {
-            provider: true
-          }
-        }
+        valor: true
       }
     });
 
     const monthlyRevenue = monthlyPaymentsData.reduce((acc, p) => acc + p.valor, 0);
-    
-    const revenueBySource = monthlyPaymentsData.reduce((acc: any, p: any) => {
-      const source = p.reserva?.provider?.toLowerCase() || 'direto';
-      acc[source] = (acc[source] || 0) + p.valor;
-      return acc;
-    }, {} as Record<string, number>);
 
     // 5. Próximos Check-ins (Top 5, excluindo hoje)
     const upcomingCheckins = await prisma.reservation.findMany({

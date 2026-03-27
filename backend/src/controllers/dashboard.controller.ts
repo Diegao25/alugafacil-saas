@@ -86,6 +86,8 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       }
     });
 
+    const totalBookedVolume = monthlyReservationsData.reduce((acc, res) => acc + res.valor_total, 0);
+
     const revenueBySource = monthlyReservationsData.reduce((acc: any, res: any) => {
       const source = res.provider?.toLowerCase() || 'direto';
       acc[source] = (acc[source] || 0) + res.valor_total;
@@ -210,6 +212,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       checkoutsToday,
       pendingCheckinsCount,
       monthlyRevenue,
+      totalBookedVolume,
       revenueBySource,
       upcomingCheckins,
       upcomingCheckouts,

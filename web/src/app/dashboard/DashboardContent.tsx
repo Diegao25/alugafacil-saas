@@ -309,10 +309,12 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {['direto', 'airbnb', 'booking'].map((source) => {
               const amount = stats?.revenueBySource?.[source] || 0;
-              const total = stats?.monthlyRevenue || 0;
+              const total = stats?.totalBookedVolume || 0;
               const percentage = total > 0 ? (amount / total) * 100 : 0;
               
-              if (amount === 0 && source !== 'direto') return null;
+              const hasData = stats?.revenueBySource && Object.keys(stats.revenueBySource).some(k => k.toLowerCase().includes(source));
+              
+              if (amount === 0 && !hasData && source !== 'direto') return null;
 
               return (
                 <div key={source} className="group cursor-default">

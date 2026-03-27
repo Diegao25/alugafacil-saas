@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import ReservationSourceIcon from '@/components/ReservationSourceIcon';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
@@ -174,6 +175,7 @@ export default function ReservationsPage() {
                 <span className="p-1.5 bg-slate-50 rounded-lg text-slate-400">
                   <Home className="h-4 w-4" />
                 </span>
+                <ReservationSourceIcon provider={reserva.provider} size={14} />
                 <h4 className="font-bold text-slate-800 text-base">{reserva.imovel.nome}</h4>
                 <div className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${status.bg} ${status.text} border ${status.border}`}>
                   {status.icon}
@@ -234,9 +236,12 @@ export default function ReservationsPage() {
       <div className="flex flex-col h-full py-0.5 px-1.5 leading-tight overflow-hidden relative">
         <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-md" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }} />
         <div className="flex items-center justify-between gap-1 mb-0.5">
-          <span className="font-bold truncate text-[10px] text-white/95 uppercase tracking-tight">
-            {reserva.imovel.nome}
-          </span>
+          <div className="flex items-center gap-1 truncate">
+            <ReservationSourceIcon provider={reserva.provider} size={10} className="text-white/80 shrink-0" />
+            <span className="font-bold truncate text-[10px] text-white/95 uppercase tracking-tight">
+              {reserva.imovel.nome}
+            </span>
+          </div>
           {isTotalPago && <CheckCircle2 className="h-2.5 w-2.5 text-white/90 shrink-0" />}
         </div>
         <div className="text-[10px] font-medium truncate text-white leading-none mb-1">

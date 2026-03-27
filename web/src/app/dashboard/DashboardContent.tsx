@@ -8,6 +8,7 @@ import { ptBR } from 'date-fns/locale';
 import { formatCurrencyBR } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
+import ReservationSourceIcon from '@/components/ReservationSourceIcon';
 import OnboardingChecklist from '@/components/OnboardingChecklist';
 import CESModal from '@/components/CESModal';
 import { Plus } from 'lucide-react';
@@ -310,7 +311,10 @@ export default function DashboardPage() {
                 <div key={res.id} className="flex items-center justify-between p-4 rounded-xl bg-white border border-blue-100 shadow-sm hover:border-blue-300 transition-colors">
                   <div>
                     <p className="font-bold text-slate-900">{res.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
+                    <div className="flex items-center gap-2">
+                      <ReservationSourceIcon provider={res.provider} size={12} />
+                      <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
+                    </div>
                     {res.hora_checkin && (
                       <p className="text-[10px] font-bold text-blue-600 mt-1 flex items-center gap-1">
                         <Clock size={10} />
@@ -349,7 +353,10 @@ export default function DashboardPage() {
                 <div key={res.id} className="flex items-center justify-between p-4 rounded-xl bg-white border border-orange-100 shadow-sm hover:border-orange-300 transition-colors">
                   <div>
                     <p className="font-bold text-slate-900">{res.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
+                    <div className="flex items-center gap-2">
+                      <ReservationSourceIcon provider={res.provider} size={12} />
+                      <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
+                    </div>
                     {res.hora_checkout && (
                       <p className="text-[10px] font-bold text-orange-600 mt-1 flex items-center gap-1">
                         <Clock size={10} />
@@ -389,7 +396,10 @@ export default function DashboardPage() {
                 <div key={res.id} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
                   <div>
                     <p className="font-bold text-slate-900">{res.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
+                    <div className="flex items-center gap-2">
+                      <ReservationSourceIcon provider={res.provider} size={12} />
+                      <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
+                    </div>
                     {res.hora_checkin && (
                       <p className="text-[10px] font-bold text-blue-600 mt-1 flex items-center gap-1">
                         <Clock size={10} />
@@ -433,7 +443,10 @@ export default function DashboardPage() {
                 <div key={res.id} className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/50 border border-orange-100 hover:bg-orange-50 transition-colors">
                   <div>
                     <p className="font-bold text-slate-900">{res.imovel.nome}</p>
-                    <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
+                    <div className="flex items-center gap-2">
+                      <ReservationSourceIcon provider={res.provider} size={12} />
+                      <p className="text-sm text-slate-500">{res.locatario?.nome || (res.provider ? `Bloqueio ${res.provider}` : 'Bloqueio')}</p>
+                    </div>
                     {res.hora_checkout && (
                       <p className="text-[10px] font-bold text-orange-600 mt-1 flex items-center gap-1">
                         <Clock size={10} />

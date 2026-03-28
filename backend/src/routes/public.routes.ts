@@ -11,7 +11,8 @@ router.get('/contracts/share', serveSharedContract);
 router.get('/config', (req, res) => {
   res.json({
     supportWhatsappNumber: process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || '5511988392241',
-    enableInAppWhatsappSupport: true
+    enableInAppWhatsappSupport: true,
+    isMaintenanceMode: process.env.MAINTENANCE_MODE === 'true'
   });
 });
 

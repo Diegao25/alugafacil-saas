@@ -1,15 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
   <defs>
-    <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#4f46e5"/>
-      <stop offset="100%" stop-color="#3b82f6"/>
+    <linearGradient id="electric-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#0f172a" />
     </linearGradient>
   </defs>
-  <!-- house shape -->
-  <path d="M8 28 L32 4 L56 28 V56 H8 Z" fill="url(#grad)"/>
-  <!-- door -->
-  <rect x="28" y="34" width="8" height="14" fill="white" rx="1"/>
-  <!-- windows -->
-  <rect x="16" y="22" width="6" height="6" fill="white" rx="1"/>
-  <rect x="42" y="22" width="6" height="6" fill="white" rx="1"/>
+  
+  <!-- Modern Geometric House -->
+  <path d="M32 6L4 30H10V58H25V42H39V58H54V30H60L32 6Z" fill="url(#electric-gradient)" />
+  
+  <!-- Modern Window detail -->
+  <rect x="18" y="34" width="6" height="6" rx="1" fill="white" opacity="0.9" />
+  <rect x="40" y="34" width="6" height="6" rx="1" fill="white" opacity="0.9" />
+  
+  <!-- Subtle accent line -->
+  <path d="M32 6L60 30H54V58" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2" />
 </svg>

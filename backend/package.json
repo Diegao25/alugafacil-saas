@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/server.ts",
+    "dev": "nodemon --watch .env src/server.ts",
     "build:prisma": "prisma generate && prisma db push --accept-data-loss",
     "build:tsc": "tsc",
     "build": "npm run build:prisma && npm run build:tsc",

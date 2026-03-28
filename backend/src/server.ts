@@ -2,7 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import app from './app';
-import { syncAllProperties } from './services/calendar.service';
+import { syncAllProperties, calendarService } from './services/calendar.service';
 
 const logFile = path.join(__dirname, '../debug.log');
 const logStream = fs.createWriteStream(logFile, { flags: 'a' });
@@ -19,6 +19,9 @@ const PORT = process.env.PORT || 3333;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
+  
+  // Limpar sincronizações que ficaram presas em 'syncing' após queda/restart
+  calendarService.resetStuckSyncs().catch(err => console.error('[Bootstrap] Erro ao resetar syncs:', err));
 
   const ONE_HOUR = 60 * 60 * 1000;
   setInterval(() => {

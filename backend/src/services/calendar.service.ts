@@ -2,6 +2,31 @@ import { prisma } from '../prisma';
 import ical from 'node-ical';
 import axios from 'axios';
 
+class CalendarService {
+  /**
+   * Reseta sincronizações que ficaram presas no estado 'syncing'
+   * útil para rodar no bootstrap do servidor após uma queda/crash.
+   */
+  async resetStuckSyncs() {
+    try {
+      const res = await (prisma as any).calendarSync.updateMany({
+        where: { status: 'syncing' },
+        data: { 
+          status: 'error', 
+          last_error: 'Sincronização interrompida por reinicialização do servidor.' 
+        }
+      });
+      if (res.count > 0) {
+        console.log(`[CalendarSync] 🧹 Limpeza de boot: ${res.count} sincronizações destravadas.`);
+      }
+    } catch (error) {
+      console.error('[CalendarSync] Erro ao resetar syncs travadas no boot:', error);
+    }
+  }
+}
+
+export const calendarService = new CalendarService();
+
 export const syncExternalCalendars = async (propertyId: string) => {
   console.log(`[CalendarSync] Iniciando sincronização para o imóvel: ${propertyId}`);
   
@@ -18,21 +43,49 @@ export const syncExternalCalendars = async (propertyId: string) => {
   let totalRemoved = 0;
   let totalUpdated = 0;
 
-  for (const config of syncConfigs) {
+  // Executar sincronizações dos provedores em PARALELO
+  const syncPromises = syncConfigs.map(async (config: any) => {
+    // 0. Trava de concorrência com Auto-Cura (2 minutos)
+    const isSyncing = (config as any).status === 'syncing';
+    const lastUpdate = new Date((config as any).updated_at).getTime();
+    const isStale = Date.now() - lastUpdate > 2 * 60 * 1000; // 2 minutos
+
+    if (isSyncing && !isStale) {
+      console.log(`[CalendarSync] Ignorando ${config.provider} - já em sincronização recente.`);
+      return;
+    }
+
+    if (isSyncing && isStale) {
+      console.log(`[CalendarSync] Sincronização de ${config.provider} estava travada (mais de 2min). Forçando reinício.`);
+    }
+
     try {
+      // Marcar como sincronizando e forçar atualização do timestamp para a auto-cura
+      await (prisma as any).calendarSync.update({
+        where: { id: config.id },
+        data: { 
+          status: 'syncing',
+          updated_at: new Date()
+        }
+      });
+
       console.log(`[CalendarSync] Buscando calendário de: ${config.provider} (${config.external_url})`);
       
       const response = await axios.get(config.external_url, { 
-        timeout: 15000,
+        timeout: 10000, // Reduzido de 15s para 10s por provedor
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Accept': 'text/calendar, text/plain, */*'
         }
       });
-      console.log(`[CalendarSync] HTTP Status: ${response.status}, Tamanho: ${response.data?.length || 0} bytes`);
-      const data = ical.parseICS(response.data);
+      
+      // Validação de Conteúdo (Evita Falso Positivo)
+      const content = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+      if (!content.includes('BEGIN:VCALENDAR')) {
+        throw new Error('O link não contém um calendário iCal válido (Tag BEGIN:VCALENDAR não encontrada).');
+      }
 
-      // 1. Coletar todos os IDs externos presentes no iCal atual
+      const data = ical.parseICS(content);
       const externalIdsInFeed: string[] = [];
       let eventCount = 0;
 
@@ -41,33 +94,24 @@ export const syncExternalCalendars = async (propertyId: string) => {
           const ev = data[k] as any;
           if (ev.type === 'VEVENT') {
             eventCount++;
-            
-            // Gerar ID externo único combinando o UID do provedor com o ID do imóvel
-            // Isso evita conflitos se o mesmo link for usado em propriedades diferentes
             const externalId = ev.uid 
               ? `${config.provider}-${ev.uid}-${propertyId}` 
-              : `${config.provider}-${ev.start.toISOString()}-${propertyId}`;
+              : `${config.provider}-${ev.start?.toISOString() || Date.now()}-${propertyId}`;
               
             externalIdsInFeed.push(externalId);
-            console.log(`[CalendarSync] Evento #${eventCount}: UID=${externalId}, Start=${ev.start}, End=${ev.end}, Summary=${ev.summary}`);
 
             // Verificar se já existe para não duplicar
             const existing = await (prisma as any).reservation.findUnique({
               where: { external_id: externalId }
             });
 
-            // Buscar valor da diária do imóvel para estimar o total
             const property = await prisma.property.findUnique({
               where: { id: propertyId },
               select: { valor_diaria: true }
             });
 
-            // iCal usa DTEND exclusivo para eventos de dia inteiro.
-            // O DTEND já representa a data de saída (checkout), não deve ser subtraído um dia.
             const checkoutDate = new Date(ev.end);
             const checkinDate = new Date(ev.start);
-
-            // Calcular noites e valor estimado
             const diffTime = Math.abs(checkoutDate.getTime() - checkinDate.getTime());
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
             const estimatedValue = (property?.valor_diaria || 0) * diffDays;
@@ -85,9 +129,7 @@ export const syncExternalCalendars = async (propertyId: string) => {
                 }
               });
               totalImported++;
-              console.log(`[CalendarSync] ✅ Importado: ${externalId}`);
             } else {
-              // Verifica se as datas mudaram no Airbnb (ex: reduziu dias do bloqueio)
               const existingCheckin = new Date(existing.data_checkin).toISOString().split('T')[0];
               const existingCheckout = new Date(existing.data_checkout).toISOString().split('T')[0];
               const newCheckin = checkinDate.toISOString().split('T')[0];
@@ -103,19 +145,13 @@ export const syncExternalCalendars = async (propertyId: string) => {
                   }
                 });
                 totalUpdated++;
-                console.log(`[CalendarSync] 🔄 Atualizado: ${externalId} (${newCheckin} a ${newCheckout})`);
-              } else {
-                console.log(`[CalendarSync] ⏭️ Já existe e sem mudanças: ${externalId}`);
               }
             }
           }
         }
       }
 
-      console.log(`[CalendarSync] Total de eventos no feed: ${eventCount}, No banco: ${externalIdsInFeed.length}`);
-
-      // 2. Remover reservas que existem no banco MAS não estão mais no feed iCal
-      //    (significa que foram canceladas/deletadas no Airbnb)
+      // 2. Remover reservas que não estão mais no feed
       const existingExternalReservations = await (prisma as any).reservation.findMany({
         where: {
           imovel_id: propertyId,
@@ -131,20 +167,32 @@ export const syncExternalCalendars = async (propertyId: string) => {
             where: { id: reservation.id }
           });
           totalRemoved++;
-          console.log(`[CalendarSync] Removido (não está mais no feed): ${reservation.external_id}`);
         }
       }
 
-      // Atualizar last_sync
+      // Finalizar com Sucesso
       await (prisma as any).calendarSync.update({
         where: { id: config.id },
-        data: { last_sync: new Date() }
+        data: { 
+          last_sync: new Date(),
+          status: 'success',
+          last_error: null
+        }
       });
 
-    } catch (error) {
-      console.error(`[CalendarSync] Erro ao sincronizar ${config.provider}:`, error);
+    } catch (error: any) {
+      console.error(`[CalendarSync] Erro ao sincronizar ${config.provider}:`, error.message);
+      await (prisma as any).calendarSync.update({
+        where: { id: config.id },
+        data: { 
+          status: 'error',
+          last_error: error.message || 'Erro desconhecido'
+        }
+      });
     }
-  }
+  });
+
+  await Promise.all(syncPromises);
 
   return { success: true, imported: totalImported, removed: totalRemoved, updated: totalUpdated, hasConfigs: true };
 };
@@ -163,7 +211,7 @@ export const syncUserProperties = async (userId: string) => {
     properties.map(async (p: any) => {
       try {
         return await syncExternalCalendars(p.id);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`[CalendarSync] Erro ao sincronizar imóvel ${p.id}:`, error);
         return { success: false, error };
       }

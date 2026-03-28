@@ -23,24 +23,16 @@ export const getApiBaseUrl = () => {
     const hostname = window.location.hostname;
     
     // Ambiente Local (IPs Privados e Localhost)
-    const isLocal = hostname === 'localhost' || 
-                    hostname === '127.0.0.1' || 
-                    hostname.startsWith('192.168.') || 
-                    hostname.startsWith('10.') || 
-                    hostname.startsWith('172.');
-
-    if (isLocal) {
-      return `http://127.0.0.1:3333/api`;
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
+      return `http://localhost:3333/api`;
     }
 
-    // Ambiente de Produção (Railway ou Domínios Customizados)
-    // Se não for localhost, tentamos usar o backend de produção conhecido.
-    // O screenshot confirmou que o domínio atual é 'easygoing-backend-production'.
+    // Ambiente de Produção (Railway Oficial)
     return 'https://easygoing-backend-production.up.railway.app/api';
   }
 
   // Fallback para SSR
-  return 'http://127.0.0.1:3333/api';
+  return 'http://localhost:3333/api';
 };
 
 export const api = axios.create({
@@ -61,16 +53,24 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor para capturar trial expirado
+// Interceptor para capturar erros globais (Trial expirado, Manutenção, etc)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // 1. Capturar Trial Expirado
     if (error.response?.status === 403 && error.response?.data?.code === 'TRIAL_EXPIRED') {
-      // Notificar o sistema que o trial expirou para atualizar o estado global
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('trial-expired'));
       }
     }
+
+    // 2. Capturar Modo de Manutenção (503)
+    if (error.response?.status === 503 && error.response?.data?.error === 'maintenance') {
+      if (typeof window !== 'undefined' && window.location.pathname !== '/maintenance') {
+        window.location.href = '/maintenance';
+      }
+    }
+
     return Promise.reject(error);
   }
 );

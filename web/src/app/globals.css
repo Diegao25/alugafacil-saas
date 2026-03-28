@@ -2,11 +2,15 @@
 @import "react-big-calendar/lib/css/react-big-calendar.css";
 
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
+  --color-primary-50: #f8fafc;
+  --color-primary-100: #f1f5f9;
+  --color-primary-500: #1e293b; /* Navy Slate */
+  --color-primary-600: #0f172a; /* Deep Navy */
+  --color-primary-700: #020617; /* Midnight */
+  
+  --color-accent-400: #22d3ee; /* Electric Cyan */
+  --color-accent-500: #06b6d4; /* Deep Cyan */
+  --color-accent-600: #0891b2; /* Dark Cyan */
 }
 
 body {

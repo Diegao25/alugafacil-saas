@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import 'dotenv/config'; // Trigger: Atualizando status de manutenção no .env
 import express from 'express';
 import cors from 'cors';
 
@@ -16,6 +16,7 @@ import { campaignRoutes } from './routes/campaign.routes';
 import npsRoutes from './routes/nps.routes';
 import cesRoutes from './routes/ces.routes';
 import { getAllowedOrigins, getJwtSecret, isOriginAllowed } from './utils/security';
+import { maintenanceMiddleware } from './middleware/maintenance.middleware';
 
 const app = express();
 const allowedOrigins = getAllowedOrigins();
@@ -26,7 +27,9 @@ app.set('trust proxy', 1);
 // Middleware de Log de Auditoria
 app.use((req, res, next) => {
   const origin = req.headers.origin || 'No Origin';
-  console.log(`[Request] ${req.method} ${req.url} | Origin: ${origin}`);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`[Request] ${req.method} ${req.url} | Origin: ${origin}`);
+  }
   next();
 });
 
@@ -42,6 +45,9 @@ app.use(cors({
   },
   credentials: true
 }));
+
+// Modo de Manutenção (Bloqueio Global) - Deve vir após o CORS e antes das rotas de negócio
+app.use(maintenanceMiddleware);
 
 // Webhook do Stripe (PRECISA vir antes do express.json() para ter acesso ao raw body)
 import { handleWebhook } from './controllers/subscription.controller';

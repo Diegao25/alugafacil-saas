@@ -73,8 +73,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 onClick={onClose}
                 className={`flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-medium transition-all group ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
-                    : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/20'
+                    : 'text-slate-300 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <item.icon className={`h-5 w-5 transition-colors ${isActive ? 'text-white' : 'text-slate-300 group-hover:text-white'}`} />

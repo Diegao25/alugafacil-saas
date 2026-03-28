@@ -194,7 +194,10 @@ model CalendarSync {
   provider     String
   external_url String
   last_sync    DateTime?
+  status       String    @default("idle")
+  last_error   String?
   created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now()) @updatedAt
   imovel_id    String
   imovel       Property  @relation(fields: [imovel_id], references: [id])
 }

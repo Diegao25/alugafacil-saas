@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api, getApiBaseUrl } from '@/lib/api';
 import { toast } from 'react-toastify';
-import { Share2, RefreshCw, Trash2, Calendar, Link as LinkIcon, Info, Check, Copy } from 'lucide-react';
+import { Share2, RefreshCw, Trash2, Calendar, Link as LinkIcon, Info, Check, Copy, AlertCircle, Clock } from 'lucide-react';
 import ConfirmModal from '@/components/ConfirmModal';
 
 interface SyncConfig {
@@ -11,6 +11,8 @@ interface SyncConfig {
   provider: string;
   external_url: string;
   last_sync: string | null;
+  status: 'idle' | 'syncing' | 'success' | 'error';
+  last_error: string | null;
 }
 
 interface CalendarSyncSettingsProps {
@@ -228,24 +230,69 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
         {configs.length > 0 ? (
           <div className="grid gap-3">
             {configs.map(config => (
-              <div key={config.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm hover:border-slate-200 transition-all">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#f1f5f9] rounded-full flex items-center justify-center font-bold text-[#64748b] text-lg border border-[#e2e8f0]">
-                    {config.provider[0].toUpperCase()}
+              <div key={config.id} className={`flex flex-col p-4 bg-white border rounded-2xl shadow-sm transition-all ${config.status === 'error' ? 'border-red-100 bg-red-50/10' : 'border-slate-100 hover:border-slate-200'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg border ${
+                      config.status === 'error' ? 'bg-red-50 text-red-600 border-red-200' : 
+                      config.status === 'success' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' :
+                      'bg-slate-50 text-slate-500 border-slate-200'
+                    }`}>
+                      {config.provider[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-black text-slate-800 uppercase tracking-tight">
+                          {config.provider === 'airbnb' ? 'AIRBNB' : config.provider === 'booking' ? 'BOOKING' : config.provider.toUpperCase()}
+                        </span>
+                        
+                        {/* Indicador Visual de Status */}
+                        {config.status === 'success' && (
+                          <span className="flex items-center gap-1 text-[9px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full uppercase">
+                            <Check className="w-2 h-2" /> Ativo
+                          </span>
+                        )}
+                        {config.status === 'error' && (
+                          <span className="flex items-center gap-1 text-[9px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full uppercase">
+                            <AlertCircle className="w-2 h-2" /> Falha
+                          </span>
+                        )}
+                        {config.status === 'syncing' && (
+                          <span className="flex items-center gap-1 text-[9px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase">
+                            <RefreshCw className="w-2 h-2 animate-spin" /> Sync...
+                          </span>
+                        )}
+                        {config.status === 'idle' && (
+                          <span className="flex items-center gap-1 text-[9px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full uppercase">
+                            <Clock className="w-2 h-2" /> Pendente
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-400 font-medium">
+                        {config.last_sync ? `Sincronizado em: ${new Date(config.last_sync).toLocaleString()}` : 'Aguardando primeira sincronização'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-sm font-black text-slate-800 uppercase tracking-tight">{config.provider === 'airbnb' ? 'AIRBNB' : config.provider === 'booking' ? 'BOOKING' : config.provider.toUpperCase()}</span>
-                    <p className="text-[11px] text-slate-400 font-medium">Última sync: {config.last_sync ? new Date(config.last_sync).toLocaleString() : 'Nunca sincronizado'}</p>
-                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteClick(e, config.id)}
+                    className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                    title="Remover"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={(e) => handleDeleteClick(e, config.id)}
-                  className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                  title="Remover"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+
+                {/* Exibição da mensagem de erro se houver */}
+                {config.status === 'error' && config.last_error && (
+                  <div className="mt-3 p-2 bg-red-50 border border-red-100 rounded-xl flex items-start gap-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                    <AlertCircle className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-[10px] text-red-800 font-medium leading-normal italic">
+                      Motivo da falha: {config.last_error}
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
           </div>

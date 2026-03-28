@@ -1,5 +1,6 @@
 'use client';
 
+import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { inAppWhatsappSupportEnabled } from '@/lib/features';
 import { MessageCircle } from 'lucide-react';
@@ -31,13 +32,8 @@ export default function SupportWhatsAppButton() {
 
     async function loadRuntimeConfig() {
       try {
-        const response = await fetch('/api/public/config', { cache: 'no-store' });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const data = await response.json();
+        const response = await api.get('/public/config');
+        const data = response.data;
 
         if (!mounted) {
           return;

@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Building2, MessageCircle, MapPin } from 'lucide-react';
 import InteractiveAgenda from '@/components/InteractiveAgenda';
 
@@ -61,6 +61,10 @@ async function fetchAvailability(id: string): Promise<PropertyAvailabilityRespon
 
   if (response.status === 404) {
     notFound();
+  }
+
+  if (response.status === 503) {
+    redirect('/maintenance');
   }
 
   if (!response.ok) {

@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import MaintenanceSentinel from '@/components/MaintenanceSentinel';
 
 const inter = Inter({ subsets: ['latin'] });
 export const dynamic = 'force-dynamic';
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: '#2563eb',
+  themeColor: '#0f172a', /* Deep Navy */
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -63,6 +64,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}>
         <AuthProvider>
+          <MaintenanceSentinel />
           {children}
           <ToastContainer 
             position="top-right" 

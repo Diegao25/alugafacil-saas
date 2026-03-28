@@ -4,42 +4,6 @@ import { prisma } from '../prisma';
 import ical, { ICalCalendarMethod } from 'ical-generator';
 import { syncExternalCalendars, syncUserProperties } from '../services/calendar.service';
 
-export const dangerZoneResetAll = async (req: Request, res: Response) => {
-  // Verificação de segurança simples por query param
-  const secret = req.query.secret;
-  if (secret !== 'reset2026') {
-    return res.status(401).json({ error: 'Não autorizado' });
-  }
-
-  try {
-    console.log('[DANGER ZONE] Iniciando reset total de reservas na produção...');
-    
-    // 1. Deletar Pagamentos (Dependem de Reservas)
-    const pCount = await (prisma as any).payment.deleteMany({});
-    // 2. Deletar Contratos (Dependem de Reservas)
-    const cCount = await (prisma as any).contractDraft.deleteMany({});
-    // 3. Deletar Reservas
-    const rCount = await (prisma as any).reservation.deleteMany({});
-    // 4. Deletar Configurações de Sincronização
-    const sCount = await (prisma as any).calendarSync.deleteMany({});
-    
-    console.log(`[DANGER ZONE] Reset concluído: ${rCount.count} reservas removidas.`);
-
-    return res.json({
-      success: true,
-      removed: {
-        payments: pCount.count,
-        contracts: cCount.count,
-        reservas: rCount.count,
-        syncs: sCount.count
-      }
-    });
-  } catch (error) {
-    console.error('[DANGER ZONE] Erro no reset:', error);
-    return res.status(500).json({ error: 'Erro crítico no reset' });
-  }
-};
-
 export const exportPropertyCalendar = async (req: Request, res: Response) => {
   const id = req.params.id as string;
 

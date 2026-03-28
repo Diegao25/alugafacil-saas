@@ -57,14 +57,16 @@ export const exportPropertyCalendar = async (req: Request, res: Response) => {
         end.setDate(end.getDate() + 1);
       }
 
-      calendar.createEvent({
-        id: reserva.id, // UID Único e Estável
+      const event = calendar.createEvent({
         start: start,
         end: end,
         summary: summary,
         description: `Reserva gerenciada pelo Aluga Fácil. Código: ${reserva.id}`,
         allDay: true
       });
+
+      // Forçar UID estável via método (mais robusto em v10+)
+      event.uid(reserva.id);
     });
 
     const icalString = calendar.toString();

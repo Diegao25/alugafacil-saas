@@ -11,7 +11,7 @@ export const syncExternalCalendars = async (propertyId: string) => {
 
   if (syncConfigs.length === 0) {
     console.log(`[CalendarSync] Nenhuma configuração de sincronização encontrada para ${propertyId}`);
-    return { success: true, processed: 0 };
+    return { success: true, imported: 0, removed: 0, updated: 0, hasConfigs: false };
   }
 
   let totalImported = 0;
@@ -41,9 +41,15 @@ export const syncExternalCalendars = async (propertyId: string) => {
           const ev = data[k] as any;
           if (ev.type === 'VEVENT') {
             eventCount++;
-            const externalId = ev.uid || `${config.provider}-${ev.start.toISOString()}`;
+            
+            // Gerar ID externo único combinando o UID do provedor com o ID do imóvel
+            // Isso evita conflitos se o mesmo link for usado em propriedades diferentes
+            const externalId = ev.uid 
+              ? `${config.provider}-${ev.uid}-${propertyId}` 
+              : `${config.provider}-${ev.start.toISOString()}-${propertyId}`;
+              
             externalIdsInFeed.push(externalId);
-            console.log(`[CalendarSync] Evento #${eventCount}: UID=${externalId}, Start=${ev.start}, End=${ev.end}`);
+            console.log(`[CalendarSync] Evento #${eventCount}: UID=${externalId}, Start=${ev.start}, End=${ev.end}, Summary=${ev.summary}`);
 
             // Verificar se já existe para não duplicar
             const existing = await (prisma as any).reservation.findUnique({
@@ -57,8 +63,8 @@ export const syncExternalCalendars = async (propertyId: string) => {
             });
 
             // iCal usa DTEND exclusivo para eventos de dia inteiro.
+            // O DTEND já representa a data de saída (checkout), não deve ser subtraído um dia.
             const checkoutDate = new Date(ev.end);
-            checkoutDate.setDate(checkoutDate.getDate() - 1);
             const checkinDate = new Date(ev.start);
 
             // Calcular noites e valor estimado
@@ -140,7 +146,7 @@ export const syncExternalCalendars = async (propertyId: string) => {
     }
   }
 
-  return { success: true, imported: totalImported, removed: totalRemoved, updated: totalUpdated };
+  return { success: true, imported: totalImported, removed: totalRemoved, updated: totalUpdated, hasConfigs: true };
 };
 
 export const syncUserProperties = async (userId: string) => {
@@ -169,14 +175,26 @@ export const syncUserProperties = async (userId: string) => {
 
 export const syncAllProperties = async () => {
   console.log('[CalendarSync] Iniciando sincronização global...');
+  
+  // Pegar configurações de sincronização APENAS de usuários no Plano Completo ou em Trial
   const syncConfigs = await (prisma as any).calendarSync.findMany({
+    where: {
+      imovel: {
+        user: {
+          OR: [
+            { plan_name: 'Plano Completo' },
+            { subscription_status: 'trial_active' }
+          ]
+        }
+      }
+    },
     select: { imovel_id: true }
   });
 
   // Unique property IDs
   const propertyIds = Array.from(new Set(syncConfigs.map((c: any) => c.imovel_id)));
 
-  console.log(`[CalendarSync] Encontrados ${propertyIds.length} imóveis para sincronizar.`);
+  console.log(`[CalendarSync] Encontrados ${propertyIds.length} imóveis elegíveis para sincronização automática.`);
 
   for (const propertyId of propertyIds as string[]) {
     try {

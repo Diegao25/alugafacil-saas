@@ -37,6 +37,8 @@ export const exportPropertyCalendar = async (req: Request, res: Response) => {
       });
     }
 
+    console.log(`[iCalExport] Iniciando exportação para imóvel ${id}. Reservas encontradas: ${property.reservas.length}`);
+
     property.reservas.forEach((reserva: any) => {
       // Definindo o título do evento
       let summary = 'Reserva Aluga Fácil';
@@ -46,12 +48,17 @@ export const exportPropertyCalendar = async (req: Request, res: Response) => {
       const start = new Date(reserva.data_checkin);
       const end = new Date(reserva.data_checkout);
 
+      // Logs para depuração interna
+      console.log(`[iCalExport] Processando reserva ${reserva.id}: ${summary} (${start.toISOString().split('T')[0]} a ${end.toISOString().split('T')[0]})`);
+
       // Padrão iCal exige que o End date de eventos all-day seja no mínimo 1 dia após o start (End é exclusivo)
+      // Se start e end forem iguais ou end for anterior, forçamos ao menos 1 dia de duração
       if (start.getTime() >= end.getTime()) {
         end.setDate(end.getDate() + 1);
       }
 
       calendar.createEvent({
+        id: reserva.id, // UID Único e Estável
         start: start,
         end: end,
         summary: summary,
@@ -100,6 +107,10 @@ export const addPropertySyncConfig = async (req: Request, res: Response) => {
         external_url: url
       }
     });
+
+    // Sincronizar automaticamente após adicionar o link
+    await syncExternalCalendars(id);
+
     return res.json(config);
   } catch (error) {
     return res.status(500).json({ error: 'Erro ao salvar configuração' });

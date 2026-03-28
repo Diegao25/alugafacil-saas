@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/server.ts",
-    "build": "npx prisma generate && npx prisma db push --accept-data-loss && tsc",
+    "build:prisma": "prisma generate && prisma db push --accept-data-loss",
+    "build:tsc": "tsc",
+    "build": "npm run build:prisma && npm run build:tsc",
     "start": "node dist/server.js",
     "delete:user:a90fa124": "node scripts/delete-user-a90fa124.js",
     "test": "jest",

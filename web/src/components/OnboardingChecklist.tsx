@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CheckCircle2, PartyPopper, ArrowRight, Building, Calendar, FileText, User } from 'lucide-react';
+import { CheckCircle2, PartyPopper, ArrowRight, Building, Calendar, FileText, User, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
@@ -20,10 +20,20 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    if (!user || user.plan_type !== 'trial') {
+    if (!user) {
       setIsVisible(false);
       return;
     }
+
+    // Verificar se o onboarding foi ocultado manualmente para ESTE usuário
+    const isDismissed = localStorage.getItem(`onboarding_dismissed_${user.id}`) === 'true';
+    if (isDismissed) {
+      setIsVisible(false);
+      return;
+    }
+
+    // Resetar visibilidade se trocar de usuário e não estiver oculto
+    setIsVisible(true);
 
     const checklist: ChecklistItem[] = [
       {
@@ -73,6 +83,13 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
   const completedCount = items.filter(i => i.completed).length;
   const progressPercent = Math.round((completedCount / items.length) * 100);
 
+  const handleDismiss = () => {
+    if (user) {
+      localStorage.setItem(`onboarding_dismissed_${user.id}`, 'true');
+    }
+    setIsVisible(false);
+  };
+
   if (completedCount === items.length) {
     return (
       <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-6 text-white shadow-lg shadow-emerald-200 animate-in zoom-in duration-500 relative overflow-hidden">
@@ -90,7 +107,7 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
             </div>
           </div>
           <button 
-            onClick={() => setIsVisible(false)}
+            onClick={handleDismiss}
             className="bg-white text-emerald-600 px-6 py-3 rounded-xl font-bold hover:bg-emerald-50 transition-all text-sm whitespace-nowrap"
           >
             Começar a Usar
@@ -101,7 +118,16 @@ export default function OnboardingChecklist({ stats }: { stats: any }) {
   }
 
   return (
-    <div className="bg-white rounded-3xl p-8 border-none shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] animate-in slide-in-from-top-4 duration-500">
+    <div className="bg-white rounded-3xl p-8 border-none shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] animate-in slide-in-from-top-4 duration-500 relative group/checklist">
+      {/* Botão de fechar */}
+      <button
+        onClick={handleDismiss}
+        className="absolute top-4 right-4 p-2 text-slate-300 hover:text-slate-500 hover:bg-slate-100 rounded-full transition-all opacity-0 group-hover/checklist:opacity-100"
+        title="Ocultar guia"
+      >
+        <X size={18} /> 
+      </button>
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div>
           <h2 className="text-2xl font-black text-slate-900 flex items-center gap-2">

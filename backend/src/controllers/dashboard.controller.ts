@@ -24,8 +24,15 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
     const todayEnd = endOfToday();
     todayEnd.setHours(todayEnd.getHours() + 12); 
     
-    const monthStart = startOfMonth(new Date());
-    const monthEnd = endOfMonth(new Date());
+    // Suporte para filtros de mês e ano
+    const queryMonth = req.query.month ? parseInt(req.query.month as string, 10) : new Date().getMonth() + 1;
+    const queryYear = req.query.year ? parseInt(req.query.year as string, 10) : new Date().getFullYear();
+    
+    // Meses no JavaScript são 0-11, mas a API recebe 1-12
+    const targetDate = new Date(queryYear, queryMonth - 1, 1);
+    
+    const monthStart = startOfMonth(targetDate);
+    const monthEnd = endOfMonth(targetDate);
 
     // 1. Total de Imóveis
     const totalProperties = await prisma.property.count({
@@ -94,22 +101,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       return acc;
     }, {} as Record<string, number>);
 
-    // Para o faturamento TOTAL (no card principal), mantemos apenas o que foi REALMENTE PAGO
-    const monthlyPaymentsData = await prisma.payment.findMany({
-      where: {
-        reserva: { imovel: { usuario_id: userId } },
-        status: 'Pago',
-        data_pagamento: {
-          gte: monthStart,
-          lte: monthEnd
-        }
-      },
-      select: {
-        valor: true
-      }
-    });
-
-    const monthlyRevenue = monthlyPaymentsData.reduce((acc, p) => acc + p.valor, 0);
+    const monthlyRevenue = monthlyReservationsData.reduce((acc, res) => acc + (res.valor_total || 0), 0);
 
     // 5. Próximos Check-ins (Top 5, excluindo hoje)
     const upcomingCheckins = await prisma.reservation.findMany({
@@ -228,7 +220,9 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       checkoutsTodayList,
       pendingPayments,
       profileCompleted,
-      lastSync
+      lastSync,
+      selectedMonth: queryMonth,
+      selectedYear: queryYear
     });
   } catch (error) {
     console.error(error);

@@ -149,7 +149,7 @@ export default function RegisterContent() {
               <Logo href="/landing?external=1" size="medium" withText={false} />
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-800 text-center">Criar Conta</h1>
-            <p className="text-[11px] font-bold text-slate-600 mt-1 bg-slate-100/80 px-2 py-0.5 rounded-full uppercase">Premium Já</p>
+            <p className="text-[11px] font-bold text-slate-600 mt-1 bg-slate-100/80 px-2 py-0.5 rounded-full uppercase">SaaS Completo</p>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-3">

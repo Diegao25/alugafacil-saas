@@ -4,6 +4,9 @@ import { AUTH_HEADER } from './helpers/jwt.helper';
 import { makeProperty, makeTenant, makeReservation, makePayment } from './helpers/factories';
 
 jest.mock('../prisma');
+jest.mock('../services/calendar.service', () => ({
+  syncExternalCalendars: jest.fn().mockResolvedValue(undefined)
+}));
 
 const { prisma } = require('../prisma');
 

@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import { Plus, MapPin, Users, DollarSign, Trash2, Edit, MessageCircle, Instagram, Facebook, ExternalLink, RefreshCcw } from 'lucide-react';
+import { Plus, MapPin, Users, DollarSign, Trash2, Edit, MessageCircle, Instagram, Facebook, ExternalLink, RefreshCcw, Zap } from 'lucide-react';
 import { toast } from 'react-toastify';
 import CopyLinkButton from '@/components/CopyLinkButton';
 import { formatCurrencyBR, unmask } from '@/lib/utils';
 import ConfirmModal from '@/components/ConfirmModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Property {
   id: string;
@@ -16,9 +17,11 @@ interface Property {
   valor_diaria: number;
   capacidade_maxima: number;
   redes_sociais_url?: string | null;
+  is_excedente?: boolean;
 }
 
 export default function PropertiesPage() {
+  const { user } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [tenants, setTenants] = useState<any[]>([]);
@@ -82,8 +85,10 @@ export default function PropertiesPage() {
     setSyncingId(propertyId);
     try {
       const res = await api.post(`/properties/${propertyId}/sync-now`);
-      const { imported = 0, removed = 0, updated = 0 } = res.data;
-      if (imported === 0 && removed === 0 && updated === 0) {
+      const { imported = 0, removed = 0, updated = 0, hasConfigs = true } = res.data;
+      if (!hasConfigs) {
+        toast.warning('Este imóvel não possui link iCal configurado. Vá em Editar Imóvel para adicionar.');
+      } else if (imported === 0 && removed === 0 && updated === 0) {
         toast.info('Agenda já está atualizada. Nenhuma alteração encontrada.');
       } else {
         const parts = [];
@@ -158,15 +163,47 @@ function normalizeExternalUrl(url?: string | null) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Imóveis</h1>
-        <Link 
-          href="/dashboard/properties/new" 
-          className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Novo Imóvel</span>
-        </Link>
-      </div>
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Imóveis</h1>
+          {user?.plan_name === 'Plano Básico' && user?.subscription_status !== 'trial_active' && properties.length >= 3 && (
+            <p className="text-xs font-bold text-amber-600 mt-1 bg-amber-50 px-3 py-1 rounded-full border border-amber-100 inline-block">
+              Limite do Plano Básico atingido (3/3)
+            </p>
+          )}
+        </div>
+        <div className="flex gap-2">
+          {!(user?.plan_name === 'Plano Básico' && user?.subscription_status !== 'trial_active' && properties.length >= 3) && (
+            <Link 
+              href="/dashboard/properties/new" 
+              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Novo Imóvel</span>
+            </Link>
+          )}
+        </div>
+
+      {properties.some(p => p.is_excedente) && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="bg-amber-100 p-2.5 rounded-xl text-amber-600 shrink-0">
+            <Zap size={22} className="fill-amber-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold text-amber-900">Atenção: Imóveis Bloqueados pelo Plano</h3>
+            <p className="text-xs text-amber-800 mt-0.5 leading-relaxed">
+              Você possui imóveis que excedem o limite de 3 do Plano Básico. Eles estão em modo de <strong>Apenas Visualização</strong>. 
+              Para gerenciar, editar ou sincronizar estes imóveis, faça o upgrade para o Plano Completo.
+            </p>
+          </div>
+          <Link 
+            href="http://localhost:3000/dashboard/plans" 
+            className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-black uppercase tracking-widest px-5 py-2.5 rounded-xl transition-all shadow-md shadow-amber-200"
+          >
+            Fazer Upgrade
+          </Link>
+        </div>
+      )}
+    </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {properties.length === 0 ? (
@@ -184,9 +221,20 @@ function normalizeExternalUrl(url?: string | null) {
               <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
               
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-slate-800 truncate pr-2">{property.nome}</h3>
+                <div className="flex flex-col gap-1 pr-2 overflow-hidden">
+                  <h3 className="text-xl font-bold text-slate-800 truncate">{property.nome}</h3>
+                  {property.is_excedente && (
+                    <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                      <Zap size={10} className="fill-amber-600" /> Bloqueado pelo Plano
+                    </span>
+                  )}
+                </div>
                 <div className="flex space-x-1 shrink-0">
-                  <Link href={`/dashboard/properties/${property.id}`} className="p-1.5 text-slate-400 hover:text-blue-600 bg-slate-50 rounded-lg hover:bg-blue-50 transition-colors">
+                  <Link 
+                    href={property.is_excedente ? "#" : `/dashboard/properties/${property.id}`} 
+                    onClick={(e) => property.is_excedente && e.preventDefault()}
+                    className={`p-1.5 rounded-lg transition-colors ${property.is_excedente ? 'text-slate-300 bg-slate-100/50 cursor-not-allowed' : 'text-slate-400 hover:text-blue-600 bg-slate-50 hover:bg-blue-50'}`}
+                  >
                     <Edit className="h-4 w-4" />
                   </Link>
                   <button onClick={() => setPropertyToDelete(property.id)} className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 rounded-lg hover:bg-red-50 transition-colors">
@@ -233,20 +281,21 @@ function normalizeExternalUrl(url?: string | null) {
                   />
                   <button
                     type="button"
+                    disabled={property.is_excedente}
                     onClick={() => {
                       setShareDialog(property);
                       setSelectedTenant('');
                     }}
-                    className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-emerald-700 transition hover:bg-emerald-100 hover:border-emerald-200 shadow-sm"
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition shadow-sm ${property.is_excedente ? 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed' : 'bg-emerald-50 border-emerald-100 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-200'}`}
                   >
                     <MessageCircle className="h-3.5 w-3.5" />
                     Compartilhar
                   </button>
                    <button
                     type="button"
-                    onClick={() => handleSyncNow(property.id)}
-                    disabled={syncingId === property.id}
-                    className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-violet-700 transition hover:bg-violet-100 hover:border-violet-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => !property.is_excedente && handleSyncNow(property.id)}
+                    disabled={syncingId === property.id || property.is_excedente}
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition shadow-sm ${property.is_excedente || syncingId === property.id ? 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed' : 'bg-violet-50 border-violet-100 text-violet-700 hover:bg-violet-100 hover:border-violet-200'}`}
                   >
                     <RefreshCcw className={`h-3.5 w-3.5 ${syncingId === property.id ? 'animate-spin' : ''}`} />
                     {syncingId === property.id ? 'Sincronizando...' : 'Sincronizar'}
@@ -254,8 +303,9 @@ function normalizeExternalUrl(url?: string | null) {
                    <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={agendaPath}
-                    className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-blue-700 transition hover:bg-blue-100 hover:border-blue-200 shadow-sm"
+                    href={property.is_excedente ? "#" : agendaPath}
+                    onClick={(e) => property.is_excedente && e.preventDefault()}
+                    className={`inline-flex items-center rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition shadow-sm ${property.is_excedente ? 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed' : 'bg-blue-50 border-blue-100 text-blue-700 hover:bg-blue-100 hover:border-blue-200'}`}
                   >
                     Ver agenda
                   </Link>

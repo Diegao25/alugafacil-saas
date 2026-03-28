@@ -1,0 +1,14 @@
+
+> backend@1.0.0 build
+> npm run build:prisma && npm run build:tsc
+
+
+> backend@1.0.0 build:prisma
+> prisma generate && prisma db push --accept-data-loss
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Error: 
+EPERM: operation not permitted, rename 'C:\Users\Davi e Sarah\.gemini\antigravity\scratch\gestao_locacoes\backend\node_modules\.prisma\client\query_engine-windows.dll.node.tmp16756' -> 'C:\Users\Davi e Sarah\.gemini\antigravity\scratch\gestao_locacoes\backend\node_modules\.prisma\client\query_engine-windows.dll.node'
+
+

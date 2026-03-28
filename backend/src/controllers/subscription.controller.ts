@@ -11,7 +11,8 @@ const STRIPE_PRICE_ESSENTIAL = process.env.STRIPE_PRICE_ESSENTIAL;
 const STRIPE_PRICE_PROFESSIONAL = process.env.STRIPE_PRICE_PROFESSIONAL;
 
 const PLAN_PRICE_MAPPING: Record<string, string | undefined> = {
-  'Plano Completo': STRIPE_PRICE_ESSENTIAL, // Usando a mesma env por enquanto
+  'Plano Básico': STRIPE_PRICE_ESSENTIAL,
+  'Plano Completo': STRIPE_PRICE_PROFESSIONAL,
 };
 
 export const createCheckoutSession = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -81,7 +82,7 @@ export const createCheckoutSession = async (req: AuthRequest, res: Response): Pr
           name: planName,
           description: 'Acesso total ao sistema Aluga Fácil',
         },
-        unit_amount: 4990,
+        unit_amount: planName === 'Plano Básico' ? 3990 : 7990,
         recurring: { interval: 'month' },
       };
     }
@@ -171,6 +172,19 @@ export const cancelSubscription = async (req: AuthRequest, res: Response): Promi
       })
     ]);
     
+    // Cancelar no Stripe se houver uma assinatura ativa
+    if (user.stripe_subscription_id && stripe) {
+      try {
+        console.log(`[Subscription] Cancelando assinatura ${user.stripe_subscription_id} no Stripe...`);
+        await stripe.subscriptions.update(user.stripe_subscription_id, {
+          cancel_at_period_end: true
+        });
+      } catch (e: any) {
+        console.error('Erro ao cancelar assinatura no Stripe:', e.message);
+        // Prosseguimos com o cancelamento no banco mesmo se falhar no Stripe (ex: assinatura já cancelada manualmente)
+      }
+    }
+
     // Enviar e-mail de cancelamento
     try {
       await sendSubscriptionCancellationEmail(
@@ -214,13 +228,25 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
     });
 
     if (session.payment_status === 'paid') {
-      const planName = session.metadata?.planName || 'Essencial';
+      const planName = session.metadata?.planName || (session.amount_total === 3990 ? 'Plano Básico' : 'Plano Completo');
       const subscriptionId = typeof session.subscription === 'string' 
         ? session.subscription 
         : (session.subscription as any).id;
       if (userId) {
         const existingUser = await prisma.user.findUnique({ where: { id: userId } });
-        console.log('Verificação de pagamento concluída. Atualizando dados da assinatura...');
+        const oldSubscriptionId = existingUser?.stripe_subscription_id;
+
+        // Se mudou de assinatura (novo checkout para quem já tinha), cancelar a antiga no Stripe
+        if (oldSubscriptionId && oldSubscriptionId !== subscriptionId && stripe) {
+          try {
+            console.log(`[VerifySession] Cancelando assinatura antiga ${oldSubscriptionId} após novo checkout.`);
+            await stripe.subscriptions.cancel(oldSubscriptionId);
+          } catch (e: any) {
+            console.error('[VerifySession] Erro ao cancelar assinatura antiga:', e.message);
+          }
+        }
+
+        console.log(`[VerifySession] Atualizando usuário ${userId} para plano ${planName} (ID: ${subscriptionId})`);
         await prisma.user.update({
           where: { id: userId },
           data: {
@@ -230,12 +256,12 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
             stripe_subscription_id: subscriptionId,
             trial_end_date: null,
             subscription_date: new Date(),
-            subscription_amount: 49.90,
+            subscription_amount: planName === 'Plano Básico' ? 39.90 : 79.90,
             payment_method: 'Cartão de Crédito' // Simplificado
           }
         });
 
-        const planAmount = 49.90;
+        const planAmount = planName === 'Plano Básico' ? 39.90 : 79.90;
         if (existingUser?.subscription_status === 'cancelled') {
           await prisma.subscriptionHistory.create({
             data: {
@@ -277,14 +303,15 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
 
 export const handleWebhook = async (req: Request, res: Response): Promise<void> => {
   if (!stripe) {
-    res.status(503).json({ error: 'Webhook não configurado' });
+    console.error('[Webhook 503] Stripe instance is missing.');
+    res.status(503).json({ error: 'Stripe não configurado no servidor' });
     return;
   }
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    console.error('[Webhook] STRIPE_WEBHOOK_SECRET não configurado. Requisição rejeitada.');
-    res.status(503).json({ error: 'Webhook secret não configurado no servidor.' });
+    console.error('[Webhook 503] STRIPE_WEBHOOK_SECRET is missing from .env.');
+    res.status(503).json({ error: 'Webhook secret não configurado no servidor' });
     return;
   }
 
@@ -304,10 +331,24 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
     case 'checkout.session.completed':
       const session = event.data.object as any;
       const userId = session.metadata.userId;
-      const planName = session.metadata.planName;
+      const planName = session.metadata.planName || (session.amount_total === 3990 ? 'Plano Básico' : 'Plano Completo');
       const subscriptionId = session.subscription;
 
+      console.log(`[Webhook] Checkout concluído! User: ${userId}, Plan: ${planName}, Subscription: ${subscriptionId}`);
+
       const existingUser = await prisma.user.findUnique({ where: { id: userId } });
+      const oldSubscriptionId = existingUser?.stripe_subscription_id;
+
+      // Se mudou de assinatura (novo checkout para quem já tinha), cancelar a antiga no Stripe
+      if (oldSubscriptionId && oldSubscriptionId !== subscriptionId && stripe) {
+        try {
+          console.log(`[Webhook] Cancelando assinatura antiga ${oldSubscriptionId} após novo checkout.`);
+          await stripe.subscriptions.cancel(oldSubscriptionId);
+        } catch (e: any) {
+          console.error('[Webhook] Erro ao cancelar assinatura antiga:', e.message);
+        }
+      }
+
       await prisma.user.update({
         where: { id: userId },
         data: {
@@ -317,12 +358,12 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
           stripe_subscription_id: subscriptionId,
           trial_end_date: null,
           subscription_date: new Date(),
-          subscription_amount: 49.90,
+          subscription_amount: planName === 'Plano Básico' ? 39.90 : 79.90,
           payment_method: 'Cartão de Crédito'
         }
       });
 
-      const planAmount = 49.90;
+      const planAmount = planName === 'Plano Básico' ? 39.90 : 79.90;
       if (existingUser?.subscription_status === 'cancelled') {
         await prisma.subscriptionHistory.create({
           data: {
@@ -356,15 +397,41 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
       const invoice = event.data.object as any;
       const subscriptionId = invoice.subscription;
 
-      if (subscriptionId) {
-        // Marca o usuário com problema de pagamento para que o front mostre um aviso
-        await prisma.user.updateMany({
-          where: { stripe_subscription_id: subscriptionId } as any,
-          data: {
-            subscription_status: 'payment_failed'
-          } as any
-        });
+      break;
+    }
+
+    case 'customer.subscription.updated': {
+      const subscription = event.data.object as any;
+      const priceId = subscription.items.data[0]?.price?.id;
+
+      // Mapear priceId de volta para o nome do plano
+      let planName = 'Plano Completo';
+      if (priceId === process.env.STRIPE_PRICE_ESSENTIAL) {
+        planName = 'Plano Básico';
+      } else if (priceId === process.env.STRIPE_PRICE_PROFESSIONAL) {
+        planName = 'Plano Completo';
       }
+
+      const status = subscription.status === 'active' ? 'active_subscription' : 
+                     subscription.status === 'past_due' ? 'payment_failed' : 
+                     subscription.status === 'canceled' ? 'cancelled' : subscription.status;
+
+      // Se a assinatura foi marcada para cancelar ao fim do período, refletimos no banco
+      const isScheduledToCancel = subscription.cancel_at_period_end;
+      const finalStatus = isScheduledToCancel ? 'cancelled' : status;
+      const accessUntil = isScheduledToCancel ? new Date(subscription.current_period_end * 1000) : null;
+
+      await prisma.user.updateMany({
+        where: { stripe_subscription_id: subscription.id } as any,
+        data: {
+          plan_name: planName,
+          subscription_status: finalStatus as any,
+          plan_type: 'pro',
+          subscription_amount: planName === 'Plano Básico' ? 39.90 : 79.90,
+          access_until: accessUntil,
+          cancellation_date: isScheduledToCancel ? new Date() : null
+        } as any
+      });
       break;
     }
 
@@ -405,6 +472,36 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
   }
 
   res.json({ received: true });
+};
+
+export const createPortalSession = async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!stripe) {
+    res.status(503).json({ error: 'Stripe não configurado' });
+    return;
+  }
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+       res.status(401).json({ error: 'Não autenticado' });
+       return;
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !(user as any).stripe_customer_id) {
+      res.status(400).json({ error: 'Cliente Stripe não encontrado para este usuário.' });
+      return;
+    }
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: (user as any).stripe_customer_id,
+      return_url: `${process.env.FRONTEND_URL}/dashboard/plans`,
+    });
+
+    res.json({ url: session.url });
+  } catch (error: any) {
+    console.error('Portal Session Error:', error);
+    res.status(500).json({ error: 'Erro ao criar sessão do portal' });
+  }
 };
 
 export const getSubscriptionHistory = async (req: AuthRequest, res: Response): Promise<void> => {

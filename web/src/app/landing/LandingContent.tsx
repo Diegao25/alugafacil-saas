@@ -154,7 +154,7 @@ export default function LandingPage() {
   const faqItems = [
     {
       question: "Preciso cadastrar cartão de crédito para testar?",
-      answer: "Não! Você pode criar sua conta e usar todas as funcionalidades por 15 dias sem informar nenhum dado de pagamento. Só pediremos o cartão se você decidir assinar um plano profissional após o teste."
+      answer: "Não! Você pode criar sua conta e usar todas as funcionalidades por 15 dias sem informar nenhum dado de pagamento. Só pediremos o cartão se você decidir assinar um Plano Completo após o teste."
     },
     {
       question: "Como funciona a sincronização com o Airbnb?",

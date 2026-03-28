@@ -5,6 +5,9 @@ import { makeProperty, makeUser } from './helpers/factories';
 import { v4 as uuidv4 } from 'uuid';
 
 jest.mock('../prisma');
+jest.mock('../services/calendar.service', () => ({
+  syncExternalCalendars: jest.fn().mockResolvedValue(undefined)
+}));
 
 const { prisma } = require('../prisma');
 

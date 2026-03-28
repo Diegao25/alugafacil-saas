@@ -113,5 +113,8 @@ describe('Google Auth Controller Unit Test', () => {
     const responseBody = jsonMock.mock.calls[0][0];
     expect(responseBody).toHaveProperty('token');
     expect(responseBody.isNewUser).toBe(false);
+    expect(responseBody.user).toHaveProperty('subscription_status', 'active');
+    expect(responseBody.user).toHaveProperty('plan_name');
+    expect(responseBody.user).toHaveProperty('access_until');
   });
 });

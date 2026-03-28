@@ -60,7 +60,7 @@ export default function PlanBanner() {
             <span className="text-xs sm:text-sm">
               {accessUntilLabel
                 ? `Acesso ativo até ${accessUntilLabel}.`
-                : 'Seu acesso seguirá ativo até a data limite.'}
+                : 'Acesso ativo até a data limite.'}
             </span>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function PlanBanner() {
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
             <span className="font-black tracking-tight uppercase text-xs bg-white/20 px-2 py-0.5 rounded text-blue-50">
-              Plano {user.plan_name || 'Profissional'}
+              {user.plan_name || 'Plano Completo'}
             </span>
             <span className="text-blue-50 opacity-90 hidden sm:inline">|</span>
             <span className="text-xs sm:text-sm">

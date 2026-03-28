@@ -37,6 +37,7 @@ export default function CollapsibleSection({
       </button>
 
       <div 
+        onInvalidCapture={() => setIsOpen(true)}
         className={`transition-all duration-300 ease-in-out ${
           isOpen ? 'max-h-[2000px] opacity-100 border-t border-slate-100' : 'max-h-0 opacity-0 pointer-events-none'
         }`}

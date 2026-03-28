@@ -1,0 +1,51 @@
+jest-haste-map: duplicate manual mock found: prisma
+  The following files share their name; please delete one of them:
+    * <rootDir>\src\__mocks__\prisma.ts
+    * <rootDir>\dist\__mocks__\prisma.js
+
+  console.log
+    [dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  suppress all logs with { quiet: true }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+  console.log
+    [Request] GET /api/dashboard/stats | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    mock auth active
+
+      at authenticate (src/__tests__/dashboard_filter.test.ts:5:13)
+
+  console.log
+    dashboard filter res 401 { error: 'N├úo autorizado' }
+
+      at Object.<anonymous> (src/__tests__/dashboard_filter.test.ts:79:13)
+
+FAIL src/__tests__/dashboard_filter.test.ts (6.484 s)
+  Dashboard Controller - Filter Bloqueios
+    ├ù deve excluir bloqueios (sem locat├írio) das estat├¡sticas do dashboard (51 ms)
+
+  ÔùÅ Dashboard Controller - Filter Bloqueios ÔÇ║ deve excluir bloqueios (sem locat├írio) das estat├¡sticas do dashboard
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 401
+
+      79 |     console.log('dashboard filter res', res.status, res.body);
+      80 |
+    > 81 |     expect(res.status).toBe(200);
+         |                        ^
+      82 |     
+      83 |     expect(prisma.reservation.count).toHaveBeenCalled();
+      84 |     expect(prisma.reservation.findMany).toHaveBeenCalled();
+
+      at Object.<anonymous> (src/__tests__/dashboard_filter.test.ts:81:24)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 total
+Snapshots:   0 total
+Time:        6.636 s, estimated 8 s
+Ran all test suites matching /src\\__tests__\\dashboard_filter.test.ts/i.

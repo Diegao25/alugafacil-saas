@@ -120,6 +120,8 @@ YearView.title = (date: Date) => format(date, 'yyyy');
 export default function ReservationsPage() {
   const router = useRouter();
   const [events, setEvents] = useState<any[]>([]);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<any>(Views.MONTH);
@@ -128,8 +130,18 @@ export default function ReservationsPage() {
 
   useEffect(() => {
     fetchReservations();
+    fetchProperties();
     fetchLastSync();
   }, [currentDate]);
+
+  async function fetchProperties() {
+    try {
+      const response = await api.get('/properties');
+      setProperties(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar imóveis:', error);
+    }
+  }
 
   async function fetchLastSync() {
     try {
@@ -286,8 +298,27 @@ export default function ReservationsPage() {
   const handleSyncAll = async () => {
     setIsSyncing(true);
     try {
-      await api.post('/properties/sync/all');
-      toast.success('Calendário sincronizado com sucesso!');
+      const response = await api.post('/properties/sync/all');
+      const { results = [] } = response.data;
+      
+      const propertiesWithLinks = results.filter((r: any) => r.hasConfigs).length;
+      const totalImported = results.reduce((acc: number, r: any) => acc + (r.imported || 0), 0);
+      const totalUpdated = results.reduce((acc: number, r: any) => acc + (r.updated || 0), 0);
+      const totalRemoved = results.reduce((acc: number, r: any) => acc + (r.removed || 0), 0);
+
+      if (results.length === 0) {
+        toast.info('Você ainda não possui imóveis cadastrados.');
+      } else if (propertiesWithLinks === 0) {
+        toast.warning('Nenhum link de sincronização (iCal) configurado nos seus imóveis.');
+      } else {
+        const changes = totalImported + totalUpdated + totalRemoved;
+        if (changes === 0) {
+          toast.success(`Sincronização concluída! ${propertiesWithLinks} imóvel(is) verificado(s). Tudo atualizado.`);
+        } else {
+          toast.success(`Sincronização concluída! ${totalImported} novas, ${totalUpdated} atualizadas.`);
+        }
+      }
+
       await fetchReservations();
     } catch (error) {
       console.error('Erro ao sincronizar:', error);
@@ -336,6 +367,12 @@ export default function ReservationsPage() {
   };
 
 
+  const filteredEvents = selectedPropertyId 
+    ? events.filter(e => e.resource.imovel_id === selectedPropertyId)
+    : events;
+
+  const selectedProperty = properties.find(p => p.id === selectedPropertyId);
+
   if (loading) return (
     <div className="flex items-center justify-center h-64">
       <div className="animate-spin rounded-full h-8 w-8 border-4 border-emerald-600 border-t-transparent"></div>
@@ -346,7 +383,39 @@ export default function ReservationsPage() {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Calendário de Reservas</h1>
-        <div className="flex items-center gap-3">
+        
+        <div className="flex items-center gap-4">
+          {/* Seletor de Imóvel e Ver Agenda */}
+          <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-200 shadow-sm transition-all hover:bg-white group">
+            <select
+              value={selectedPropertyId}
+              onChange={(e) => setSelectedPropertyId(e.target.value)}
+              className="bg-transparent text-sm font-black text-slate-700 outline-none px-3 py-1 cursor-pointer uppercase tracking-tight group-hover:text-emerald-700 transition-colors"
+            >
+              <option value="">TODOS OS IMÓVEIS</option>
+              {properties.map(p => (
+                <option key={p.id} value={p.id}>{p.nome}</option>
+              ))}
+            </select>
+            
+            {selectedPropertyId && (
+              <Link
+                href={`/properties/${selectedPropertyId}/agenda`}
+                target="_blank"
+                rel="noreferrer"
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+                  ${selectedProperty?.is_excedente 
+                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300' 
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200'
+                  }
+                `}
+                onClick={(e) => selectedProperty?.is_excedente && e.preventDefault()}
+              >
+                Ver Agenda
+              </Link>
+            )}
+          </div>
+
           <button
             onClick={handleSyncAll}
             disabled={isSyncing}
@@ -424,7 +493,7 @@ export default function ReservationsPage() {
         `}</style>
         <BigCalendar
           localizer={localizer}
-          events={events}
+          events={filteredEvents}
           date={currentDate}
           onNavigate={handleNavigate}
           view={currentView}

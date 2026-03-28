@@ -118,7 +118,7 @@ export default function CancelPage() {
               <div className="text-xs text-slate-500 font-medium">
                 Seu plano atual:{' '}
                 <span className="font-bold text-slate-800">
-                  {user?.plan_name || 'Profissional'}
+                  {user?.plan_name || 'Plano Completo'}
                 </span>
               </div>
               <button
@@ -253,7 +253,7 @@ export default function CancelPage() {
                   <span className="text-xs font-bold">Plano atual</span>
                 </div>
                 <span className="text-xs font-black text-slate-900">
-                  {user?.plan_name || 'Profissional'}
+                  {user?.plan_name || 'Plano Completo'}
                 </span>
               </div>
               <div className="flex items-center justify-between border-t border-slate-200 pt-3">

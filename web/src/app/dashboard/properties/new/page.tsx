@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { fetchAddressByCep, maskCep, getPrimaryAddressSegment, formatCurrencyInput, parseCurrencyBR } from '@/lib/utils';
-import { LogOut, Save, Home, MapPin, DollarSign, Users, Image as ImageIcon } from 'lucide-react';
+import { LogOut, Save, Home, MapPin, DollarSign, Users, Image as ImageIcon, RefreshCw, Info, Share2, Calendar, Link as LinkIcon, Trash2 } from 'lucide-react';
 import CollapsibleSection from '@/components/CollapsibleSection';
 
 export default function NewPropertyPage() {
@@ -14,6 +14,10 @@ export default function NewPropertyPage() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   
+  const [syncConfigs, setSyncConfigs] = useState<{ provider: string, external_url: string }[]>([]);
+  const [newSyncUrl, setNewSyncUrl] = useState('');
+  const [newSyncProvider, setNewSyncProvider] = useState('airbnb');
+
   const [formData, setFormData] = useState({
     nome: '',
     cep: '',
@@ -23,7 +27,7 @@ export default function NewPropertyPage() {
     capacidade_maxima: '',
     redes_sociais_url: '',
     foto_principal: '',
-    comodidades: ''
+    comodidades: '',
   });
   const [cepError, setCepError] = useState<string | null>(null);
   const [logradouro, setLogradouro] = useState('');
@@ -47,7 +51,8 @@ export default function NewPropertyPage() {
         capacidade_maxima: parseInt(formData.capacidade_maxima, 10),
         redes_sociais_url: formData.redes_sociais_url,
         foto_principal: formData.foto_principal,
-        comodidades: formData.comodidades
+        comodidades: formData.comodidades,
+        calendar_syncs: syncConfigs
       };
       await api.post('/properties', payload);
       toast.success('Imóvel criado com sucesso!');
@@ -275,6 +280,107 @@ export default function NewPropertyPage() {
                 placeholder="https://www.instagram.com/seuimovel"
               />
               <p className="text-[11px] text-slate-500 italic">Cole aqui o link direto da postagem ou do seu perfil.</p>
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        {/* Seção 5: Sincronização */}
+        <CollapsibleSection 
+          title="Sincronização de Calendário" 
+          icon={<RefreshCw className="w-5 h-5" />}
+        >
+          <div className="space-y-8">
+            {/* Seção 1: Exportação (Preview) */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 opacity-75">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-2">
+                <Share2 className="w-5 h-5 text-indigo-600" />
+                Exportar Calendário
+              </h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Copie este link e cole no seu <strong>Airbnb / Booking.com</strong> para que eles saibam quando você tem reservas diretas.
+              </p>
+              <div className="flex gap-2">
+                <div className="flex-1 bg-white border border-slate-200 border-dashed rounded-xl px-4 py-2 text-xs text-slate-400 font-mono italic">
+                  Link será gerado automaticamente após o cadastro...
+                </div>
+                <button type="button" disabled className="bg-slate-200 text-slate-400 px-6 py-2 rounded-xl text-sm font-bold cursor-not-allowed">
+                  Copiar
+                </button>
+              </div>
+              
+              <div className="mt-4 flex items-start gap-2 bg-amber-50 border border-amber-100 p-3 rounded-xl shadow-sm">
+                <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <p className="text-[11px] text-amber-800 leading-tight">
+                  <strong className="font-bold uppercase tracking-wide">DICA</strong>: Vá na aba &quot;Anúncio &rarr; Preços e Disponibilidade &rarr; Sincronização de Calendário&quot; no seu <strong>Airbnb</strong> e selecione &quot;Importar Calendário&quot; para colar este link.
+                </p>
+              </div>
+            </div>
+
+            {/* Seção 2: Importação */}
+            <div className="border border-slate-200 rounded-2xl p-6">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-2">
+                <Calendar className="w-5 h-5 text-emerald-600" />
+                Importar Calendários Externos
+              </h3>
+              <p className="text-xs text-slate-500 mb-6">Bloqueie datas automaticamente no Aluga Fácil vindas do Airbnb/Booking.</p>
+              
+              <div className="bg-slate-50 p-5 rounded-2xl space-y-4 mb-8">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">ADICIONAR NOVO LINK</p>
+                <div className="flex flex-col md:flex-row gap-2">
+                  <select
+                    value={newSyncProvider}
+                    onChange={(e) => setNewSyncProvider(e.target.value)}
+                    className="rounded-xl border border-slate-200 px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none bg-white font-medium"
+                  >
+                    <option value="airbnb">Airbnb</option>
+                    <option value="booking">Booking.com</option>
+                    <option value="custom">Outro (iCal)</option>
+                  </select>
+                  <input
+                    type="url"
+                    placeholder={`Cole aqui a URL .ics do ${newSyncProvider === 'airbnb' ? 'Airbnb' : newSyncProvider === 'booking' ? 'Booking' : 'Calendário'}`}
+                    value={newSyncUrl}
+                    onChange={(e) => setNewSyncUrl(e.target.value)}
+                    className="flex-1 rounded-xl border border-slate-200 px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newSyncUrl) return;
+                      setSyncConfigs([...syncConfigs, { provider: newSyncProvider, external_url: newSyncUrl }]);
+                      setNewSyncUrl('');
+                    }}
+                    className="bg-[#1e293b] text-white px-8 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-sm"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+
+              {syncConfigs.length > 0 && (
+                <div className="grid gap-3">
+                  {syncConfigs.map((config, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-[#f1f5f9] rounded-full flex items-center justify-center font-bold text-[#64748b] text-lg border border-[#e2e8f0]">
+                          {config.provider[0].toUpperCase()}
+                        </div>
+                        <div>
+                          <span className="text-sm font-black text-slate-800 uppercase tracking-tight">{config.provider === 'airbnb' ? 'AIRBNB' : config.provider === 'booking' ? 'BOOKING' : config.provider.toUpperCase()}</span>
+                          <p className="text-[11px] text-slate-400 font-medium">Pronto para importar após salvar</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSyncConfigs(syncConfigs.filter((_, i) => i !== idx))}
+                        className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </CollapsibleSection>

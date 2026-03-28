@@ -14,18 +14,34 @@ import { plansAccessEnabled } from '@/lib/features';
 
 const PLANS = [
   {
+    name: 'Plano Básico',
+    price: 'R$ 39,90',
+    description: 'Ideal para quem está começando com poucos imóveis.',
+    features: [
+      'Até 3 imóveis',
+      'Agenda de reservas inteligente',
+      'Gestão Financeira básica',
+      'Sincronização manual',
+      'Suporte via e-mail',
+    ],
+    buttonText: 'Começar Agora',
+    highlight: false
+  },
+  {
     name: 'Plano Completo',
-    price: 'R$ 49,90',
+    price: 'R$ 79,90',
     description: 'Gestão total do seu negócio de locações sem limites.',
     features: [
       'Imóveis ilimitados',
+      'Sincronização automática (1h)',
       'Agenda de reservas inteligente',
       'Mala Direta via WhatsApp',
       'Gestão Financeira completa',
       'Contratos digitais ilimitados',
-      'Suporte prioritário',
+      'Cadastro de usuários/equipe',
+      'Suporte prioritário (WhatsApp)',
     ],
-    buttonText: 'Começar Agora',
+    buttonText: 'Assinar Agora',
     highlight: true
   }
 ];
@@ -36,6 +52,7 @@ export default function PlansPage() {
   const router = useRouter();
   const mode = searchParams.get('mode');
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [showPlans, setShowPlans] = useState(mode === 'plans');
   const [history, setHistory] = useState<any[]>([]);
 
@@ -106,6 +123,18 @@ export default function PlansPage() {
       return { ...item, _badge: badge, _label: label };
     });
   }, [history]);
+
+  const handlePortal = async () => {
+    try {
+      setLoading(true);
+      const { data } = await api.post('/subscriptions/portal');
+      window.location.href = data.url;
+    } catch (error) {
+      toast.error('Não foi possível carregar o portal de gerenciamento.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubscription = async (planName: string) => {
     if (planName === 'Enterprise') {
@@ -196,7 +225,7 @@ export default function PlansPage() {
                 <Package size={20} className="text-blue-500" />
                 <span className="text-sm font-bold">Plano</span>
               </div>
-              <span className="font-black text-slate-900">{user?.plan_name || 'Profissional'}</span>
+              <span className="font-black text-slate-900">{user?.plan_name || 'Plano Completo'}</span>
             </div>
 
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -260,7 +289,7 @@ export default function PlansPage() {
               <span className="font-black text-blue-600">
                 {user?.subscription_amount 
                   ? `R$ ${user.subscription_amount.toFixed(2).replace('.', ',')}` 
-                  : 'R$ 49,90'}
+                  : 'R$ 79,90'}
               </span>
             </div>
 
@@ -354,17 +383,36 @@ export default function PlansPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             {!isCancelled && (
-              <Link 
-                href="/dashboard/plans/cancel"
-                className="px-10 py-5 rounded-3xl border border-slate-200 text-slate-500 font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all text-center"
-              >
-                Cancelar Assinatura
-              </Link>
+              <>
+                <Link 
+                  href="/dashboard/plans/cancel"
+                  className="px-8 py-5 rounded-3xl border-2 border-slate-100 text-slate-400 font-bold hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all text-center flex-1"
+                >
+                  Cancelar Assinatura
+                </Link>
+                
+                <button
+                  onClick={() => setShowPlans(true)}
+                  className="px-8 py-5 rounded-3xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black transition-all flex items-center justify-center gap-2 flex-1"
+                >
+                  <ArrowRightLeft size={20} className="text-blue-600" />
+                  Mudar de Plano
+                </button>
+
+                <button
+                  onClick={handlePortal}
+                  disabled={loading}
+                  className="px-8 py-5 rounded-3xl bg-blue-600 hover:bg-blue-700 text-white font-black transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2 flex-1 disabled:opacity-50"
+                >
+                  <CreditCard size={20} className="fill-white" />
+                  Gerenciar no Stripe
+                </button>
+              </>
             )}
             {isCancelled && (
               <button
                 onClick={() => setShowPlans(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-black px-10 py-5 rounded-3xl transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-black px-10 py-5 rounded-3xl transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2 flex-1 sm:flex-initial"
               >
                 <Rocket size={20} />
                 Reativar Assinatura
@@ -447,11 +495,11 @@ export default function PlansPage() {
                     {loadingPlan === plan.name ? (
                       <Loader2 className="animate-spin" size={20} />
                     ) : isCancelled && plan.name.toLowerCase() === user?.plan_name?.toLowerCase() ? (
-                      'Recontratar'
+                      'Reativar este Plano'
                     ) : matchesCurrent ? (
-                      'Plano Atual'
+                      'Seu Plano Atual'
                     ) : (
-                      plan.buttonText
+                      hasSubscriptionDetails ? 'Trocar para este Plano' : plan.buttonText
                     )}
                   </button>
                 </div>

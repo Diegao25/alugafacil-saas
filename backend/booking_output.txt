@@ -1,0 +1,3 @@
+Total Booking encontradas no sistema: 2
+ID: edc7de4f-76df-4f57-a1b4-10d9608df961, Data: 2026-04-27T03:00:00.000Z, Valor: R$ 250
+ID: baeccfe5-2ac3-4f73-83af-42c2256e4792, Data: 2026-04-29T03:00:00.000Z, Valor: R$ 250

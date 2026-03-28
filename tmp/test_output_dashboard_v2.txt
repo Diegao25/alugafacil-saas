@@ -1,0 +1,40 @@
+
+> backend@1.0.0 test
+> jest src/__tests__/dashboard.test.ts
+
+  console.log
+    [dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+  console.log
+    [Request] GET /api/dashboard/stats | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /stats
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+  console.log
+    [Request] GET /api/dashboard/stats | Origin: No Origin
+
+      at src/app.ts:29:11
+
+  console.log
+    [Auth] User user-owner-123 authenticated for /stats
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+PASS src/__tests__/dashboard.test.ts (5.004 s)
+  Dashboard Controller
+    GET /api/dashboard/stats
+      ÔêÜ deve retornar estat├¡sticas completas com sucesso (44 ms)
+      ÔêÜ deve retornar faturamento zero se n├úo houver pagamentos (10 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        5.104 s, estimated 16 s
+Ran all test suites matching /src\\__tests__\\dashboard.test.ts/i.

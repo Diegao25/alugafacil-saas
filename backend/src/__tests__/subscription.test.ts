@@ -6,24 +6,40 @@ process.env.STRIPE_PRICE_PROFESSIONAL = 'price_professional';
 process.env.FRONTEND_URL = 'http://localhost:3000';
 process.env.STRIPE_SECRET_KEY = 'sk_test_mock'; // Importante para o config/stripe não ser null
 
-// Mocks
+
+const stripeCustomerCreate = jest.fn().mockResolvedValue({ id: 'cus_123' });
+const stripeCheckoutSessionCreate = jest.fn().mockResolvedValue({ id: 'sess_123', url: 'http://stripe.com' });
+const stripeCheckoutSessionRetrieve = jest.fn().mockResolvedValue({
+  id: 'sess_123',
+  payment_status: 'paid',
+  metadata: { planName: 'Plano Completo' },
+  subscription: { id: 'sub_123' },
+  created: Math.floor(Date.now() / 1000),
+  amount_total: 4990
+});
+
 jest.mock('stripe', () => {
   return jest.fn().mockImplementation(() => ({
     customers: {
-      create: jest.fn().mockResolvedValue({ id: 'cus_123' }),
+      create: stripeCustomerCreate,
     },
     checkout: {
       sessions: {
-        create: jest.fn().mockResolvedValue({ id: 'sess_123', url: 'http://stripe.com' }),
-        retrieve: jest.fn().mockResolvedValue({
-          id: 'sess_123',
-          payment_status: 'paid',
-          metadata: { planName: 'Plano Completo' },
-          subscription: { id: 'sub_123' },
-          created: Math.floor(Date.now() / 1000),
-          amount_total: 4990
-        }),
+        create: stripeCheckoutSessionCreate,
+        retrieve: stripeCheckoutSessionRetrieve,
       }
+    },
+    subscriptions: {
+      update: jest.fn().mockResolvedValue({}),
+      cancel: jest.fn().mockResolvedValue({})
+    },
+    billingPortal: {
+      sessions: {
+        create: jest.fn().mockResolvedValue({ url: 'http://portal' })
+      }
+    },
+    webhooks: {
+      constructEvent: jest.fn()
     }
   }));
 });
@@ -57,12 +73,22 @@ import { AUTH_HEADER } from './helpers/jwt.helper';
 const { prisma } = require('../prisma');
 const USER_ID = 'user-123';
 
-describe('Subscription Controller', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    
-    // Mocker o findUnique para o middleware e para o controller
-    prisma.user.findUnique.mockResolvedValue({
+  describe('Subscription Controller', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      stripeCustomerCreate.mockResolvedValue({ id: 'cus_123' });
+      stripeCheckoutSessionCreate.mockResolvedValue({ id: 'sess_123', url: 'http://stripe.com' });
+      stripeCheckoutSessionRetrieve.mockResolvedValue({
+        id: 'sess_123',
+        payment_status: 'paid',
+        metadata: { planName: 'Plano Completo' },
+        subscription: { id: 'sub_123' },
+        created: Math.floor(Date.now() / 1000),
+        amount_total: 4990
+      });
+      
+      // Mocker o findUnique para o middleware e para o controller
+      prisma.user.findUnique.mockResolvedValue({
       id: USER_ID,
       email: 'test@example.com',
       nome: 'Test',

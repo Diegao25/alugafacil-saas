@@ -115,7 +115,13 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         subscription_status: user.subscription_status,
         terms_pending: termsStatus.termsPending,
         current_terms_version: termsStatus.currentTermsVersion,
-        accepted_terms_version: termsStatus.acceptedTermsVersion
+        accepted_terms_version: termsStatus.acceptedTermsVersion,
+        plan_name: (user as any).plan_name,
+        subscription_date: (user as any).subscription_date,
+        subscription_amount: (user as any).subscription_amount,
+        payment_method: (user as any).payment_method,
+        cancellation_date: (user as any).cancellation_date,
+        access_until: (user as any).access_until,
       },
       isNewUser
     });

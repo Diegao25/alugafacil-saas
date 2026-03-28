@@ -42,6 +42,11 @@ app.use(cors({
   },
   credentials: true
 }));
+
+// Webhook do Stripe (PRECISA vir antes do express.json() para ter acesso ao raw body)
+import { handleWebhook } from './controllers/subscription.controller';
+app.post('/api/subscriptions/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);

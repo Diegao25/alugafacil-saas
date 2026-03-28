@@ -1,0 +1,7 @@
+prisma:info Starting a postgresql pool with 5 connections.
+--- RESULTADO DEBUG ---
+USUARIO: diegohga@gmail.com
+PLANO: Plano Completo
+STATUS_ASSINATURA: active_subscription
+TOTAL_RESERVAS_ATIVAS: 2
+RESERVAS_ESTE_MES (MARÇO/2026): 0

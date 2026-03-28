@@ -6,7 +6,8 @@
     },
     "scripts": {
         "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix web\"",
-        "test": "npm test --prefix backend"
+        "test": "npm test --prefix backend",
+        "build": "npm run build --prefix backend && npm run build --prefix web"
     },
     "devDependencies": {
         "concurrently": "^8.2.2"

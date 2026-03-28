@@ -1,0 +1,1648 @@
+
+> backend@1.0.0 test
+> jest --reporters=default
+
+PASS src/__tests__/reservations.test.ts (23.691 s)
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒøá´©Å  run anywhere with `dotenvx run -- yourcommand`
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] POST /api/reservations | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/reservations | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/reservations | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/reservations | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/reservations | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/reservations | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] PATCH /api/reservations/res-123/status | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /res-123/status
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] PATCH /api/reservations/res-other/status | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /res-other/status
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+PASS src/__tests__/auth.test.ts (24.573 s)
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] POST /api/auth/register | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/register | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/register | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/register | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/login | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/login | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/login | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] GET /api/auth/me | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-test-123 authenticated for /me
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/auth/me | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.warn
+      [Auth] No token provided for GET /me
+
+      16 |
+      17 |   if (!token) {
+    > 18 |     console.warn(`[Auth] No token provided for ${req.method} ${req.url}`);
+         |             ^
+      19 |     res.status(401).json({ error: 'Token n├úo fornecido' });
+      20 |     return;
+      21 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:18:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at next (node_modules/router/lib/route.js:157:13)
+      at Route.dispatch (node_modules/router/lib/route.js:117:3)
+      at handle (node_modules/router/index.js:435:11)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at node_modules/router/index.js:295:15
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/auth/me | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.error
+      [Auth] Token invalid for /me: jwt expired
+
+      41 |     next();
+      42 |   } catch (err: any) {
+    > 43 |     console.error(`[Auth] Token invalid for ${req.url}:`, err.message);
+         |             ^
+      44 |     res.status(401).json({ error: 'Token inv├ílido' });
+      45 |     return;
+      46 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:43:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at next (node_modules/router/lib/route.js:157:13)
+      at Route.dispatch (node_modules/router/lib/route.js:117:3)
+      at handle (node_modules/router/index.js:435:11)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at node_modules/router/index.js:295:15
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/auth/me | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.error
+      [Auth] Token invalid for /me: invalid token
+
+      41 |     next();
+      42 |   } catch (err: any) {
+    > 43 |     console.error(`[Auth] Token invalid for ${req.url}:`, err.message);
+         |             ^
+      44 |     res.status(401).json({ error: 'Token inv├ílido' });
+      45 |     return;
+      46 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:43:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at next (node_modules/router/lib/route.js:157:13)
+      at Route.dispatch (node_modules/router/lib/route.js:117:3)
+      at handle (node_modules/router/index.js:435:11)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at node_modules/router/index.js:295:15
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] POST /api/auth/forgot-password | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/forgot-password | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/reset-password | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/reset-password | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/logout | Origin: No Origin
+
+      at src/app.ts:29:11
+
+PASS src/__tests__/security.test.ts (25.906 s)
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜí´©Å secrets for agents: https://dotenvx.com/as2
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] GET /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.warn
+      [Auth] No token provided for GET /
+
+      16 |
+      17 |   if (!token) {
+    > 18 |     console.warn(`[Auth] No token provided for ${req.method} ${req.url}`);
+         |             ^
+      19 |     res.status(401).json({ error: 'Token n├úo fornecido' });
+      20 |     return;
+      21 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:18:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/tenants | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.warn
+      [Auth] No token provided for GET /
+
+      16 |
+      17 |   if (!token) {
+    > 18 |     console.warn(`[Auth] No token provided for ${req.method} ${req.url}`);
+         |             ^
+      19 |     res.status(401).json({ error: 'Token n├úo fornecido' });
+      20 |     return;
+      21 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:18:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/reservations | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.warn
+      [Auth] No token provided for GET /
+
+      16 |
+      17 |   if (!token) {
+    > 18 |     console.warn(`[Auth] No token provided for ${req.method} ${req.url}`);
+         |             ^
+      19 |     res.status(401).json({ error: 'Token n├úo fornecido' });
+      20 |     return;
+      21 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:18:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/dashboard/stats | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.warn
+      [Auth] No token provided for GET /stats
+
+      16 |
+      17 |   if (!token) {
+    > 18 |     console.warn(`[Auth] No token provided for ${req.method} ${req.url}`);
+         |             ^
+      19 |     res.status(401).json({ error: 'Token n├úo fornecido' });
+      20 |     return;
+      21 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:18:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at next (node_modules/router/lib/route.js:157:13)
+      at Route.dispatch (node_modules/router/lib/route.js:117:3)
+      at handle (node_modules/router/index.js:435:11)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at node_modules/router/index.js:295:15
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.error
+      [Auth] Token invalid for /: invalid signature
+
+      41 |     next();
+      42 |   } catch (err: any) {
+    > 43 |     console.error(`[Auth] Token invalid for ${req.url}:`, err.message);
+         |             ^
+      44 |     res.status(401).json({ error: 'Token inv├ílido' });
+      45 |     return;
+      46 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:43:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.warn
+      [Auth] Orphan session detected for user owner-a-123 on /
+
+      32 |
+      33 |     if (!user) {
+    > 34 |       console.warn(`[Auth] Orphan session detected for user ${decoded.id} on ${req.url}`);
+         |               ^
+      35 |       res.status(401).json({ error: 'Sess├úo inv├ílida ou usu├írio removido.' });
+      36 |       return;
+      37 |     }
+
+      at authenticate (src/middleware/auth.middleware.ts:34:15)
+
+    console.log
+      [Request] GET /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.error
+      [Auth] Token invalid for /: jwt malformed
+
+      41 |     next();
+      42 |   } catch (err: any) {
+    > 43 |     console.error(`[Auth] Token invalid for ${req.url}:`, err.message);
+         |             ^
+      44 |     res.status(401).json({ error: 'Token inv├ílido' });
+      45 |     return;
+      46 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:43:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.error
+      [Auth] Token invalid for /: jwt signature is required
+
+      41 |     next();
+      42 |   } catch (err: any) {
+    > 43 |     console.error(`[Auth] Token invalid for ${req.url}:`, err.message);
+         |             ^
+      44 |     res.status(401).json({ error: 'Token inv├ílido' });
+      45 |     return;
+      46 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:43:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at read (node_modules/body-parser/lib/read.js:53:5)
+      at jsonParser (node_modules/body-parser/lib/types/json.js:88:5)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at cors (node_modules/cors/lib/index.js:188:7)
+      at node_modules/cors/lib/index.js:224:17
+      at origin (src/app.ts:36:7)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at src/app.ts:30:3
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+    console.log
+      [Request] GET /api/properties/property-of-b | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-a-123 authenticated for /property-of-b
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] DELETE /api/reservations/res-of-b | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-a-123 authenticated for /res-of-b
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] PATCH /api/reservations/res-of-b/status | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-a-123 authenticated for /res-of-b/status
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-a-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/auth/login | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] POST /api/auth/register | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.error
+      Erro ao enviar e-mail de boas-vindas via Resend: {
+        statusCode: 403,
+        name: 'validation_error',
+        message: 'You can only send testing emails to your own email address (diegohga@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain.'
+      }
+
+      93 |
+      94 |     if (error) {
+    > 95 |       console.error('Erro ao enviar e-mail de boas-vindas via Resend:', error);
+         |               ^
+      96 |       throw new Error(error.message);
+      97 |     }
+      98 |
+
+      at sendWelcomeEmail (src/utils/mail.ts:95:15)
+      at register (src/controllers/auth.controller.ts:62:7)
+
+    console.error
+      Falha cr├¡tica no envio de e-mail de boas-vindas: Error: You can only send testing emails to your own email address (diegohga@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain.
+          at sendWelcomeEmail (C:\Users\Davi e Sarah\.gemini\antigravity\scratch\gestao_locacoes\backend\src\utils\mail.ts:96:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at register (C:\Users\Davi e Sarah\.gemini\antigravity\scratch\gestao_locacoes\backend\src\controllers\auth.controller.ts:62:7)
+
+       99 |     return data;
+      100 |   } catch (err) {
+    > 101 |     console.error('Falha cr├¡tica no envio de e-mail de boas-vindas:', err);
+          |             ^
+      102 |     throw err;
+      103 |   }
+      104 | }
+
+      at sendWelcomeEmail (src/utils/mail.ts:101:13)
+      at register (src/controllers/auth.controller.ts:62:7)
+
+    console.warn
+      Falha no envio do e-mail de boas-vindas: Error: You can only send testing emails to your own email address (diegohga@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain.
+          at sendWelcomeEmail (C:\Users\Davi e Sarah\.gemini\antigravity\scratch\gestao_locacoes\backend\src\utils\mail.ts:96:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at register (C:\Users\Davi e Sarah\.gemini\antigravity\scratch\gestao_locacoes\backend\src\controllers\auth.controller.ts:62:7)
+
+      62 |       await sendWelcomeEmail(user.email, user.nome, loginLink, user.trial_end_date);
+      63 |     } catch (error) {
+    > 64 |       console.warn('Falha no envio do e-mail de boas-vindas:', error);
+         |               ^
+      65 |     }
+      66 |
+      67 |     res.status(201).json({ 
+
+      at register (src/controllers/auth.controller.ts:64:15)
+
+PASS src/__tests__/contract.test.ts
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] GET /api/contracts/0d319ca3-0839-4678-8bfa-328745a19504/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /0d319ca3-0839-4678-8bfa-328745a19504/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/contracts/66e29c67-e69d-4b85-9529-7ad3fef363a8/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /66e29c67-e69d-4b85-9529-7ad3fef363a8/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/contracts/8c4b9d48-4879-4d5b-80a9-33c33f1cb43e/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User other-user-456 authenticated for /8c4b9d48-4879-4d5b-80a9-33c33f1cb43e/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] PUT /api/contracts/dc4e9074-ad88-472d-8410-9761ac5a3dfe/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /dc4e9074-ad88-472d-8410-9761ac5a3dfe/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/contracts/006358c0-fc8f-4ad3-8236-f7d9468dc886 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /006358c0-fc8f-4ad3-8236-f7d9468dc886
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/contracts/16a028c9-349d-40b5-90d2-2ee880ee2d66/share | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /16a028c9-349d-40b5-90d2-2ee880ee2d66/share
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/public/contracts/share?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb250cmFjdElkIjoiMmQzYzdiMzctY2FiMS00OGUxLTgwODgtNjhjODUxNDU0M2NmIiwiaWF0IjoxNzc0NjQ2OTc0fQ.5eq_2mJVn3TB5UGhd-xG1d0GTcOqq2bXNPS9GRp-msI | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Request] GET /api/public/contracts/share | Origin: No Origin
+
+      at src/app.ts:29:11
+
+PASS src/__tests__/payment.test.ts
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  enable debug logging with { debug: true }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] POST /api/payments | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/payments | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/payments | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] PATCH /api/payments/pay-1/status | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /pay-1/status
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] PATCH /api/payments/non-existent/status | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /non-existent/status
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] DELETE /api/payments/pay-1 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /pay-1
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+PASS src/__tests__/googleAuth.test.ts
+  ÔùÅ Console
+
+    console.log
+      --- Google Login Request ---
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:15:13)
+
+    console.log
+      Credential provided: true
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:16:13)
+
+    console.log
+      Google Client ID (env): test-google-id
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:17:13)
+
+    console.log
+      [Step 1] Verifying Google token...
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:24:13)
+
+    console.log
+      [Step 2] Token verified. Payload extracted.
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:30:13)
+
+    console.log
+      [Step 3] Searching user: test-google@example.com
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:39:13)
+
+    console.log
+      [Step 4] New user detected. Creating account...
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:48:15)
+
+    console.log
+      [Step 4] User created successfully.
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:70:15)
+
+    console.warn
+      Resend n├úo configurado. E-mail de boas-vindas n├úo enviado para: test-google@example.com
+
+      63 |   try {
+      64 |     if (!resend) {
+    > 65 |       console.warn('Resend n├úo configurado. E-mail de boas-vindas n├úo enviado para:', email);
+         |               ^
+      66 |       return;
+      67 |     }
+      68 |     const { data, error } = await resend.emails.send({
+
+      at sendWelcomeEmail (src/utils/mail.ts:65:15)
+      at googleLogin (src/controllers/googleAuth.controller.ts:76:31)
+      at Object.<anonymous> (src/__tests__/googleAuth.test.ts:80:5)
+
+    console.log
+      [Step 5] Generating system JWT...
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:92:13)
+
+    console.log
+      [Step 6] Finalizing response data...
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:100:13)
+
+    console.log
+      [Step 7] Success! Sending user data.
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:104:13)
+
+    console.log
+      --- Google Login Request ---
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:15:13)
+
+    console.log
+      Credential provided: true
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:16:13)
+
+    console.log
+      Google Client ID (env): test-google-id
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:17:13)
+
+    console.log
+      [Step 1] Verifying Google token...
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:24:13)
+
+    console.log
+      [Step 2] Token verified. Payload extracted.
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:30:13)
+
+    console.log
+      [Step 3] Searching user: test-google@example.com
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:39:13)
+
+    console.log
+      [Step 4] Returning user. Updating login count...
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:81:15)
+
+    console.log
+      [Step 5] Generating system JWT...
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:92:13)
+
+    console.log
+      [Step 6] Finalizing response data...
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:100:13)
+
+    console.log
+      [Step 7] Success! Sending user data.
+
+      at googleLogin (src/controllers/googleAuth.controller.ts:104:13)
+
+PASS src/__tests__/tenants.test.ts
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  enable debug logging with { debug: true }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] POST /api/tenants | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/tenants | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/tenants | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/tenants | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/tenants | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] DELETE /api/tenants/tenant-123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /tenant-123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] DELETE /api/tenants/tenant-123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /tenant-123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+PASS src/__tests__/properties.test.ts (8.522 s)
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒøí´©Å auth for agents: https://vestauth.com
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] POST /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] POST /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.warn
+      [Auth] No token provided for POST /
+
+      16 |
+      17 |   if (!token) {
+    > 18 |     console.warn(`[Auth] No token provided for ${req.method} ${req.url}`);
+         |             ^
+      19 |     res.status(401).json({ error: 'Token n├úo fornecido' });
+      20 |     return;
+      21 |   }
+
+      at authenticate (src/middleware/auth.middleware.ts:18:13)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at router (node_modules/router/index.js:60:12)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/body-parser/lib/read.js:171:5
+      at invokeCallback (node_modules/raw-body/index.js:238:16)
+      at done (node_modules/raw-body/index.js:227:7)
+      at IncomingMessage.onEnd (node_modules/raw-body/index.js:287:7)
+
+    console.log
+      [Request] GET /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/properties | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/properties/prop-123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /prop-123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/properties/nonexistent | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /nonexistent
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] PUT /api/properties/prop-123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /prop-123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] PUT /api/properties/prop-other-owner | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /prop-other-owner
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] DELETE /api/properties/prop-123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /prop-123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] DELETE /api/properties/prop-123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-test-123 authenticated for /prop-123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+FAIL src/__tests__/subscription.test.ts
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜí´©Å secrets for agents: https://dotenvx.com/as2
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] POST /api/subscriptions/checkout | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-123 authenticated for /checkout
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [DEBUG] createCheckoutSession start { userId: 'user-123', planName: 'Plano Completo' }
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:28:13)
+
+    console.log
+      --- In├¡cio de Checkout ---
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:30:13)
+
+    console.log
+      User ID: user-123
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:31:13)
+
+    console.log
+      Plan Name: Plano Completo
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:32:13)
+
+    console.log
+      Stripe Customer ID Atual: cus_123
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:47:13)
+
+    console.log
+      Criando sess├úo de checkout no Stripe...
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:70:13)
+
+    console.log
+      Criando sess├úo de checkout no Stripe com Line Item: {"quantity":1,"price":"price_professional"}
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:90:13)
+
+    console.error
+      === Stripe Checkout Error ===
+
+      105 |     res.json({ url: session.url });
+      106 |   } catch (error: any) {
+    > 107 |     console.error('=== Stripe Checkout Error ===');
+          |             ^
+      108 |     console.error('Message:', error.message);
+      109 |     console.error('Type:', error.type);
+      110 |     console.error('Code:', error.code);
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:107:13)
+
+    console.error
+      Message: Cannot read properties of undefined (reading 'id')
+
+      106 |   } catch (error: any) {
+      107 |     console.error('=== Stripe Checkout Error ===');
+    > 108 |     console.error('Message:', error.message);
+          |             ^
+      109 |     console.error('Type:', error.type);
+      110 |     console.error('Code:', error.code);
+      111 |     console.error('Param:', error.param);
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:108:13)
+
+    console.error
+      Type: undefined
+
+      107 |     console.error('=== Stripe Checkout Error ===');
+      108 |     console.error('Message:', error.message);
+    > 109 |     console.error('Type:', error.type);
+          |             ^
+      110 |     console.error('Code:', error.code);
+      111 |     console.error('Param:', error.param);
+      112 |     if (error.raw) console.error('Raw:', JSON.stringify(error.raw, null, 2));
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:109:13)
+
+    console.error
+      Code: undefined
+
+      108 |     console.error('Message:', error.message);
+      109 |     console.error('Type:', error.type);
+    > 110 |     console.error('Code:', error.code);
+          |             ^
+      111 |     console.error('Param:', error.param);
+      112 |     if (error.raw) console.error('Raw:', JSON.stringify(error.raw, null, 2));
+      113 |     res.status(500).json({ error: 'Erro ao criar sess├úo de checkout', message: error.message });
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:110:13)
+
+    console.error
+      Param: undefined
+
+      109 |     console.error('Type:', error.type);
+      110 |     console.error('Code:', error.code);
+    > 111 |     console.error('Param:', error.param);
+          |             ^
+      112 |     if (error.raw) console.error('Raw:', JSON.stringify(error.raw, null, 2));
+      113 |     res.status(500).json({ error: 'Erro ao criar sess├úo de checkout', message: error.message });
+      114 |   }
+
+      at createCheckoutSession (src/controllers/subscription.controller.ts:111:13)
+
+    console.log
+      [Request] POST /api/subscriptions/cancel | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-123 authenticated for /cancel
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/subscriptions/verify/sess_123 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-123 authenticated for /verify/sess_123
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      Verificando Sess├úo: sess_123
+
+      at verifySession (src/controllers/subscription.controller.ts:225:13)
+
+    console.error
+      Verify Session Error: {
+        message: "Cannot read properties of undefined (reading 'payment_status')",
+        stack: "TypeError: Cannot read properties of undefined (reading 'payment_status')\n" +
+          '    at verifySession (C:\\Users\\Davi e Sarah\\.gemini\\antigravity\\scratch\\gestao_locacoes\\backend\\src\\controllers\\subscription.controller.ts:230:17)\n' +
+          '    at processTicksAndRejections (node:internal/process/task_queues:104:5)',
+        prisma: undefined,
+        code: undefined
+      }
+
+      291 |     }
+      292 |   } catch (error: any) {
+    > 293 |     console.error('Verify Session Error:', {
+          |             ^
+      294 |       message: error.message,
+      295 |       stack: error.stack,
+      296 |       prisma: error.meta,
+
+      at verifySession (src/controllers/subscription.controller.ts:293:13)
+
+  ÔùÅ Subscription Controller ÔÇ║ deve criar uma sess├úo de checkout
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: 500
+    Received array: [200, 503]
+
+      86 |       .send({ planName: 'Plano Completo' });
+      87 |
+    > 88 |     expect([200, 503]).toContain(res.status); // 503 se o stripe mock n├úo acoplar bem, mas ideal ├® 200
+         |                        ^
+      89 |     if (res.status === 200) {
+      90 |         expect(res.body).toHaveProperty('url');
+      91 |     }
+
+      at Object.<anonymous> (src/__tests__/subscription.test.ts:88:24)
+
+  ÔùÅ Subscription Controller ÔÇ║ deve verificar sess├úo
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+      106 |       .set(AUTH_HEADER(USER_ID));
+      107 |
+    > 108 |     expect(res.status).toBe(200);
+          |                        ^
+      109 |     expect(res.body.success).toBe(true);
+      110 |   });
+      111 | });
+
+      at Object.<anonymous> (src/__tests__/subscription.test.ts:108:24)
+
+PASS src/__tests__/dashboard_filter.test.ts
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒøá´©Å  run anywhere with `dotenvx run -- yourcommand`
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] GET /api/dashboard/stats | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-123 authenticated for /stats
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+PASS src/__tests__/contract_external.test.ts
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ­ƒñû agentic secret storage: https://dotenvx.com/as2
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] GET /api/contracts/external-456 | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-123 authenticated for /external-456
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/contracts/external-456/draft | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User owner-123 authenticated for /external-456/draft
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+PASS src/__tests__/dashboard.test.ts
+  ÔùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ÔÜÖ´©Å  enable debug logging with { debug: true }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [Request] GET /api/dashboard/stats | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /stats
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+    console.log
+      [Request] GET /api/dashboard/stats | Origin: No Origin
+
+      at src/app.ts:29:11
+
+    console.log
+      [Auth] User user-owner-123 authenticated for /stats
+
+      at authenticate (src/middleware/auth.middleware.ts:39:13)
+
+
+Test Suites: 1 failed, 11 passed, 12 total
+Tests:       2 failed, 75 passed, 77 total
+Snapshots:   0 total
+Time:        36.82 s
+Ran all test suites.
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=1536\" NEXT_PRIVATE_WORKER_OPTS=\"--max-old-space-size=1536\" next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },

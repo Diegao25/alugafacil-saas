@@ -29,3 +29,5 @@ app.listen(PORT, () => {
     syncAllProperties().catch(err => console.error('[Cron] Erro na sincronização inicial:', err));
   }, 60 * 1000);
 });
+
+// Restart backend to reload updated .env with new Price IDs

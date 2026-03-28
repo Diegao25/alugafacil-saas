@@ -31,7 +31,7 @@ export default function SupportWhatsAppButton() {
 
     async function loadRuntimeConfig() {
       try {
-        const response = await fetch('/api/public-config', { cache: 'no-store' });
+        const response = await fetch('/api/public/config', { cache: 'no-store' });
 
         if (!response.ok) {
           return;
@@ -74,6 +74,24 @@ export default function SupportWhatsAppButton() {
   ].join('\n');
 
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+  const isTrial = user?.subscription_status === 'trial_active' || user?.plan_type === 'trial';
+  const isBasic = !isTrial && (user?.plan_name === 'Plano Básico' || user?.plan_name === 'Essencial');
+
+  if (isBasic) {
+    return createPortal(
+      <a
+        href="mailto:diegohga@gmail.com"
+        className="fixed bottom-5 right-5 z-[9999] inline-flex items-center gap-3 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-xl shadow-blue-700/30 transition-all hover:-translate-y-0.5 hover:bg-blue-700 lg:bottom-6 lg:right-6"
+        aria-label="Falar com o suporte por E-mail"
+        title="Falar com o suporte por E-mail"
+      >
+        <MessageCircle className="h-5 w-5" />
+        <span className="hidden sm:inline">Suporte E-mail</span>
+      </a>,
+      document.body
+    );
+  }
 
   return createPortal(
     <a

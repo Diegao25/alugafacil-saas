@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { Building, Calendar, CheckCircle, DollarSign, Clock, LogOut, Rocket, Info, ChevronRight, X, Eye, EyeOff, RefreshCcw } from 'lucide-react';
+import { Building, Calendar, CheckCircle, DollarSign, Clock, LogOut, Rocket, Info, ChevronRight, ChevronLeft, X, Eye, EyeOff, RefreshCcw } from 'lucide-react';
 import { format, differenceInCalendarDays, parseISO, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrencyBR } from '@/lib/utils';
@@ -66,6 +66,7 @@ export default function DashboardPage() {
   const [npsSubmitting, setNpsSubmitting] = useState(false);
   const [hideRevenue, setHideRevenue] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [viewDate, setViewDate] = useState(new Date());
 
   const daysRemaining = (() => {
     if (user?.plan_type !== 'trial' || !user?.trial_end_date) return 0;
@@ -79,15 +80,19 @@ export default function DashboardPage() {
   })();
 
   useEffect(() => {
-    async function loadStats() {
+    async function loadStats(dateToFetch?: Date) {
       // NÃ£o tentar carregar se o trial jÃ¡ estiver expirado localmente
       if (user?.subscription_status === 'trial_expired' && trialEnforcementEnabled) {
         setLoading(false);
         return;
       }
 
+      const activeDate = dateToFetch || viewDate;
+      const month = activeDate.getMonth() + 1;
+      const year = activeDate.getFullYear();
+
       try {
-        const response = await api.get('/dashboard/stats');
+        const response = await api.get(`/dashboard/stats?month=${month}&year=${year}`);
         setStats(response.data);
       } catch (error: any) {
         // Silenciar erro 403 de trial expirado, pois o modal jÃ¡ cuida disso
@@ -99,7 +104,7 @@ export default function DashboardPage() {
       }
     }
     loadStats();
-  }, [user, user?.subscription_status]);
+  }, [user, user?.subscription_status, viewDate]);
 
   useEffect(() => {
     if (!user) return;
@@ -174,11 +179,30 @@ export default function DashboardPage() {
   const handleSyncAll = async () => {
     setIsSyncing(true);
     try {
-      await api.post('/properties/sync/all');
-      toast.success('Todos os imóveis foram sincronizados com sucesso!');
+      const response = await api.post('/properties/sync/all');
+      const { results = [] } = response.data;
+      
+      const propertiesWithLinks = results.filter((r: any) => r.hasConfigs).length;
+      const totalImported = results.reduce((acc: number, r: any) => acc + (r.imported || 0), 0);
+      const totalUpdated = results.reduce((acc: number, r: any) => acc + (r.updated || 0), 0);
+      const totalRemoved = results.reduce((acc: number, r: any) => acc + (r.removed || 0), 0);
+
+      if (results.length === 0) {
+        toast.info('Você ainda não possui imóveis cadastrados.');
+      } else if (propertiesWithLinks === 0) {
+        toast.warning('Nenhum link de sincronização (iCal) configurado nos seus imóveis.');
+      } else {
+        const changes = totalImported + totalUpdated + totalRemoved;
+        if (changes === 0) {
+          toast.success(`Sincronização concluída! ${propertiesWithLinks} imóvel(is) verificado(s). Tudo atualizado.`);
+        } else {
+          toast.success(`Sincronização concluída! ${totalImported} novas, ${totalUpdated} atualizadas.`);
+        }
+      }
+
       // Recarregar estatísticas para refletir possíveis mudanças
-      const response = await api.get('/dashboard/stats');
-      setStats(response.data);
+      const statsResp = await api.get('/dashboard/stats');
+      setStats(statsResp.data);
     } catch (error) {
       console.error('Erro ao sincronizar tudo:', error);
       toast.error('Não foi possível sincronizar todos os imóveis no momento.');
@@ -296,64 +320,109 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {(stats?.revenueBySource && Object.keys(stats.revenueBySource).length > 0) && (
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-100 animate-in slide-in-from-bottom-4 duration-700">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <Rocket className="text-blue-600" size={24} />
-              Desempenho por Canal
-            </h3>
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full">Mensal</span>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {['direto', 'airbnb', 'booking'].map((source) => {
-              const amount = stats?.revenueBySource?.[source] || 0;
-              const total = stats?.totalBookedVolume || 0;
-              const percentage = total > 0 ? (amount / total) * 100 : 0;
-              
-              const hasData = stats?.revenueBySource && Object.keys(stats.revenueBySource).some(k => k.toLowerCase().includes(source));
-              
-              if (amount === 0 && !hasData && source !== 'direto') return null;
-
-              return (
-                <div key={source} className="group cursor-default">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-xl transition-colors ${
-                        source === 'airbnb' ? 'bg-[#FF5A5F]/10 text-[#FF5A5F]' : 
-                        source === 'booking' ? 'bg-[#003580]/10 text-[#003580]' : 
-                        'bg-slate-100 text-slate-400'
-                      }`}>
-                        <ReservationSourceIcon provider={source} size={20} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-tighter">{source}</p>
-                        <p className="font-black text-slate-900 tracking-tight">
-                          {hideRevenue ? 'R$ ••••••' : formatCurrencyBR(amount)}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-sm font-black text-slate-400 group-hover:text-slate-900 transition-colors">
-                      {percentage.toFixed(0)}%
-                    </span>
-                  </div>
-                  
-                  <div className="h-3 bg-slate-50 rounded-full overflow-hidden border border-slate-100 p-0.5">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-[1500ms] ease-out shadow-sm ${
-                        source === 'airbnb' ? 'bg-gradient-to-r from-[#FF5A5F] to-[#FF7E82]' : 
-                        source === 'booking' ? 'bg-gradient-to-r from-[#003580] to-[#0055CC]' : 
-                        'bg-gradient-to-r from-slate-400 to-slate-500'
-                      }`}
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+      {user?.plan_name === 'Plano Básico' && user?.subscription_status !== 'trial_active' ? (
+        <div className="rounded-3xl bg-slate-50 p-8 border border-slate-200 border-dashed animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="bg-white p-4 rounded-2xl shadow-sm text-blue-600 shrink-0">
+                <Rocket size={32} />
+              </div>
+              <div className="text-left">
+                <h3 className="text-lg font-black text-slate-800 italic">Desempenho por Canal Bloqueado</h3>
+                <p className="text-sm text-slate-500 font-medium">
+                  Assine o <span className="text-blue-600 font-bold">Plano Completo</span> para visualizar o detalhamento estratégico do seu faturamento em outras plataformas.
+                </p>
+              </div>
+            </div>
+            <Link 
+              href="http://localhost:3000/dashboard/plans" 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-black text-xs shadow-lg shadow-blue-200 transition-all active:scale-95 whitespace-nowrap"
+            >
+              FAZER UPGRADE AGORA
+            </Link>
           </div>
         </div>
+      ) : (
+        (user?.plan_name === 'Plano Completo' || user?.subscription_status === 'trial_active' || (stats?.revenueBySource && Object.keys(stats.revenueBySource).length > 0)) && (
+          <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-100 animate-in slide-in-from-bottom-4 duration-700">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                  <Rocket className="text-blue-600" size={24} />
+                  Desempenho por Canal
+                </h3>
+              </div>
+              
+              <div className="flex items-center gap-3 bg-slate-50 p-1 rounded-2xl border border-slate-100 self-start md:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}
+                  className="p-2 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <span className="text-sm font-black text-slate-700 uppercase tracking-tighter min-w-[120px] text-center">
+                  {format(viewDate, 'MMMM yyyy', { locale: ptBR })}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}
+                  className="p-2 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              {['direto', 'airbnb', 'booking'].map((source) => {
+                const amount = stats?.revenueBySource?.[source] || 0;
+                const total = stats?.totalBookedVolume || 0;
+                const percentage = total > 0 ? (amount / total) * 100 : 0;
+                
+                const hasData = stats?.allProviders?.some((p: string) => p.includes(source));
+                
+                if (amount === 0 && !hasData && source !== 'direto') return null;
+
+                return (
+                  <div key={source} className="group cursor-default">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-xl transition-colors ${
+                          source === 'airbnb' ? 'bg-[#FF5A5F]/10 text-[#FF5A5F]' : 
+                          source === 'booking' ? 'bg-[#003580]/10 text-[#003580]' : 
+                          'bg-slate-100 text-slate-400'
+                        }`}>
+                          <ReservationSourceIcon provider={source} size={20} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-black text-slate-400 uppercase tracking-tighter">{source}</p>
+                          <p className="font-black text-slate-900 tracking-tight">
+                            {hideRevenue ? 'R$ ••••••' : formatCurrencyBR(amount)}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-sm font-black text-slate-400 group-hover:text-slate-900 transition-colors">
+                        {percentage.toFixed(0)}%
+                      </span>
+                    </div>
+                    
+                    <div className="h-3 bg-slate-50 rounded-full overflow-hidden border border-slate-100 p-0.5">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-[1500ms] ease-out shadow-sm ${
+                          source === 'airbnb' ? 'bg-gradient-to-r from-[#FF5A5F] to-[#FF7E82]' : 
+                          source === 'booking' ? 'bg-gradient-to-r from-[#003580] to-[#0055CC]' : 
+                          'bg-gradient-to-r from-slate-400 to-slate-500'
+                        }`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">

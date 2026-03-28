@@ -11,9 +11,7 @@ jest.mock('../middleware/trial.middleware', () => ({
   checkTrial: (_req: any, _res: any, next: any) => next(),
 }));
 
-jest.mock('../utils/owner', () => ({
-  resolveOwnerId: jest.fn((id) => Promise.resolve(id)),
-}));
+// Removido mock manual de resolveOwnerId para usar o padrão de dashboard.test.ts
 
 import app from '../app';
 import { AUTH_HEADER } from './helpers/jwt.helper';
@@ -42,8 +40,7 @@ describe('Dashboard Controller - Filter Bloqueios', () => {
     prisma.reservation.findMany.mockResolvedValueOnce([
       { id: 'res-1', locatario_id: 'tenant-1', locatario: { nome: 'Hóspede Real' }, imovel: { nome: 'Casa' }, valor_total: 100, provider: 'airbnb' }
     ]);
-    // 2. monthlyPaymentsData (Payment)
-    prisma.payment.findMany.mockResolvedValueOnce([]);
+    // A chamada para faturamento total mensal baseada em pagamentos foi removida
     // 3. upcomingCheckins (Reservation)
     prisma.reservation.findMany.mockResolvedValueOnce([
       { id: 'res-1', locatario_id: 'tenant-1', locatario: { nome: 'Hóspede Real' }, imovel: { nome: 'Casa' } }
@@ -59,16 +56,22 @@ describe('Dashboard Controller - Filter Bloqueios', () => {
     // 8. allProviders (Reservation)
     prisma.reservation.findMany.mockResolvedValueOnce([{ provider: 'airbnb' }]);
 
-    // Mock para busca de perfil
-    prisma.user.findUnique.mockResolvedValue({
-      nome: 'Hóspede Real',
+    // Mock para resolveOwnerId (usado no início do controller)
+    prisma.user.findUnique.mockResolvedValueOnce({ id: OWNER_ID, is_admin: true, owner_user_id: null });
+    
+    // Mock para busca de termos
+    prisma.term = { findMany: jest.fn().mockResolvedValue([]) };
+    
+    // Mock para última sincronização
+    prisma.calendarSync = { findFirst: jest.fn().mockResolvedValue(null) };
+    
+    // Mock para busca de perfil (usado no final do controller)
+    prisma.user.findUnique.mockResolvedValueOnce({
+      nome: 'Test',
       cpf_cnpj: '123',
       telefone: '123',
       endereco: '123'
     });
-
-    prisma.calendarSync.findFirst = jest.fn().mockResolvedValue(null);
-    prisma.user.findUnique.mockResolvedValueOnce({ nome: 'Test' });
 
     const res = await request(app)
       .get('/api/dashboard/stats')

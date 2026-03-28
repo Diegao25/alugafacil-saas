@@ -44,18 +44,31 @@ describe('Dashboard Controller', () => {
       // Calls for reservation counts (Today Checkins, Today Checkouts, Future Checkins)
       prisma.reservation.count.mockResolvedValue(3); 
 
-      // Mock aggregate for revenue
-      prisma.payment.aggregate.mockResolvedValue({
-        _sum: { valor: 5000 }
-      });
+      // Mock findMany para reservas mensais (que agora calculam o faturamento)
+      prisma.reservation.findMany.mockResolvedValueOnce([
+        makeReservation({ id: 'res-1', valor_total: 2500, provider: 'airbnb' }),
+        makeReservation({ id: 'res-2', valor_total: 2500, provider: 'booking' })
+      ]);
 
       // Mock findMany for lists
       prisma.reservation.findMany.mockResolvedValue([
         makeReservation({ id: 'res-1' })
       ]);
-      prisma.payment.findMany.mockResolvedValue([
-        { id: 'pay-1', valor: 100 }
+      
+      // Mock for allProviders
+      prisma.reservation.findMany.mockResolvedValueOnce([
+        { provider: 'airbnb' },
+        { provider: 'booking' }
       ]);
+
+      // Mock for lastSync
+      prisma.calendarSync.findFirst = jest.fn().mockResolvedValue({
+        last_sync: new Date()
+      });
+
+      prisma.payment.findMany.mockResolvedValueOnce([
+        { id: 'pay-1', valor: 100 }
+      ]); // For pendingPayments
 
       // Mock user profile check
       prisma.user.findUnique.mockResolvedValueOnce({
@@ -73,12 +86,22 @@ describe('Dashboard Controller', () => {
       expect(res.body).toHaveProperty('totalProperties', 10);
       expect(res.body).toHaveProperty('monthlyRevenue', 5000);
       expect(res.body).toHaveProperty('profileCompleted', true);
+      expect(res.body).toHaveProperty('allProviders');
     });
 
     it('deve retornar faturamento zero se não houver pagamentos', async () => {
       setupAuth();
-      prisma.payment.aggregate.mockResolvedValue({ _sum: { valor: null } });
-      
+      // Mocks para evitar erros de undefined
+      prisma.reservation.findMany.mockResolvedValueOnce([]); // monthlyReservationsData
+      prisma.reservation.findMany.mockResolvedValue([]); // upcomingCheckins
+      prisma.reservation.findMany.mockResolvedValue([]); // upcomingCheckouts
+      prisma.reservation.findMany.mockResolvedValue([]); // checkinsTodayList
+      prisma.reservation.findMany.mockResolvedValue([]); // checkoutsTodayList
+      prisma.payment.findMany.mockResolvedValue([]);     // pendingPayments
+      prisma.reservation.findMany.mockResolvedValue([]); // allProviders
+      prisma.calendarSync.findFirst.mockResolvedValue(null);
+      prisma.user.findUnique.mockResolvedValueOnce({ nome: 'Test' });
+
       const res = await request(app)
         .get('/api/dashboard/stats')
         .set(AUTH_HEADER(USER_ID));

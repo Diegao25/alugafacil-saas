@@ -205,6 +205,13 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
     });
     const lastSync = lastSyncRecord?.last_sync || null;
 
+    const allProvidersData = await prisma.reservation.findMany({
+      where: { imovel: { usuario_id: userId } },
+      distinct: ['provider'],
+      select: { provider: true }
+    });
+    const allProviders = allProvidersData.map(p => p.provider?.toLowerCase() || 'direto');
+
     res.status(200).json({
       totalProperties,
       totalTenants,
@@ -214,6 +221,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       monthlyRevenue,
       totalBookedVolume,
       revenueBySource,
+      allProviders,
       upcomingCheckins,
       upcomingCheckouts,
       checkinsTodayList,

@@ -47,11 +47,19 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
     fetchConfigs();
   }, [propertyId]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(exportUrl);
-    setCopied(true);
-    toast.success('Link copiado!');
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      navigator.clipboard.writeText(exportUrl);
+      setCopied(true);
+      toast.success('Link copiado!');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Falha ao copiar:', err);
+      toast.error('Erro ao copiar link. Tente selecionar e copiar manualmente.');
+    }
   };
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -74,7 +82,9 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
     }
   };
 
-  const handleDeleteClick = (syncId: string) => {
+  const handleDeleteClick = (e: React.MouseEvent, syncId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
     setSyncIdToDelete(syncId);
     setDeleteConfirmOpen(true);
   };
@@ -94,7 +104,9 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
     }
   };
 
-  const handleSyncNow = async () => {
+  const handleSyncNow = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setSyncing(true);
     try {
       const resp = await api.post(`/properties/${propertyId}/sync-now`);
@@ -129,7 +141,7 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
           Exportar Calendário
         </h3>
         <p className="text-sm text-slate-600 mb-4">
-          Copie este link e cole no seu **Airbnb / Booking.com** para que eles saibam quando você tem reservas diretas.
+          Copie este link e cole no seu <strong>Airbnb / Booking.com</strong> para que eles saibam quando você tem reservas diretas.
         </p>
 
         <div className="flex gap-2">
@@ -137,20 +149,21 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
             {exportUrl}
           </div>
           <button
-            onClick={handleCopy}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95"
+            type="button"
+            onClick={(e) => handleCopy(e)}
+            className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95"
           >
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             <span className="text-sm font-bold">Copiar</span>
           </button>
         </div>
         
-        <div className="mt-4 flex items-start gap-2 bg-amber-50 border border-amber-100 p-3 rounded-xl">
-           <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-           <p className="text-[11px] text-amber-800 leading-tight">
-             **Dica**: Vá na aba &quot;Anúncio &rarr; Preços e Disponibilidade &rarr; Sincronização de Calendário&quot; no seu Airbnb e selecione &quot;Importar Calendário&quot; para colar este link.
-           </p>
-        </div>
+         <div className="mt-4 flex items-start gap-2 bg-amber-50 border border-amber-100 p-3 rounded-xl shadow-sm">
+            <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+            <p className="text-[11px] text-amber-800 leading-tight">
+              <strong className="font-bold uppercase tracking-wide">DICA</strong>: Vá na aba &quot;Anúncio &rarr; Preços e Disponibilidade &rarr; Sincronização de Calendário&quot; no seu <strong>Airbnb</strong> e selecione &quot;Importar Calendário&quot; para colar este link.
+            </p>
+         </div>
       </div>
 
       {/* Seção 2: Importação (Para o Aluga Fácil ler o Airbnb) */}
@@ -161,14 +174,15 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
                <Calendar className="w-5 h-5 text-emerald-600" />
                Importar Calendários Externos
              </h3>
-             <p className="text-sm text-slate-500">Bloqueie datas automaticamente no Aluga Fácil vindas do Airbnb/Booking.</p>
+             <p className="text-xs text-slate-500 mt-1">Bloqueie datas automaticamente no Aluga Fácil vindas do Airbnb/Booking.</p>
            </div>
            
            {configs.length > 0 && (
              <button
-               onClick={handleSyncNow}
+               type="button"
+               onClick={(e) => handleSyncNow(e)}
                disabled={syncing}
-               className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-all disabled:opacity-50"
+               className="flex items-center gap-2 bg-[#ecfdf5] text-[#065f46] border border-[#d1fae5] px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#d1fae5] transition-all disabled:opacity-50 shadow-sm"
              >
                <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
                {syncing ? 'Sincronizando...' : 'Sincronizar Agora'}
@@ -176,13 +190,13 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
            )}
         </div>
 
-        <form onSubmit={handleAdd} className="bg-slate-50 p-4 rounded-xl space-y-4 mb-6">
-          <p className="text-xs font-bold text-slate-700 uppercase">Adicionar Novo Link</p>
+        <div className="bg-slate-50 p-5 rounded-2xl space-y-4 mb-8">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">ADICIONAR NOVO LINK</p>
           <div className="flex flex-col md:flex-row gap-2">
             <select
               value={newProvider}
               onChange={(e) => setNewProvider(e.target.value)}
-              className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none"
+              className="rounded-xl border border-slate-200 px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none bg-white font-medium"
             >
               <option value="airbnb">Airbnb</option>
               <option value="booking">Booking.com</option>
@@ -190,48 +204,55 @@ export default function CalendarSyncSettings({ propertyId }: CalendarSyncSetting
             </select>
             <input
               type="url"
-              placeholder="Cole aqui a URL .ics do Airbnb"
+              placeholder={`Cole aqui a URL .ics do ${newProvider === 'airbnb' ? 'Airbnb' : newProvider === 'booking' ? 'Booking' : 'Calendário'}`}
               value={newUrl}
-              required
               onChange={(e) => setNewUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleAdd(e as any);
+                }
+              }}
               className="flex-1 rounded-xl border border-slate-200 px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none"
             />
             <button
-              type="submit"
+              type="button"
+              onClick={handleAdd}
               disabled={adding}
-              className="bg-slate-800 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-slate-900 transition-all disabled:opacity-50"
+              className="bg-[#1e293b] text-white px-8 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-900 transition-all disabled:opacity-50 shadow-sm"
             >
               {adding ? 'Salvando...' : 'Adicionar'}
             </button>
           </div>
-        </form>
-
+        </div>
+ 
         {configs.length > 0 ? (
-          <div className="space-y-3">
+          <div className="grid gap-3">
             {configs.map(config => (
-              <div key={config.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-400">
+              <div key={config.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm hover:border-slate-200 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#f1f5f9] rounded-full flex items-center justify-center font-bold text-[#64748b] text-lg border border-[#e2e8f0]">
                     {config.provider[0].toUpperCase()}
                   </div>
                   <div>
-                    <span className="text-sm font-bold text-slate-800 uppercase">{config.provider}</span>
-                    <p className="text-[11px] text-slate-500">Última sync: {config.last_sync ? new Date(config.last_sync).toLocaleString() : 'Nunca sincronizado'}</p>
+                    <span className="text-sm font-black text-slate-800 uppercase tracking-tight">{config.provider === 'airbnb' ? 'AIRBNB' : config.provider === 'booking' ? 'BOOKING' : config.provider.toUpperCase()}</span>
+                    <p className="text-[11px] text-slate-400 font-medium">Última sync: {config.last_sync ? new Date(config.last_sync).toLocaleString() : 'Nunca sincronizado'}</p>
                   </div>
                 </div>
                 <button
-                  onClick={() => handleDeleteClick(config.id)}
-                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  type="button"
+                  onClick={(e) => handleDeleteClick(e, config.id)}
+                  className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                   title="Remover"
-                >  <Trash2 className="w-4 h-4" />
+                >
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-            <LinkIcon className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-500">Nenhum calendário externo conectado.</p>
+          <div className="text-center py-10 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+            <LinkIcon className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+            <p className="text-sm text-slate-500 font-medium">Nenhum calendário externo conectado.</p>
           </div>
         )}
       </div>

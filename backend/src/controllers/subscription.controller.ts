@@ -69,28 +69,20 @@ export const createCheckoutSession = async (req: AuthRequest, res: Response): Pr
     
     console.log('Criando sessão de checkout no Stripe...');
     const priceId = PLAN_PRICE_MAPPING[planName as string];
-    const lineItem: any = {
+    
+    if (!priceId) {
+      console.error(`[ERRO] ID de preço não configurado para o plano: ${planName}`);
+      res.status(400).json({ 
+        error: `O plano "${planName}" não possui um preço configurado no sistema.`,
+        details: 'Verifique as variáveis de ambiente STRIPE_PRICE_ESSENTIAL e STRIPE_PRICE_PROFESSIONAL.'
+      });
+      return;
+    }
+
+    const lineItem = {
+      price: priceId,
       quantity: 1,
     };
-
-    // Fallback de segurança para Price IDs de teste se as ENVs sumirem na migração
-    const fallbackPriceId = planName === 'Plano Básico' 
-      ? 'price_1TFa89RDeWfp60TDPDrr9AzV' 
-      : 'price_1TFa8mRDeWfp60TDW15OusMr';
-
-    if (priceId || fallbackPriceId) {
-      lineItem.price = priceId || fallbackPriceId;
-    } else {
-      lineItem.price_data = {
-        currency: 'brl',
-        product_data: {
-          name: planName,
-          description: 'Acesso total ao sistema Aluga Fácil',
-        },
-        unit_amount: planName === 'Plano Básico' ? 3990 : 7990,
-        recurring: { interval: 'month' },
-      };
-    }
 
     const frontendUrl = process.env.FRONTEND_URL || 'https://www.alugafacil.net.br';
 

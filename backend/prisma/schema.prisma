@@ -21,6 +21,7 @@ model User {
   reset_token_expires    DateTime?
   data_criacao           DateTime               @default(now())
   login_count            Int                    @default(0)
+  has_seen_tour          Boolean                @default(false)
   plan_type              String                 @default("trial")
   trial_start_date       DateTime?              @default(now())
   trial_end_date         DateTime?

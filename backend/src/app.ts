@@ -15,6 +15,7 @@ import subscriptionRoutes from './routes/subscription.routes';
 import { campaignRoutes } from './routes/campaign.routes';
 import npsRoutes from './routes/nps.routes';
 import cesRoutes from './routes/ces.routes';
+import uploadRoutes from './routes/upload.routes';
 import { getAllowedOrigins, getJwtSecret, isOriginAllowed } from './utils/security';
 import { maintenanceMiddleware } from './middleware/maintenance.middleware';
 
@@ -68,5 +69,6 @@ app.use('/api/campaigns', campaignRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/nps', npsRoutes);
 app.use('/api/ces', cesRoutes);
+app.use('/api/upload', uploadRoutes);
 
 export default app;

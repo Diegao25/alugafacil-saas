@@ -27,12 +27,12 @@ export const getApiBaseUrl = () => {
       return `http://localhost:3333/api`;
     }
 
-    // Ambiente de Produção (Railway Oficial)
-    return 'https://easygoing-backend-production.up.railway.app/api';
+    // Ambiente de Produção (Domínio Oficial)
+    return 'https://api.alugafacil.net.br/api';
   }
 
   // Fallback para SSR
-  return 'http://localhost:3333/api';
+  return 'https://api.alugafacil.net.br/api';
 };
 
 export const api = axios.create({

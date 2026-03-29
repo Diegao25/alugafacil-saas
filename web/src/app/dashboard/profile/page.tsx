@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { toast } from 'react-toastify';
-import { maskCep, fetchAddressByCep, isValidCpfCnpj, maskCpfCnpj, parseAddressComponents } from '@/lib/utils';
+import { maskCep, fetchAddressByCep, isValidCpfCnpj, isValidPhone, maskCpfCnpj, maskPhone, parseAddressComponents, PHONE_POLICY_MESSAGE, unmask } from '@/lib/utils';
 import { User, Phone, MapPin, CreditCard, Save, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -16,6 +16,7 @@ export default function ProfilePage() {
   const [cepLoading, setCepLoading] = useState(false);
   const [showOwnerProfileLabel, setShowOwnerProfileLabel] = useState(false);
   const [documentError, setDocumentError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [readOnly, setReadOnly] = useState(false);
 
   const [address, setAddress] = useState({
@@ -108,6 +109,13 @@ export default function ProfilePage() {
         return;
       }
 
+      if (formData.telefone && !isValidPhone(formData.telefone)) {
+        setPhoneError(PHONE_POLICY_MESSAGE);
+        toast.error(PHONE_POLICY_MESSAGE);
+        setLoading(false);
+        return;
+      }
+
       const enderecoSegment = [
         [address.logradouro, address.numero].filter(Boolean).join(', '),
         address.bairro
@@ -132,8 +140,8 @@ export default function ProfilePage() {
 
       await api.put('/auth/profile', {
         nome: formData.nome,
-        cpf_cnpj: formData.cpf_cnpj,
-        telefone: formData.telefone,
+        cpf_cnpj: unmask(formData.cpf_cnpj),
+        telefone: formData.telefone ? unmask(formData.telefone) : null,
         endereco: formattedEndereco
       });
       
@@ -151,21 +159,6 @@ export default function ProfilePage() {
     }
   }
 
-  function formatPhoneNumber(value: string): string {
-    // Remove tudo que não é número
-    const numbers = value.replace(/\D/g, '');
-    
-    // Limita a 11 dígitos (padrão brasileiro)
-    if (numbers.length > 11) {
-      return formatPhoneNumber(numbers.slice(0, 11));
-    }
-    
-    // Formata de acordo com a quantidade de dígitos
-    if (numbers.length === 0) return '';
-    if (numbers.length <= 2) return `(${numbers}`;
-    if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-  }
 
   async function handleCepBlur() {
     const digits = cep.replace(/\D/g, '');
@@ -279,9 +272,22 @@ export default function ProfilePage() {
                     required
                     disabled={readOnly}
                     value={formData.telefone}
-                    onChange={(e) => setFormData({ ...formData, telefone: formatPhoneNumber(e.target.value) })}
-                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-70"
+                    onChange={(e) => {
+                      setFormData({ ...formData, telefone: maskPhone(e.target.value) });
+                      if (phoneError) setPhoneError('');
+                    }}
+                    onBlur={() => {
+                      if (formData.telefone && !isValidPhone(formData.telefone)) {
+                        setPhoneError(PHONE_POLICY_MESSAGE);
+                      } else {
+                        setPhoneError('');
+                      }
+                    }}
+                    className={`w-full rounded-xl border ${phoneError ? 'border-rose-500' : 'border-slate-200'} px-4 py-2.5 text-slate-900 outline-none transition-all bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-70`}
                   />
+                  {phoneError && (
+                    <p className="text-sm font-medium text-rose-600">{phoneError}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">

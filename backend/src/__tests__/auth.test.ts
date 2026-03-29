@@ -52,6 +52,7 @@ function mockAuthenticatedUser(userId = USER_ID) {
       plan_type: 'trial',
       trial_end_date: futureDate,
       subscription_status: 'trial_active',
+      has_seen_tour: false,
       plan_name: null,
       subscription_date: null,
       subscription_amount: null,
@@ -243,5 +244,28 @@ describe('POST /api/auth/logout', () => {
       const cookieStr = Array.isArray(setCookieHeader) ? setCookieHeader.join(';') : setCookieHeader;
       expect(cookieStr).toMatch(/gestaolocacoes\.session/);
     }
+  });
+});
+
+describe('POST /api/auth/complete-tour', () => {
+  it('deve marcar o tour como concluído com sucesso', async () => {
+    mockAuthenticatedUser();
+    prisma.user.update.mockResolvedValue({ id: USER_ID, has_seen_tour: true });
+
+    const res = await request(app)
+      .post('/api/auth/complete-tour')
+      .set(AUTH_HEADER(USER_ID));
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/sucesso/i);
+    expect(prisma.user.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: USER_ID },
+      data: { has_seen_tour: true }
+    }));
+  });
+
+  it('deve retornar 401 para usuário não autenticado', async () => {
+    const res = await request(app).post('/api/auth/complete-tour');
+    expect(res.status).toBe(401);
   });
 });

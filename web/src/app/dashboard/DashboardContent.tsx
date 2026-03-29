@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import ReservationSourceIcon from '@/components/ReservationSourceIcon';
 import OnboardingChecklist from '@/components/OnboardingChecklist';
+import OnboardingTour from '@/components/OnboardingTour';
 import CESModal from '@/components/CESModal';
 import { Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -229,6 +230,7 @@ export default function DashboardPage() {
 
         <div className="flex items-center gap-3 shrink-0">
           <button
+            id="tour-sync-all"
             onClick={handleSyncAll}
             disabled={isSyncing}
             title={stats?.lastSync ? `Última sincronização: ${formatDistanceToNow(new Date(stats.lastSync), { addSuffix: true, locale: ptBR })}` : 'Sincronizar todos os imóveis'}
@@ -241,21 +243,24 @@ export default function DashboardPage() {
             <RefreshCcw size={18} className={isSyncing ? 'animate-spin' : ''} />
             {isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR TUDO'}
           </button>
-
-          <Link 
-            href="/dashboard/reservations/new"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg shadow-blue-200 flex items-center gap-2 transition-all active:scale-95 shrink-0"
-          >
-            <Plus size={18} />
-            NOVA RESERVA
-          </Link>
+ 
+          <div id="tour-new-reservation" className="inline-block">
+            <Link 
+              href="/dashboard/reservations/new"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg shadow-blue-200 flex items-center gap-2 transition-all active:scale-95 shrink-0"
+            >
+              <Plus size={18} />
+              NOVA RESERVA
+            </Link>
+          </div>
         </div>
       </div>
 
+      <OnboardingTour />
       <OnboardingChecklist stats={stats} />
       
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
-        <div className="rounded-2xl bg-white p-6 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+        <div id="tour-stats-properties" className="rounded-2xl bg-white p-6 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-2px_rgba(0,0,0,0.05)] border-none flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
           <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:scale-110 transition-transform">
             <Building size={100} />
           </div>
@@ -295,27 +300,29 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-gradient-to-br from-[#1e293b] to-[#334155] p-6 shadow-xl shadow-slate-300 flex flex-col text-white relative overflow-hidden group hover:scale-[1.02] transition-all lg:col-span-1 border-none">
-          <div className="absolute right-[-10px] top-[-10px] opacity-10 group-hover:scale-110 transition-transform">
-            <DollarSign size={100} />
-          </div>
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-bold text-slate-300 uppercase tracking-wider">Faturamento (Mês)</p>
-            <button
-              type="button"
-              onClick={() => setHideRevenue((current) => !current)}
-              className="relative z-10 rounded-full bg-white/10 p-2 text-slate-300 transition hover:bg-white/20 hover:text-white"
-              aria-label={hideRevenue ? 'Mostrar faturamento' : 'Ocultar faturamento'}
-              title={hideRevenue ? 'Mostrar faturamento' : 'Ocultar faturamento'}
-            >
-              {hideRevenue ? <Eye size={16} /> : <EyeOff size={16} />}
-            </button>
-          </div>
-          <div className="mt-4 flex items-baseline gap-1 min-w-0">
-            <span className="text-base font-bold text-slate-400 shrink-0">R$</span>
-            <span className="text-xl font-black truncate">
-              {hideRevenue ? '••••••' : formatCurrencyBR(stats?.monthlyRevenue ?? 0)}
-            </span>
+        <div className="lg:col-span-1">
+          <div id="tour-stats-revenue" className="rounded-2xl bg-gradient-to-br from-[#1e293b] to-[#334155] p-6 shadow-xl shadow-slate-300 flex flex-col text-white relative overflow-hidden group hover:scale-[1.02] transition-all border-none h-full">
+            <div className="absolute right-[-10px] top-[-10px] opacity-10 group-hover:scale-110 transition-transform">
+              <DollarSign size={100} />
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-bold text-slate-300 uppercase tracking-wider">Faturamento (Mês)</p>
+              <button
+                type="button"
+                onClick={() => setHideRevenue((current) => !current)}
+                className="relative z-10 rounded-full bg-white/10 p-2 text-slate-300 transition hover:bg-white/20 hover:text-white"
+                aria-label={hideRevenue ? 'Mostrar faturamento' : 'Ocultar faturamento'}
+                title={hideRevenue ? 'Mostrar faturamento' : 'Ocultar faturamento'}
+              >
+                {hideRevenue ? <Eye size={16} /> : <EyeOff size={16} />}
+              </button>
+            </div>
+            <div className="mt-4 flex items-baseline gap-1 min-w-0">
+              <span className="text-base font-bold text-slate-400 shrink-0">R$</span>
+              <span className="text-xl font-black truncate">
+                {hideRevenue ? '••••••' : formatCurrencyBR(stats?.monthlyRevenue ?? 0)}
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 'use client';
-
+ 
 import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { inAppWhatsappSupportEnabled } from '@/lib/features';
@@ -7,76 +7,77 @@ import { MessageCircle } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-
+ 
 const DEFAULT_SUPPORT_WHATSAPP_NUMBER = '5511988392241';
 const buildTimeWhatsappNumber =
   process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || DEFAULT_SUPPORT_WHATSAPP_NUMBER;
-
+ 
 function normalizePhone(value: string) {
   return value.replace(/\D/g, '');
 }
-
+ 
 export default function SupportWhatsAppButton() {
   const { user } = useAuth();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [runtimeWhatsappNumber, setRuntimeWhatsappNumber] = useState(buildTimeWhatsappNumber);
   const [runtimeFeatureEnabled, setRuntimeFeatureEnabled] = useState(inAppWhatsappSupportEnabled);
-
+ 
   useEffect(() => {
     setMounted(true);
   }, []);
-
+ 
   useEffect(() => {
     let mounted = true;
-
+ 
     async function loadRuntimeConfig() {
       try {
         const response = await api.get('/public/config');
         const data = response.data;
-
+ 
         if (!mounted) {
           return;
         }
-
+ 
         setRuntimeWhatsappNumber(data.supportWhatsappNumber || '');
         setRuntimeFeatureEnabled(data.enableInAppWhatsappSupport !== false);
       } catch {
         // Keep build-time fallback when runtime config cannot be fetched.
       }
     }
-
+ 
     void loadRuntimeConfig();
-
+ 
     return () => {
       mounted = false;
     };
   }, []);
-
+ 
   const phone = useMemo(
     () => normalizePhone(runtimeWhatsappNumber || buildTimeWhatsappNumber),
     [runtimeWhatsappNumber]
   );
-
+ 
   if (!mounted || !runtimeFeatureEnabled || !phone) {
     return null;
   }
-
+ 
   const message = [
     'Olá! Preciso de ajuda no Aluga Fácil.',
     `Usuário: ${user?.nome || 'Não identificado'}`,
     `E-mail: ${user?.email || 'Não informado'}`,
     `Tela atual: ${pathname}`
   ].join('\n');
-
+ 
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-
+ 
   const isTrial = user?.subscription_status === 'trial_active' || user?.plan_type === 'trial';
-  const isBasic = !isTrial && (user?.plan_name === 'Plano Básico' || user?.plan_name === 'Essencial');
-
+  const isBasic = !isTrial && user?.plan_type === 'basico';
+ 
   if (isBasic) {
     return createPortal(
       <a
+        id="tour-support-button"
         href="mailto:diegohga@gmail.com"
         className="fixed bottom-5 right-5 z-[9999] inline-flex items-center gap-3 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-xl shadow-blue-700/30 transition-all hover:-translate-y-0.5 hover:bg-blue-700 lg:bottom-6 lg:right-6"
         aria-label="Falar com o suporte por E-mail"
@@ -88,9 +89,10 @@ export default function SupportWhatsAppButton() {
       document.body
     );
   }
-
+ 
   return createPortal(
     <a
+      id="tour-support-button"
       href={whatsappUrl}
       target="_blank"
       rel="noreferrer"

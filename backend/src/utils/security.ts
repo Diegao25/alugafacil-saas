@@ -40,8 +40,9 @@ export function getAllowedOrigins() {
   );
 
   if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
-    // Em produção, se nada estiver configurado, tentamos um padrão baseado no domínio comum do railway
-    allowedOrigins.push('https://easygoing-backend-production.up.railway.app');
+    // Em produÃ§Ã£o, se nada estiver configurado, usamos o domÃ­nio oficial como fallback
+    allowedOrigins.push('https://alugafacil.net.br');
+    allowedOrigins.push('https://www.alugafacil.net.br');
   }
 
   return allowedOrigins;
@@ -60,8 +61,8 @@ export function isOriginAllowed(origin: string | undefined): boolean {
   // 1. Check exato (normalizado)
   if (allowed.includes(originLower)) return true;
 
-  // 2. Check de Regex para Railway (Segurança flexível para infra-estrutura dinâmica)
-  if (originLower.endsWith('.up.railway.app')) {
+  // 2. Check de Regex para DomÃ­nios Oficiais (SeguranÃ§a flexÃ­vel para infra-estrutura dinâmica)
+  if (originLower.endsWith('.alugafacil.net.br') || originLower.endsWith('.up.railway.app')) {
     // Opcional: restringir para conter o nome do projeto se desejar mais rigor
     if (originLower.includes('easygoing') || originLower.includes('alugafacil')) {
       return true;

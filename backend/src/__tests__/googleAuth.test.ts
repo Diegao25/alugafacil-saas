@@ -74,6 +74,7 @@ describe('Google Auth Controller Unit Test', () => {
       nome: 'Test Google User',
       plan_type: 'trial',
       subscription_status: 'trial_active',
+      has_seen_tour: false,
       is_admin: true
     });
 
@@ -101,6 +102,7 @@ describe('Google Auth Controller Unit Test', () => {
       nome: 'Existing Guest',
       plan_type: 'regular',
       subscription_status: 'active',
+      has_seen_tour: true,
       is_admin: true
     };
 

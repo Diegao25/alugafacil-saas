@@ -26,6 +26,21 @@ export function maskPhone(value: string): string {
 }
 
 /**
+ * Valida se o telefone tem 10 (fixo) ou 11 (celular) dígitos
+ */
+export function isValidPhone(value: string | null | undefined): boolean {
+  if (!value) return true; // Não obrigatório
+  const digits = value.replace(/\D/g, "");
+  
+  // Rejeita sequências óbvias de teste (0000..., 1111..., etc)
+  if (/^(\d)\1+$/.test(digits)) return false;
+  
+  return digits.length === 10 || digits.length === 11;
+}
+
+export const PHONE_POLICY_MESSAGE = "O telefone deve ter 10 ou 11 dígitos (DDD + número).";
+
+/**
  * Remove todos os caracteres não numéricos de uma string
  */
 export function unmask(value: string): string {

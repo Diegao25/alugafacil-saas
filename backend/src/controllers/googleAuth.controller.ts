@@ -6,27 +6,27 @@ import { AUTH_COOKIE_NAME, getAuthCookieOptions, getJwtSecret } from '../utils/s
 import { canManageUsers } from '../utils/owner';
 import { getTermsStatus } from '../utils/terms';
 import { sendWelcomeEmail } from '../utils/mail';
-
+ 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
+ 
 export const googleLogin = async (req: Request, res: Response): Promise<void> => {
   try {
     const { credential } = req.body;
     console.log('--- Google Login Request ---');
     console.log('Credential provided:', !!credential);
     console.log('Google Client ID (env):', process.env.GOOGLE_CLIENT_ID);
-
+ 
     if (!credential) {
       res.status(400).json({ error: 'Token do Google não fornecido.' });
       return;
     }
-
+ 
     console.log('[Step 1] Verifying Google token...');
     const ticket = await client.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-
+ 
     console.log('[Step 2] Token verified. Payload extracted.');
     const payload = ticket.getPayload();
     if (!payload || !payload.email) {
@@ -34,23 +34,23 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
       res.status(400).json({ error: 'Falha ao verificar token do Google.' });
       return;
     }
-
+ 
     const { email, name, picture, sub: googleId } = payload;
     console.log(`[Step 3] Searching user: ${email}`);
-
+ 
     let user = await prisma.user.findUnique({
       where: { email },
     });
-
+ 
     let isNewUser = false;
-
+ 
     if (!user) {
       console.log('[Step 4] New user detected. Creating account...');
       isNewUser = true;
       const trialStartDate = new Date();
       const trialEndDate = new Date();
       trialEndDate.setDate(trialStartDate.getDate() + 14);
-
+ 
       user = await prisma.user.create({
         data: {
           nome: name || 'Usuário Google',
@@ -58,6 +58,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
           senha: '', 
           is_admin: true,
           plan_type: 'trial',
+          plan_name: 'trial',
           trial_start_date: trialStartDate,
           trial_end_date: trialEndDate,
           subscription_status: 'trial_active',
@@ -68,10 +69,10 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         },
       });
       console.log('[Step 4] User created successfully.');
-
+ 
       const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
       const loginLink = `${frontendBase}/login?external=1`;
-
+ 
       try {
         await sendWelcomeEmail(user.email, user.nome, loginLink, user.trial_end_date!);
       } catch (error) {
@@ -88,19 +89,19 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         console.warn('Não foi possível atualizar login_count:', e);
       }
     }
-
+ 
     console.log('[Step 5] Generating system JWT...');
     const secret = getJwtSecret();
     const token = jwt.sign({ id: user.id }, secret, {
       expiresIn: '7d',
     });
-
+ 
     res.cookie(AUTH_COOKIE_NAME, token, getAuthCookieOptions());
-
+ 
     console.log('[Step 6] Finalizing response data...');
     const canManageUsersAccess = await canManageUsers(user.id);
     const termsStatus = await getTermsStatus(user.id);
-
+ 
     console.log('[Step 7] Success! Sending user data.');
     res.status(200).json({
       token,
@@ -113,6 +114,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         plan_type: user.plan_type,
         trial_end_date: user.trial_end_date,
         subscription_status: user.subscription_status,
+        has_seen_tour: (user as any).has_seen_tour,
         terms_pending: termsStatus.termsPending,
         current_terms_version: termsStatus.currentTermsVersion,
         accepted_terms_version: termsStatus.acceptedTermsVersion,

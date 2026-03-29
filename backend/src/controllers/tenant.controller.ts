@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { prisma } from '../prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { isValidCpfCnpj } from '../utils/document';
+import { isValidPhone } from '../utils/phone';
 import { resolveOwnerId } from '../utils/owner';
 import { Prisma } from '@prisma/client';
 
@@ -27,6 +28,11 @@ export const createTenant = async (req: AuthRequest, res: Response): Promise<voi
 
     if (!isValidCpfCnpj(cpf)) {
       res.status(400).json({ error: 'CPF ou CNPJ inválido.' });
+      return;
+    }
+
+    if (telefone && !isValidPhone(telefone)) {
+      res.status(400).json({ error: 'Telefone inválido. Deve conter 10 ou 11 dígitos com DDD.' });
       return;
     }
 
@@ -125,6 +131,11 @@ export const updateTenant = async (req: AuthRequest, res: Response): Promise<voi
 
     if (!isValidCpfCnpj(data.cpf)) {
       res.status(400).json({ error: 'CPF ou CNPJ inválido.' });
+      return;
+    }
+
+    if (data.telefone && !isValidPhone(data.telefone)) {
+      res.status(400).json({ error: 'Telefone inválido. Deve conter 10 ou 11 dígitos com DDD.' });
       return;
     }
 

@@ -250,8 +250,8 @@ export const verifySession = async (req: AuthRequest, res: Response): Promise<vo
         await prisma.user.update({
           where: { id: userId },
           data: {
-            plan_type: 'pro',
             plan_name: planName,
+            plan_type: planName === 'Plano Básico' ? 'basico' : 'completo',
             subscription_status: 'active_subscription',
             stripe_subscription_id: subscriptionId,
             trial_end_date: null,
@@ -352,8 +352,8 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
       await prisma.user.update({
         where: { id: userId },
         data: {
-          plan_type: 'pro',
           plan_name: planName,
+          plan_type: planName === 'Plano Básico' ? 'basico' : 'completo',
           subscription_status: 'active_subscription',
           stripe_subscription_id: subscriptionId,
           trial_end_date: null,
@@ -426,7 +426,7 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
         data: {
           plan_name: planName,
           subscription_status: finalStatus as any,
-          plan_type: 'pro',
+          plan_type: planName === 'Plano Básico' ? 'basico' : 'completo',
           subscription_amount: planName === 'Plano Básico' ? 39.90 : 79.90,
           access_until: accessUntil,
           cancellation_date: isScheduledToCancel ? new Date() : null

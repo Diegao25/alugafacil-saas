@@ -7,7 +7,8 @@ import {
   requestPasswordReset,
   resetPassword,
   getOwnerProfile,
-  logout
+  logout,
+  completeTour
 } from '../controllers/auth.controller';
 import { acceptCurrentTerms, getCurrentTerms } from '../controllers/terms.controller';
 import { authenticate } from '../middleware/auth.middleware';
@@ -44,10 +45,11 @@ router.post('/google', googleLogin);
 router.post('/forgot-password', forgotPasswordRateLimit, requestPasswordReset);
 router.post('/reset-password', resetPassword);
 router.get('/me', authenticate, getMe);
-router.get('/owner', authenticate, getOwnerProfile);
 router.get('/terms/current', authenticate, getCurrentTerms);
 router.post('/terms/accept', authenticate, acceptCurrentTerms);
+router.get('/owner', authenticate, getOwnerProfile);
 router.put('/profile', authenticate, updateProfile);
+router.post('/complete-tour', authenticate, completeTour);
 router.post('/logout', logout);
 
 export default router;

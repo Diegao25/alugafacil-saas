@@ -9,6 +9,7 @@ import { maskCep, fetchAddressByCep, parseAddressComponents, getPrimaryAddressSe
 import { LogOut, Save, RefreshCw, Home, MapPin, DollarSign, Users, Image as ImageIcon } from 'lucide-react';
 import CalendarSyncSettings from '@/components/CalendarSyncSettings';
 import CollapsibleSection from '@/components/CollapsibleSection';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function EditPropertyPage() {
   const router = useRouter();
@@ -300,16 +301,11 @@ export default function EditPropertyPage() {
           icon={<ImageIcon className="w-5 h-5" />}
         >
           <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700">Link da Foto Principal (Capa)</label>
-              <input
-                type="url"
-                value={formData.foto_principal}
-                onChange={(e) => setFormData({ ...formData, foto_principal: e.target.value })}
-                className="w-full rounded-xl border border-slate-300 px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
-                placeholder="https://sua-imagem.com/foto.jpg"
-              />
-            </div>
+            <ImageUpload 
+              label="Foto Principal (Capa)"
+              value={formData.foto_principal}
+              onChange={(url) => setFormData({ ...formData, foto_principal: url })}
+            />
 
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">Comodidades (Separadas por vírgula)</label>

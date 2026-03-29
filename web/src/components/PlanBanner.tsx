@@ -1,5 +1,5 @@
 'use client';
-
+ 
 import { useAuth } from '@/contexts/AuthContext';
 import { differenceInCalendarDays, parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -7,19 +7,19 @@ import { AlertCircle, ChevronRight, ShieldCheck, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { plansAccessEnabled, trialEnforcementEnabled } from '@/lib/features';
-
+ 
 export default function PlanBanner() {
   const { user } = useAuth();
   const pathname = usePathname();
-
+ 
   if (!plansAccessEnabled && !(user?.subscription_status === 'trial_expired' && !trialEnforcementEnabled)) {
     return null;
   }
-
+ 
   if (!user || pathname === '/dashboard/plans') {
     return null;
   }
-
+ 
   if (user.subscription_status === 'trial_expired' && !trialEnforcementEnabled) {
     return (
       <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-4 py-2 text-sm font-semibold flex items-center justify-center gap-4 animate-in slide-in-from-top duration-500 shadow-lg relative z-50">
@@ -32,7 +32,7 @@ export default function PlanBanner() {
       </div>
     );
   }
-
+ 
   if (user.subscription_status === 'cancelled') {
     const accessUntilLabel = user.access_until
       ? (() => {
@@ -43,11 +43,11 @@ export default function PlanBanner() {
           }
         })()
       : null;
-
+ 
     return (
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-2 text-sm font-semibold flex items-center justify-between gap-4 animate-in slide-in-from-top duration-500 shadow-lg relative z-50 overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-full bg-white/5 skew-x-12 transform translate-x-32 pointer-events-none" />
-
+ 
         <div className="flex items-center gap-3">
           <div className="bg-white/20 p-1 rounded-lg">
             <XCircle size={18} className="text-blue-100" />
@@ -64,7 +64,7 @@ export default function PlanBanner() {
             </span>
           </div>
         </div>
-
+ 
         <Link
           href="/dashboard/plans?mode=plans"
           className="bg-white text-blue-700 px-4 py-1.5 rounded-xl text-xs font-black hover:bg-blue-50 transition-all flex items-center gap-1 shrink-0 shadow-sm hover:scale-105 active:scale-95 group relative z-10"
@@ -75,7 +75,7 @@ export default function PlanBanner() {
       </div>
     );
   }
-
+ 
   // Se o usuário tem assinatura ativa
   if (user.subscription_status === 'active_subscription') {
     return (
@@ -108,7 +108,7 @@ export default function PlanBanner() {
       </div>
     );
   }
-
+ 
   // Lógica de Trial (mantida e aprimorada)
   if (user.plan_type === 'trial' && user.subscription_status !== 'trial_expired' && user.trial_end_date) {
     const daysRemaining = (() => {
@@ -119,7 +119,7 @@ export default function PlanBanner() {
         return 14;
       }
     })();
-
+ 
     const getUrgencyConfig = () => {
       if (daysRemaining > 10) {
         return {
@@ -157,9 +157,9 @@ export default function PlanBanner() {
         pulse: true
       };
     };
-
+ 
     const config = getUrgencyConfig();
-
+ 
     return (
       <div className={`bg-gradient-to-r ${config.colors} text-white px-4 py-2 text-sm font-semibold flex items-center justify-center gap-4 animate-in slide-in-from-top duration-500 shadow-lg relative z-50`}>
         <div className="flex items-center gap-2">
@@ -176,6 +176,6 @@ export default function PlanBanner() {
       </div>
     );
   }
-
+ 
   return null;
 }

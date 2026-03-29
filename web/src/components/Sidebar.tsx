@@ -69,6 +69,20 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           return (
             <div key={item.name}>
               <Link
+                key={item.href}
+                id={
+                  item.name === 'Dashboard' ? 'tour-nav-dashboard' : 
+                  item.name === 'Imóveis' ? 'tour-nav-properties' : 
+                  item.name === 'Locatários' ? 'tour-nav-tenants' : 
+                  item.name === 'Reservas' ? 'tour-nav-reservations' : 
+                  item.name === 'Pagamentos' ? 'tour-nav-payments' : 
+                  item.name === 'Contratos' ? 'tour-nav-contracts' : 
+                  item.name === 'Mala Direta' ? 'tour-nav-campaigns' : 
+                  item.name === 'Usuários' ? 'tour-nav-users' : 
+                  item.name === 'Planos' ? 'tour-nav-plans' : 
+                  item.name === 'Meu Perfil' || item.name === 'Perfil do Locador' ? 'tour-nav-profile' : 
+                  undefined
+                }
                 href={item.href}
                 onClick={onClose}
                 className={`flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-medium transition-all group ${

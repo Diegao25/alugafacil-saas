@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { fetchAddressByCep, maskCep, getPrimaryAddressSegment, formatCurrencyInput, parseCurrencyBR } from '@/lib/utils';
 import { LogOut, Save, Home, MapPin, DollarSign, Users, Image as ImageIcon, RefreshCw, Info, Share2, Calendar, Link as LinkIcon, Trash2 } from 'lucide-react';
 import CollapsibleSection from '@/components/CollapsibleSection';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function NewPropertyPage() {
   const router = useRouter();
@@ -247,17 +248,11 @@ export default function NewPropertyPage() {
           icon={<ImageIcon className="w-5 h-5" />}
         >
           <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700">Link da Foto Principal (Capa)</label>
-              <input
-                type="url"
-                value={formData.foto_principal}
-                onChange={(e) => setFormData({ ...formData, foto_principal: e.target.value })}
-                className="w-full rounded-xl border border-slate-300 px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-slate-400"
-                placeholder="https://sua-imagem.com/foto.jpg"
-              />
-              <p className="text-[11px] text-slate-500 italic">Dica: Use um link do Instagram, Drive, ou Dropbox (link direto).</p>
-            </div>
+            <ImageUpload 
+              label="Foto Principal (Capa)"
+              value={formData.foto_principal}
+              onChange={(url) => setFormData({ ...formData, foto_principal: url })}
+            />
 
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">Comodidades (Separadas por vírgula)</label>

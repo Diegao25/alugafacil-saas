@@ -7,8 +7,10 @@ import { sendPasswordResetEmail, sendWelcomeEmail } from '../utils/mail';
 import { canManageUsers, resolveOwnerId } from '../utils/owner';
 import { AUTH_COOKIE_NAME, getAuthCookieOptions, getJwtSecret } from '../utils/security';
 import { isValidCpfCnpj } from '../utils/document';
+import { isValidPhone } from '../utils/phone';
 import { getTermsStatus } from '../utils/terms';
 import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from '../utils/password';
+import { AuthRequest } from '../middleware/auth.middleware';
 
 const PASSWORD_HASH_ROUNDS = 10;
 const INVALID_CREDENTIALS_MESSAGE = 'Credenciais inválidas.';
@@ -41,7 +43,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const trialEndDate = new Date();
     trialEndDate.setDate(trialStartDate.getDate() + 14);
 
-    const user = await prisma.user.create({
+    const user = (await prisma.user.create({
       data: {
         nome,
         email,
@@ -49,11 +51,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         is_admin: true,
         owner_user_id: null,
         plan_type: 'trial',
+        plan_name: 'trial',
         trial_start_date: trialStartDate,
         trial_end_date: trialEndDate,
         subscription_status: 'trial_active'
       },
-    });
+    })) as any;
 
     const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
     const loginLink = `${frontendBase}/login?external=1`;
@@ -74,6 +77,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         plan_type: user.plan_type,
         trial_end_date: user.trial_end_date,
         subscription_status: user.subscription_status,
+        has_seen_tour: (user as any).has_seen_tour,
         terms_pending: true,
         current_terms_version: null,
         accepted_terms_version: null
@@ -141,17 +145,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({ 
       token,
       user: { 
-        id: refreshedUser.id, 
-        nome: refreshedUser.nome, 
-        email: refreshedUser.email, 
-        cpf_cnpj: refreshedUser.cpf_cnpj, 
-        telefone: refreshedUser.telefone, 
-        endereco: refreshedUser.endereco, 
+        id: (refreshedUser as any).id, 
+        nome: (refreshedUser as any).nome, 
+        email: (refreshedUser as any).email, 
+        cpf_cnpj: (refreshedUser as any).cpf_cnpj, 
+        telefone: (refreshedUser as any).telefone, 
+        endereco: (refreshedUser as any).endereco, 
         is_admin: isAdmin,
         can_manage_users: canManageUsersAccess,
-        plan_type: refreshedUser.plan_type,
+        plan_type: (refreshedUser as any).plan_type,
         trial_end_date: trialEndDate,
-        subscription_status: refreshedUser.subscription_status,
+        subscription_status: (refreshedUser as any).subscription_status,
+        has_seen_tour: (refreshedUser as any).has_seen_tour,
         terms_pending: termsStatus.termsPending,
         current_terms_version: termsStatus.currentTermsVersion,
         accepted_terms_version: termsStatus.acceptedTermsVersion,
@@ -171,7 +176,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = (await prisma.user.findUnique({
       where: { id: (req as any).user.id },
       select: {
         id: true,
@@ -185,14 +190,15 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
         plan_type: true,
         trial_end_date: true,
         subscription_status: true,
+        has_seen_tour: true,
         plan_name: true,
         subscription_date: true,
         subscription_amount: true,
         payment_method: true,
         cancellation_date: true,
         access_until: true,
-      }
-    });
+      } as any
+    })) as any;
 
     if (!user) {
       res.status(404).json({ error: 'Usuário não encontrado.' });
@@ -228,15 +234,16 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
             plan_type: true,
             trial_end_date: true,
             subscription_status: true,
+            has_seen_tour: true,
             plan_name: true,
             subscription_date: true,
             subscription_amount: true,
             payment_method: true,
             cancellation_date: true,
             access_until: true,
-          }
+          } as any
         });
-        finalUser = updated;
+        finalUser = updated as any;
       }
     }
 
@@ -278,6 +285,11 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 
     if (!isValidCpfCnpj(cpf_cnpj)) {
       res.status(400).json({ error: 'CPF ou CNPJ inválido.' });
+      return;
+    }
+
+    if (telefone && !isValidPhone(telefone)) {
+      res.status(400).json({ error: 'Telefone inválido. Deve conter 10 ou 11 dígitos com DDD.' });
       return;
     }
 
@@ -448,6 +460,26 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     res.status(200).json({ message: 'Senha atualizada com sucesso.' });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao redefinir senha', details: error });
+  }
+};
+
+export const completeTour = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Não autorizado.' });
+      return;
+    }
+
+    await (prisma.user as any).update({
+      where: { id: userId },
+      data: { has_seen_tour: true }
+    });
+
+    res.status(200).json({ message: 'Tour concluído com sucesso.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao concluir tour', details: error });
   }
 };
 

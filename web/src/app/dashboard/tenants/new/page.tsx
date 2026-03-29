@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
-import { fetchAddressByCep, getPrimaryAddressSegment, isValidCpfCnpj, maskCep, maskCpfCnpj, maskPhone, unmask } from '@/lib/utils';
+import { fetchAddressByCep, getPrimaryAddressSegment, isValidCpfCnpj, isValidPhone, maskCep, maskCpfCnpj, maskPhone, PHONE_POLICY_MESSAGE, unmask } from '@/lib/utils';
 import { LogOut, Save } from 'lucide-react';
 
 export default function NewTenantPage() {
@@ -30,6 +30,7 @@ export default function NewTenantPage() {
   const [uf, setUf] = useState('');
   const [numero, setNumero] = useState('');
   const [documentError, setDocumentError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -43,6 +44,12 @@ export default function NewTenantPage() {
     if (!isValidCpfCnpj(formData.cpf)) {
       setDocumentError('Informe um CPF ou CNPJ válido.');
       toast.error('Informe um CPF ou CNPJ válido.');
+      return;
+    }
+
+    if (formData.telefone && !isValidPhone(formData.telefone)) {
+      setPhoneError(PHONE_POLICY_MESSAGE);
+      toast.error(PHONE_POLICY_MESSAGE);
       return;
     }
 
@@ -141,10 +148,21 @@ export default function NewTenantPage() {
               <input
                 type="text"
                 value={formData.telefone}
-                onChange={(e) => setFormData({ ...formData, telefone: maskPhone(e.target.value) })}
-                className="w-full rounded-xl border border-slate-300 px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                onChange={(e) => {
+                  setFormData({ ...formData, telefone: maskPhone(e.target.value) });
+                  if (phoneError) setPhoneError('');
+                }}
+                onBlur={() => {
+                  if (formData.telefone && !isValidPhone(formData.telefone)) {
+                    setPhoneError(PHONE_POLICY_MESSAGE);
+                  } else {
+                    setPhoneError('');
+                  }
+                }}
+                className={`w-full rounded-xl border ${phoneError ? 'border-red-500' : 'border-slate-300'} px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all`}
                 placeholder="(00) 00000-0000"
               />
+              {phoneError && <p className="text-sm font-medium text-red-600">{phoneError}</p>}
             </div>
 
             <div className="space-y-2">

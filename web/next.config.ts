@@ -20,7 +20,9 @@ const nextConfig = {
     // Re-habilitando otimização para domínios comuns
     remotePatterns: [
       { protocol: 'https', hostname: '**.up.railway.app' },
+      { protocol: 'https', hostname: '**.alugafacil.net.br' },
       { protocol: 'https', hostname: '**.stripe.com' },
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
   },
   poweredByHeader: false,

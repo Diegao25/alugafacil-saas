@@ -43,7 +43,7 @@ function getApiOrigin() {
   }
 
   if (process.env.NODE_ENV === 'production') {
-    return 'https://easygoing-backend-production.up.railway.app';
+    return 'https://api.alugafacil.net.br';
   }
 
   return 'http://localhost:3333';

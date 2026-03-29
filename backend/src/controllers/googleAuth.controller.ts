@@ -61,7 +61,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
           plan_name: 'Plano Básico',
           trial_start_date: trialStartDate,
           trial_end_date: trialEndDate,
-          subscription_status: 'trial_active',
+          subscription_status: 'active_subscription',
           cpf_cnpj: '',
           telefone: '',
           endereco: '',
@@ -83,7 +83,12 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
       try {
         await prisma.user.update({
           where: { id: user.id },
-          data: { login_count: { increment: 1 } }
+          data: { 
+            login_count: { increment: 1 },
+            plan_type: 'basico',
+            plan_name: 'Plano Básico',
+            subscription_status: 'active_subscription'
+          }
         });
       } catch (e) {
         console.warn('Não foi possível atualizar login_count:', e);

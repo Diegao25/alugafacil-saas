@@ -141,7 +141,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         data: { 
           plan_type: 'basico',
           plan_name: 'Plano Básico',
-          trial_end_date: trialEndDate 
+          trial_end_date: trialEndDate,
+          subscription_status: 'active_subscription'
         }
       });
     }
@@ -225,7 +226,12 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
         
         const updated = await prisma.user.update({
           where: { id: user.id },
-          data: { trial_end_date: trialEndDate },
+          data: { 
+            trial_end_date: trialEndDate,
+            plan_type: 'basico',
+            plan_name: 'Plano Básico',
+            subscription_status: 'active_subscription'
+          },
           select: {
             id: true,
             nome: true,

@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://alugafacil.com.br'),
+  metadataBase: new URL('https://www.alugafacil.net.br'),
   title: 'Aluga Fácil | Sistema de Gestão de Locações por Temporada',
   description: 'A solução definitiva para anfitriões. Organize suas reservas, controle seus recebimentos e gere contratos em um só lugar. Economize tempo e profissionalize sua gestão.',
   keywords: ['gestão de imóveis', 'aluguel por temporada', 'calendário de reservas', 'controle financeiro imobiliário', 'anfitrião profissional'],
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://alugafacil.com.br',
+    url: 'https://www.alugafacil.net.br',
     title: 'Aluga Fácil | Gestão Profissional de Imóveis por Temporada',
     description: 'Simplifique a gestão dos seus imóveis. Centralize reservas, controle pagamentos e pare de perder tempo com burocracia.',
     siteName: 'Aluga Fácil',

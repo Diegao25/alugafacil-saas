@@ -47,7 +47,7 @@ const PLANS = [
 ];
 
 export default function PlansPage() {
-  const { user, syncUser } = useAuth();
+  const { user, syncUser, plansEnabled } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const mode = searchParams.get('mode');
@@ -62,16 +62,16 @@ export default function PlansPage() {
   const currentPlan = PLANS.find(p => p.name.toLowerCase() === user?.plan_name?.toLowerCase()) || PLANS[0];
 
   useEffect(() => {
-    if (!plansAccessEnabled) {
+    if (!plansEnabled) {
       router.replace('/dashboard');
     }
-  }, [router]);
+  }, [router, plansEnabled]);
 
   useEffect(() => {
     syncUser();
   }, []);
 
-  if (!plansAccessEnabled) {
+  if (!plansEnabled) {
     return null;
   }
 

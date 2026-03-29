@@ -567,7 +567,40 @@ async function recordSubscriptionHistory(userId: string, planName: string, amoun
         console.error('Erro ao enviar e-mail de confirmação centralizado:', e);
       }
     }
-  } else {
-    console.log(`Plano ${planName} já é o último registrado para o usuário ${userId}. Pulando histórico e e-mail.`);
   }
 }
+
+export const getStripeDiagnostic = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const diagnostic = {
+      stripeConfigured: !!stripe,
+      hasSecretKey: !!process.env.STRIPE_SECRET_KEY,
+      secretKeyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : 'none',
+      hasWebhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET,
+      frontendUrl: process.env.FRONTEND_URL || 'not set',
+      envMode: process.env.NODE_ENV || 'development',
+      prices: {
+        essential: process.env.STRIPE_PRICE_ESSENTIAL || 'missing',
+        professional: process.env.STRIPE_PRICE_PROFESSIONAL || 'missing',
+      }
+    };
+
+    if (!stripe) {
+      res.status(200).json({ status: 'error', reason: 'Stripe not initialized', diagnostic });
+      return;
+    }
+
+    // Tentar buscar a conta do Stripe para validar a chave
+    const account = await stripe.accounts.retrieve().catch(e => ({ error: e.message }));
+
+    res.json({
+      status: 'diagnostic_complete',
+      timestamp: new Date().toISOString(),
+      diagnostic,
+      accountInfo: (account as any).error ? 'INVALID_KEY' : 'VALID_KEY',
+      stripeError: (account as any).error || null
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Erro no diagnóstico', message: error.message });
+  }
+};

@@ -16,7 +16,7 @@ export default function TrialBanner() {
     return null;
   }
 
-  if (!user || user.plan_type !== 'basico' || user.subscription_status === 'trial_expired' || !user.trial_end_date || pathname === '/dashboard/plans') {
+  if (!user || user.plan_type !== 'basico' || user.subscription_status !== 'trial_active' || !user.trial_end_date || pathname === '/dashboard/plans') {
     return null;
   }
 

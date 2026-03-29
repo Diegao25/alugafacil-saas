@@ -54,7 +54,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         plan_name: 'Plano Básico',
         trial_start_date: trialStartDate,
         trial_end_date: trialEndDate,
-        subscription_status: 'trial_active'
+        subscription_status: 'active_subscription'
       },
     })) as any;
 
@@ -131,14 +131,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const canManageUsersAccess = await canManageUsers(user.id);
     const termsStatus = await getTermsStatus(user.id);
 
-    // Auto-correção: Se o trial_end_date for nulo mas for um usuário trial
-    if (user.plan_type === 'trial' && !trialEndDate) {
+    // Auto-correção: Garantir que 'trial' legado seja visto como 'basico'
+    if (user.plan_type === 'trial' || !trialEndDate) {
       trialEndDate = new Date(user.data_criacao);
       trialEndDate.setDate(trialEndDate.getDate() + 14);
       
       await prisma.user.update({
         where: { id: user.id },
-        data: { trial_end_date: trialEndDate }
+        data: { 
+          plan_type: 'basico',
+          plan_name: 'Plano Básico',
+          trial_end_date: trialEndDate 
+        }
       });
     }
 

@@ -7,11 +7,11 @@ import { usePathname } from 'next/navigation';
 import { plansAccessEnabled, trialEnforcementEnabled } from '@/lib/features';
 
 export default function TrialBlockingModal() {
-  const { user } = useAuth();
+  const { user, plansEnabled } = useAuth();
 
   const pathname = usePathname();
 
-  if (!plansAccessEnabled || !trialEnforcementEnabled) {
+  if (!plansEnabled || !trialEnforcementEnabled) {
     return null;
   }
 

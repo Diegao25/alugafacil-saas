@@ -6,13 +6,13 @@ import { ptBR } from 'date-fns/locale';
 import { AlertCircle, ChevronRight, ShieldCheck, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { plansAccessEnabled, trialEnforcementEnabled } from '@/lib/features';
+import { trialEnforcementEnabled } from '@/lib/features';
  
 export default function PlanBanner() {
-  const { user } = useAuth();
+  const { user, plansEnabled } = useAuth();
   const pathname = usePathname();
  
-  if (!plansAccessEnabled && !(user?.subscription_status === 'trial_expired' && !trialEnforcementEnabled)) {
+  if (!plansEnabled && !(user?.subscription_status === 'trial_expired' && !trialEnforcementEnabled)) {
     return null;
   }
  

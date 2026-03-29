@@ -34,6 +34,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  plansEnabled: boolean;
   signIn: (data: any) => Promise<void>;
   signInWithGoogle: (credential: string) => Promise<void>;
   signOut: (redirectTo?: string) => void; // redirectTo defaults to /dashboard
@@ -48,6 +49,7 @@ const AuthContext = createContext({} as AuthContextType);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [plansEnabled, setPlansEnabled] = useState(true); // Default as true to follow dev behavior
   const router = useRouter();
 
   useEffect(() => {
@@ -62,6 +64,7 @@ export function AuthProvider({ children }) {
       }
     }
     void syncUser().finally(() => setLoading(false));
+    void checkPlansEnabled();
 
     // Listener para o evento de trial expirado
     const handleTrialExpired = () => {
@@ -206,8 +209,19 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function checkPlansEnabled() {
+    try {
+      const response = await api.get('/public/config');
+      if (response.data && typeof response.data.isPlansEnabled === 'boolean') {
+        setPlansEnabled(response.data.isPlansEnabled);
+      }
+    } catch (e) {
+      console.warn('Auth - checkPlansEnabled failed:', (e as Error).message);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signInWithGoogle, signOut, signUp, syncUser, resetPassword }}>
+    <AuthContext.Provider value={{ user, loading, plansEnabled, signIn, signInWithGoogle, signOut, signUp, syncUser, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

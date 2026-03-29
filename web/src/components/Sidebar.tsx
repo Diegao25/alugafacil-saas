@@ -9,7 +9,7 @@ import packageJson from '../../package.json';
 import { plansAccessEnabled, trialEnforcementEnabled } from '@/lib/features';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
-  const { signOut, user } = useAuth();
+  const { signOut, user, plansEnabled } = useAuth();
   const pathname = usePathname();
   const productVersion = `v${packageJson.version}`;
 
@@ -20,7 +20,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     { name: 'Reservas', href: '/dashboard/reservations', icon: Calendar },
     { name: 'Pagamentos', href: '/dashboard/payments', icon: DollarSign },
     { name: 'Contratos', href: '/dashboard/contracts', icon: FileText },
-    ...(plansAccessEnabled ? [{ name: 'Planos', href: '/dashboard/plans', icon: CreditCard }] : []),
+    ...(plansEnabled ? [{ name: 'Planos', href: '/dashboard/plans', icon: CreditCard }] : []),
     ...(user?.plan_name === 'Plano Completo' || user?.subscription_status === 'trial_active' ? [
       { name: 'Mala Direta', href: '/dashboard/campaigns', icon: Megaphone }
     ] : []),

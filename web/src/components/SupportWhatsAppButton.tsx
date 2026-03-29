@@ -71,7 +71,7 @@ export default function SupportWhatsAppButton() {
  
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
  
-  const isCompletoOrTrial = user?.plan_type === 'completo' || user?.subscription_status === 'trial_active';
+  const isCompletoOrTrial = user?.plan_type === 'completo' || user?.subscription_status === 'trial_active' || user?.plan_type === 'trial';
   const showEmailFallback = !isCompletoOrTrial && user?.plan_type === 'basico';
  
   if (showEmailFallback) {

@@ -4,6 +4,22 @@ Este arquivo documenta as subidas oficiais para o ambiente de produção na Rail
 
 ---
 
+## [v1.1.1] - 2026-03-29
+### 🛠️ Estabilização do Período de Teste e Redirecionamento 🛡️✨
+
+Nesta versão de manutenção, corrigimos o fluxo de onboarding para garantir que novos usuários comecem corretamente no período de teste (Trial) e estabilizamos a visualização de faturamento.
+
+#### 🚀 O que há de novo?
+*   **Fix de Cadastro Trial**: Ajustada a lógica de criação de conta manual e via Google para atribuir o status `trial` por padrão, em vez do plano `básico`. ✅🧬
+*   **Restauração da Régua de Trial**: Corrigido o bug onde a faixa azul de contagem regressiva sumia para novos usuários. 🏁🛡️
+*   **Menu de Planos Persistente**: Garantida a visibilidade do menu "Planos" e do botão de upgrade, mesmo após retornos cancelados do Stripe. 💳✨
+
+#### ⚙️ Requisitos de Produção (Atualização de Variáveis)
+*   **`ENABLE_PLANS`**: `true` (Nova variável requerida no Railway) ✅
+*   **`FRONTEND_URL`**: Deve permanecer `https://www.alugafacil.net.br` em produção. 🌐
+
+---
+
 ## [v1.1.0] - 2026-03-29
 ### 🏁 Sincronização de Produção e Novo Domínio Oficial ✨🏙️
 

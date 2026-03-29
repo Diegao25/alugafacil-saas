@@ -15,7 +15,7 @@ router.get('/config', (req, res) => {
     supportWhatsappNumber: process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || '5511988392241',
     enableInAppWhatsappSupport: true,
     isMaintenanceMode: process.env.MAINTENANCE_MODE === 'true',
-    isPlansEnabled: process.env.ENABLE_PLANS === 'true'
+    isPlansEnabled: process.env.ENABLE_PLANS !== 'false'
   });
 });
 

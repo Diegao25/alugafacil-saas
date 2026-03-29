@@ -105,7 +105,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   ? ` ${user.plan_name || 'Assinatura Ativa'}`
                   : user.subscription_status === 'cancelled'
                     ? 'Assinatura cancelada'
-                    : (user.plan_type === 'basico' ? 'Período de Teste' : 'Sem assinatura')}
+                    : ((user.plan_type === 'basico' || user.plan_type === 'trial') ? 'Período de Teste' : 'Sem assinatura')}
               </span>
             </div>
             

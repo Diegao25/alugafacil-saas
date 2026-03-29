@@ -57,11 +57,11 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
           email,
           senha: '', 
           is_admin: true,
-          plan_type: 'basico',
-          plan_name: 'Plano Básico',
+          plan_type: 'trial',
+          plan_name: 'Experimental',
           trial_start_date: trialStartDate,
           trial_end_date: trialEndDate,
-          subscription_status: 'active_subscription',
+          subscription_status: 'trial_active',
           cpf_cnpj: '',
           telefone: '',
           endereco: '',
@@ -84,10 +84,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         await prisma.user.update({
           where: { id: user.id },
           data: { 
-            login_count: { increment: 1 },
-            plan_type: 'basico',
-            plan_name: 'Plano Básico',
-            subscription_status: 'active_subscription'
+            login_count: { increment: 1 }
           }
         });
       } catch (e) {

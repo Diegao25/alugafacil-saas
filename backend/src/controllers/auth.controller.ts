@@ -50,11 +50,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         senha: passwordHash,
         is_admin: true,
         owner_user_id: null,
-        plan_type: 'basico',
-        plan_name: 'Plano Básico',
+        plan_type: 'trial',
+        plan_name: 'Experimental',
         trial_start_date: trialStartDate,
         trial_end_date: trialEndDate,
-        subscription_status: 'active_subscription'
+        subscription_status: 'trial_active'
       },
     })) as any;
 
@@ -131,21 +131,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const canManageUsersAccess = await canManageUsers(user.id);
     const termsStatus = await getTermsStatus(user.id);
 
-    // Auto-correção: Garantir que 'trial' legado seja visto como 'basico'
-    if (user.plan_type === 'trial' || !trialEndDate) {
-      trialEndDate = new Date(user.data_criacao);
-      trialEndDate.setDate(trialEndDate.getDate() + 14);
-      
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { 
-          plan_type: 'basico',
-          plan_name: 'Plano Básico',
-          trial_end_date: trialEndDate,
-          subscription_status: 'active_subscription'
-        }
-      });
-    }
 
     res.status(200).json({ 
       token,
@@ -212,50 +197,6 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
 
     let finalUser = { ...user };
 
-    // Auto-correção: Se o trial_end_date for nulo mas for um usuário trial
-    if (user.plan_type === 'trial' && !user.trial_end_date) {
-      // Buscar data_criacao para o cálculo justo
-      const fullUser = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { data_criacao: true }
-      });
-
-      if (fullUser) {
-        const trialEndDate = new Date(fullUser.data_criacao);
-        trialEndDate.setDate(trialEndDate.getDate() + 14);
-        
-        const updated = await prisma.user.update({
-          where: { id: user.id },
-          data: { 
-            trial_end_date: trialEndDate,
-            plan_type: 'basico',
-            plan_name: 'Plano Básico',
-            subscription_status: 'active_subscription'
-          },
-          select: {
-            id: true,
-            nome: true,
-            email: true,
-            cpf_cnpj: true,
-            telefone: true,
-            endereco: true,
-            owner_user_id: true,
-            is_admin: true,
-            plan_type: true,
-            trial_end_date: true,
-            subscription_status: true,
-            has_seen_tour: true,
-            plan_name: true,
-            subscription_date: true,
-            subscription_amount: true,
-            payment_method: true,
-            cancellation_date: true,
-            access_until: true,
-          } as any
-        });
-        finalUser = updated as any;
-      }
-    }
 
     const canManageUsersAccess = await canManageUsers(user.id);
     const termsStatus = await getTermsStatus(user.id);

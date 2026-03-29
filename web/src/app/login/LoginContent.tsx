@@ -33,32 +33,37 @@ export default function LoginContent() {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '136105438202-hcn3vukt3phsjvt07q1pvc7bc35hdotr.apps.googleusercontent.com';
     
     const initAndRender = () => {
-      const google = (window as any).google;
-      if (!google || !clientId) return false;
+      try {
+        const google = (window as any).google;
+        if (!google || !clientId) return false;
 
-      if (!googleInitStarted.current) {
-        google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleGoogleResponse,
-          auto_select: false,
-          use_fedcm_for_prompt: false,
-          cancel_on_tap_outside: true,
-        });
-        googleInitStarted.current = true;
-      }
+        if (!googleInitStarted.current) {
+          google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleGoogleResponse,
+            auto_select: false,
+            use_fedcm_for_prompt: false,
+            cancel_on_tap_outside: true,
+          });
+          googleInitStarted.current = true;
+        }
 
-      const buttonDiv = document.getElementById('google-signin-button');
-      if (buttonDiv) {
-        google.accounts.id.renderButton(buttonDiv, { 
-          theme: 'filled_blue', 
-          size: 'large', 
-          width: buttonDiv.offsetWidth || 350,
-          text: 'signin_with',
-          shape: 'rectangular',
-          logo_alignment: 'left'
-        });
+        const buttonDiv = document.getElementById('google-signin-button');
+        if (buttonDiv) {
+          google.accounts.id.renderButton(buttonDiv, { 
+            theme: 'filled_blue', 
+            size: 'large', 
+            width: buttonDiv.offsetWidth || 350,
+            text: 'signin_with',
+            shape: 'rectangular',
+            logo_alignment: 'left'
+          });
+        }
+        return true;
+      } catch (err) {
+        console.error('Falha crítica ao inicializar biblioteca do Google:', err);
+        return false;
       }
-      return true;
     };
 
     let interval: any;

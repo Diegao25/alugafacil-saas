@@ -106,6 +106,7 @@ export function AuthProvider({ children }) {
 
   async function signInWithGoogle(credential: string) {
     try {
+      setLoading(true); // Garante que o estado de loading apareça
       const response = await api.post('/auth/google', { credential });
       const { user: userData, token } = response.data;
 
@@ -113,10 +114,19 @@ export function AuthProvider({ children }) {
       router.push('/dashboard');
       toast.success('Login com Google realizado com sucesso!');
     } catch (error: any) {
-      const message = error?.response?.data?.error || 'Erro na autenticação com Google';
+      const message = error?.response?.data?.error || 
+                      (error?.message?.includes('Network Error') ? 'O servidor não confiou na conexão. Tente novamente em instantes.' : 'Erro na autenticação com Google');
+      
       toast.error(message);
-      console.error('Erro no Google Login', error);
+      console.error('Erro no Google Login (Detalhamento):', {
+        status: error?.response?.status,
+        data: error?.response?.data,
+        message: error?.message,
+        url: error?.config?.url
+      });
       throw error;
+    } finally {
+      setLoading(false);
     }
   }
 

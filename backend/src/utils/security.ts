@@ -34,15 +34,20 @@ export function getAllowedOrigins() {
   const allowedOrigins = Array.from(
     new Set(
       process.env.NODE_ENV === 'production'
-        ? splitOrigins
+        ? [
+            ...splitOrigins,
+            'https://alugafacil.net.br',
+            'https://www.alugafacil.net.br',
+            'https://api.alugafacil.net.br'
+          ]
         : (splitOrigins.length > 0 ? [...splitOrigins, ...developmentOrigins] : developmentOrigins)
     )
   );
 
-  if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
-    // Em produÃ§Ã£o, se nada estiver configurado, usamos o domÃ­nio oficial como fallback
-    allowedOrigins.push('https://alugafacil.net.br');
-    allowedOrigins.push('https://www.alugafacil.net.br');
+  // Garantir que os domínios profissionais estejam sempre presentes em produção
+  if (process.env.NODE_ENV === 'production') {
+    if (!allowedOrigins.includes('https://alugafacil.net.br')) allowedOrigins.push('https://alugafacil.net.br');
+    if (!allowedOrigins.includes('https://www.alugafacil.net.br')) allowedOrigins.push('https://www.alugafacil.net.br');
   }
 
   return allowedOrigins;

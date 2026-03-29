@@ -29,6 +29,8 @@ const nextConfig = {
   reactStrictMode: true,
   // Desabilita geração de sourcemaps para economizar memória
   productionBrowserSourceMaps: false,
+  // Habilita o modo standalone para otimização de build em containers (Railway/Docker)
+  output: 'standalone',
 } satisfies import("next").NextConfig;
 
 export default nextConfig;

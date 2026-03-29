@@ -73,8 +73,13 @@ export const createCheckoutSession = async (req: AuthRequest, res: Response): Pr
       quantity: 1,
     };
 
-    if (priceId) {
-      lineItem.price = priceId;
+    // Fallback de segurança para Price IDs de teste se as ENVs sumirem na migração
+    const fallbackPriceId = planName === 'Plano Básico' 
+      ? 'price_1TFa89RDeWfp60TDPDrr9AzV' 
+      : 'price_1TFa8mRDeWfp60TDW15OusMr';
+
+    if (priceId || fallbackPriceId) {
+      lineItem.price = priceId || fallbackPriceId;
     } else {
       lineItem.price_data = {
         currency: 'brl',
@@ -87,30 +92,35 @@ export const createCheckoutSession = async (req: AuthRequest, res: Response): Pr
       };
     }
 
+    const frontendUrl = process.env.FRONTEND_URL || 'https://www.alugafacil.net.br';
+
     console.log('Criando sessão de checkout no Stripe com Line Item:', JSON.stringify(lineItem));
+    console.log('Frontend URL de retorno:', frontendUrl);
+
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       payment_method_types: ['card'],
       line_items: [lineItem],
       mode: 'subscription',
-      success_url: `${process.env.FRONTEND_URL}/dashboard/plans/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/dashboard/plans`,
+      success_url: `${frontendUrl}/dashboard/plans/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${frontendUrl}/dashboard/plans`,
       metadata: {
         userId: user.id,
         planName: planName
       }
     });
 
-    console.log('Sessão criada:', session.id);
+    console.log('Sessão criada com sucesso:', session.id);
     res.json({ url: session.url });
   } catch (error: any) {
-    console.error('=== Stripe Checkout Error ===');
+    console.error('=== EXTREME STRIPE ERROR LOGS ===');
     console.error('Message:', error.message);
-    console.error('Type:', error.type);
-    console.error('Code:', error.code);
-    console.error('Param:', error.param);
-    if (error.raw) console.error('Raw:', JSON.stringify(error.raw, null, 2));
-    res.status(500).json({ error: 'Erro ao criar sessão de checkout', message: error.message });
+    if (error.raw) console.error('Raw Error:', JSON.stringify(error.raw, null, 2));
+    res.status(500).json({ 
+      error: 'Erro ao criar sessão de checkout', 
+      message: error.message,
+      code: error.code || 'unknown'
+    });
   }
 };
 

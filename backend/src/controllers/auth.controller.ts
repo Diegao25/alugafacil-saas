@@ -50,8 +50,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         senha: passwordHash,
         is_admin: true,
         owner_user_id: null,
-        plan_type: 'trial',
-        plan_name: 'trial',
+        plan_type: 'basico',
+        plan_name: 'Plano Básico',
         trial_start_date: trialStartDate,
         trial_end_date: trialEndDate,
         subscription_status: 'trial_active'

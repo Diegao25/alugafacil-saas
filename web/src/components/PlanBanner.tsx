@@ -109,8 +109,8 @@ export default function PlanBanner() {
     );
   }
  
-  // Lógica de Trial (mantida e aprimorada)
-  if (user.plan_type === 'trial' && user.subscription_status !== 'trial_expired' && user.trial_end_date) {
+  // Lógica de Trial (mantida e aprimorada - Agora usando 'basico')
+  if (user.plan_type === 'basico' && user.subscription_status !== 'trial_expired' && user.trial_end_date) {
     const daysRemaining = (() => {
       try {
         const end = typeof user.trial_end_date === 'string' ? parseISO(user.trial_end_date) : user.trial_end_date;

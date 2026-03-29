@@ -93,7 +93,7 @@ export default function PlanBanner() {
             </span>
             <span className="text-blue-50 opacity-90 hidden sm:inline">|</span>
             <span className="text-xs sm:text-sm">
-              Sua assinatura está ativa. Aproveite os recursos premium!
+              Sua assinatura está ativa. Aproveite os recursos {user.plan_name === 'Plano Básico' ? 'básicos' : 'premium'}!
             </span>
           </div>
         </div>

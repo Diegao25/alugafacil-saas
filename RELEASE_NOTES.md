@@ -4,6 +4,17 @@ Este arquivo documenta as subidas oficiais para o ambiente de produção na Rail
 
 ---
 
+## [v1.1.2] - 2026-03-29
+### 💳 Correção de Checkout em Produção e Diagnósticos 🛡️✨
+
+Nesta versão, removemos dependências de IDs de teste no código e melhoramos as mensagens de erro do Stripe para facilitar a configuração em novos ambientes.
+
+#### 🚀 O que há de novo?
+*   **Remoção de Fallbacks de Teste**: O sistema agora exige que os IDs de preço sejam configurados via variáveis de ambiente, prevenindo erros de incompatibilidade entre Test/Live mode do Stripe. ✅🧬
+*   **Logs de Erro Aprimorados**: Mensagens de erro mais detalhadas no console da Railway e para o usuário final em caso de falha na criação da sessão de checkout. 🏁🛡️
+
+---
+
 ## [v1.1.1] - 2026-03-29
 ### 🛠️ Estabilização do Período de Teste e Redirecionamento 🛡️✨
 

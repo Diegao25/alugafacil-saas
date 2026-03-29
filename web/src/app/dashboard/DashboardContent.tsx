@@ -70,7 +70,7 @@ export default function DashboardPage() {
   const [viewDate, setViewDate] = useState(new Date());
 
   const daysRemaining = (() => {
-    if (user?.plan_type !== 'trial' || !user?.trial_end_date) return 0;
+    if (user?.plan_type !== 'basico' || !user?.trial_end_date) return 0;
     try {
       const end = typeof user.trial_end_date === 'string' ? parseISO(user.trial_end_date) : user.trial_end_date;
       const diff = differenceInCalendarDays(end, new Date());

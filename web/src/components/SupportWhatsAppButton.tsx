@@ -71,10 +71,10 @@ export default function SupportWhatsAppButton() {
  
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
  
-  const isTrial = user?.subscription_status === 'trial_active' || user?.plan_type === 'trial';
-  const isBasic = !isTrial && user?.plan_type === 'basico';
+  const isCompletoOrTrial = user?.plan_type === 'completo' || user?.subscription_status === 'trial_active';
+  const showEmailFallback = !isCompletoOrTrial && user?.plan_type === 'basico';
  
-  if (isBasic) {
+  if (showEmailFallback) {
     return createPortal(
       <a
         id="tour-support-button"

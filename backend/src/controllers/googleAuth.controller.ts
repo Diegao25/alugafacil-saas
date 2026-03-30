@@ -70,7 +70,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
       });
       console.log('[Step 4] User created successfully.');
  
-      const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
+      const frontendBase = process.env.FRONTEND_URL || 'https://www.alugafacil.net.br';
       const loginLink = `${frontendBase}/login?external=1`;
  
       try {

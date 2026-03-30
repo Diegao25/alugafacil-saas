@@ -90,7 +90,7 @@ export const createUser = async (req: AuthRequest, res: Response): Promise<void>
       }
     });
 
-    const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
+    const frontendBase = process.env.FRONTEND_URL || 'https://www.alugafacil.net.br';
     const setupPasswordLink = `${frontendBase}/reset-password?token=${setupToken}`;
 
     try {
@@ -150,7 +150,7 @@ export const resendInvite = async (req: AuthRequest, res: Response): Promise<voi
       }
     });
 
-    const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
+    const frontendBase = process.env.FRONTEND_URL || 'https://www.alugafacil.net.br';
     const setupPasswordLink = `${frontendBase}/reset-password?token=${setupToken}`;
 
     try {

@@ -58,7 +58,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       },
     })) as any;
 
-    const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
+    const frontendBase = process.env.FRONTEND_URL || 'https://www.alugafacil.net.br';
     const loginLink = `${frontendBase}/login?external=1`;
 
     try {
@@ -344,7 +344,7 @@ export const requestPasswordReset = async (req: Request, res: Response): Promise
       }
     });
 
-    const frontendBase = process.env.FRONTEND_URL || process.env.WEB_BASE_URL || 'http://localhost:3000';
+    const frontendBase = process.env.FRONTEND_URL || 'https://www.alugafacil.net.br';
     const resetLink = `${frontendBase}/reset-password?token=${token}`;
 
     // Envio real do e-mail de recuperação

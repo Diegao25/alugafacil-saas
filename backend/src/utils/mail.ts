@@ -186,7 +186,7 @@ export async function sendSubscriptionConfirmationEmail(
           <p>Você agora tem acesso ilimitado a todas as ferramentas premium da plataforma.</p>
           
           <div style="text-align: center; margin: 32px 0;">
-            <a href="${process.env.FRONTEND_URL}/dashboard" style="background-color: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
+            <a href="${process.env.FRONTEND_URL || 'https://www.alugafacil.net.br'}/dashboard" style="background-color: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
               Acessar Painel
             </a>
           </div>
@@ -242,7 +242,7 @@ export async function sendSubscriptionCancellationEmail(
           <p><strong>Mudou de ideia?</strong> Você pode reativar sua assinatura a qualquer momento diretamente no seu painel.</p>
 
           <div style="text-align: center; margin: 32px 0;">
-            <a href="${process.env.FRONTEND_URL}/dashboard/plans" style="background-color: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
+            <a href="${process.env.FRONTEND_URL || 'https://www.alugafacil.net.br'}/dashboard/plans" style="background-color: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
               Ver Planos / Reativar
             </a>
           </div>

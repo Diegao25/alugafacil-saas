@@ -1,22 +1,28 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = process.env.RESEND_API_KEY 
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+// Configuração do Transporter (Umbler SMTP)
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.umbler.com',
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: false, // STARTTLS na porta 587
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false // Útil para evitar erros de certificado em alguns ambientes
+  }
+});
 
 function getFromAddress() {
-  return process.env.EMAIL_FROM || 'Aluga Fácil <onboarding@resend.dev>';
+  return process.env.EMAIL_FROM || 'Aluga Fácil <suporte@alugafacil.net.br>';
 }
 
 export async function sendPasswordResetEmail(email: string, nome: string, resetLink: string) {
   try {
-    if (!resend) {
-      console.warn('Resend não configurado. Link de recuperação:', resetLink);
-      return;
-    }
-    const { data, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: getFromAddress(),
-      to: [email],
+      to: email,
       subject: 'Recuperação de Senha - Aluga Fácil',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -38,14 +44,10 @@ export async function sendPasswordResetEmail(email: string, nome: string, resetL
       `,
     });
 
-    if (error) {
-      console.error('Erro ao enviar e-mail via Resend:', error);
-      throw new Error(error.message);
-    }
-
-    return data;
+    console.log('E-mail de recuperação enviado:', info.messageId);
+    return info;
   } catch (err) {
-    console.error('Falha crítica no envio de e-mail:', err);
+    console.error('Falha no envio do e-mail de recuperação:', err);
     throw err;
   }
 }
@@ -57,17 +59,13 @@ export async function sendWelcomeEmail(
   trialEndDate?: Date | null
 ) {
   const trialEndLabel = trialEndDate
-    ? trialEndDate.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+    ? new Date(trialEndDate).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
     : null;
 
   try {
-    if (!resend) {
-      console.warn('Resend não configurado. E-mail de boas-vindas não enviado para:', email);
-      return;
-    }
-    const { data, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: getFromAddress(),
-      to: [email],
+      to: email,
       subject: 'Bem-vindo ao Aluga Fácil',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -91,14 +89,10 @@ export async function sendWelcomeEmail(
       `,
     });
 
-    if (error) {
-      console.error('Erro ao enviar e-mail de boas-vindas via Resend:', error);
-      throw new Error(error.message);
-    }
-
-    return data;
+    console.log('E-mail de boas-vindas enviado:', info.messageId);
+    return info;
   } catch (err) {
-    console.error('Falha crítica no envio de e-mail de boas-vindas:', err);
+    console.error('Falha no envio do e-mail de boas-vindas:', err);
     throw err;
   }
 }
@@ -109,13 +103,9 @@ export async function sendInvitedUserWelcomeEmail(
   setupPasswordLink: string
 ) {
   try {
-    if (!resend) {
-      console.warn('Resend não configurado. E-mail de convite não enviado para:', email);
-      return;
-    }
-    const { data, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: getFromAddress(),
-      to: [email],
+      to: email,
       subject: 'Defina sua senha de acesso ao Aluga Fácil',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -139,17 +129,14 @@ export async function sendInvitedUserWelcomeEmail(
       `,
     });
 
-    if (error) {
-      console.error('Erro ao enviar e-mail para usuário convidado via Resend:', error);
-      throw new Error(error.message);
-    }
-
-    return data;
+    console.log('E-mail de convite enviado:', info.messageId);
+    return info;
   } catch (err) {
-    console.error('Falha crítica no envio de e-mail para usuário convidado:', err);
+    console.error('Falha no envio do e-mail de convite:', err);
     throw err;
   }
 }
+
 export async function sendSubscriptionConfirmationEmail(
   email: string,
   nome: string,
@@ -158,16 +145,12 @@ export async function sendSubscriptionConfirmationEmail(
   date: Date
 ) {
   const formattedAmount = (amount).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const formattedDate = date.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  const formattedDate = new Date(date).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
   try {
-    if (!resend) {
-      console.warn('Resend não configurado. E-mail de confirmação de assinatura não enviado para:', email);
-      return;
-    }
-    const { data, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: getFromAddress(),
-      to: [email],
+      to: email,
       subject: `Assinatura Confirmada: ${planName} - Aluga Fácil`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -198,13 +181,10 @@ export async function sendSubscriptionConfirmationEmail(
       `,
     });
 
-    if (error) {
-      console.error('Erro ao enviar e-mail de confirmação via Resend:', error);
-      throw new Error(error.message);
-    }
-    return data;
+    console.log('E-mail de confirmação de assinatura enviado:', info.messageId);
+    return info;
   } catch (err) {
-    console.error('Falha crítica no envio de e-mail de confirmação:', err);
+    console.error('Falha no envio do e-mail de confirmação de assinatura:', err);
     throw err;
   }
 }
@@ -216,17 +196,13 @@ export async function sendSubscriptionCancellationEmail(
   cancellationDate: Date,
   accessUntil: Date
 ) {
-  const formattedCancellationDate = cancellationDate.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-  const formattedAccessUntil = accessUntil.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  const formattedCancellationDate = new Date(cancellationDate).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  const formattedAccessUntil = new Date(accessUntil).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
   try {
-    if (!resend) {
-      console.warn('Resend não configurado. E-mail de cancelamento não enviado para:', email);
-      return;
-    }
-    const { data, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: getFromAddress(),
-      to: [email],
+      to: email,
       subject: `Cancelamento de Assinatura - Aluga Fácil`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -253,13 +229,10 @@ export async function sendSubscriptionCancellationEmail(
       `,
     });
 
-    if (error) {
-      console.error('Erro ao enviar e-mail de cancelamento via Resend:', error);
-      throw new Error(error.message);
-    }
-    return data;
+    console.log('E-mail de cancelamento enviado:', info.messageId);
+    return info;
   } catch (err) {
-    console.error('Falha crítica no envio de e-mail de cancelamento:', err);
+    console.error('Falha no envio do e-mail de cancelamento:', err);
     throw err;
   }
 }

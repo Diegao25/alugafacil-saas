@@ -66,12 +66,9 @@ export function isOriginAllowed(origin: string | undefined): boolean {
   // 1. Check exato (normalizado)
   if (allowed.includes(originLower)) return true;
 
-  // 2. Check de Regex para DomÃ­nios Oficiais (SeguranÃ§a flexÃ­vel para infra-estrutura dinâmica)
-  if (originLower.endsWith('.alugafacil.net.br') || originLower.endsWith('.up.railway.app')) {
-    // Opcional: restringir para conter o nome do projeto se desejar mais rigor
-    if (originLower.includes('easygoing') || originLower.includes('alugafacil')) {
-      return true;
-    }
+  // 2. Check de Domínios Oficiais (Segurança flexível para infra-estrutura dinâmica)
+  if (originLower.endsWith('alugafacil.net.br') || originLower.endsWith('.up.railway.app')) {
+    return true;
   }
 
   // 3. Desenvolvimento: permitimos acessos via IP na rede local
